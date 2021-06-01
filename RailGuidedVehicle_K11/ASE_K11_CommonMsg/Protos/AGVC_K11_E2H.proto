@@ -1,0 +1,135 @@
+﻿syntax = "proto3";
+
+option csharp_namespace = "com.mirle.AK0.RGV.HostMessage.E2H";
+// The greeting service definition.
+service AGVC_K11_E2H {
+	// Sends a greeting
+	rpc SendS6F11_001_Offline(Report_ID_0) returns (S6F12_EventReportAck) {}
+	rpc SendS6F11_002_OnlineLocal(Report_ID_0) returns (S6F12_EventReportAck) {}
+	rpc SendS6F11_003_OnlineRemote(Report_ID_0) returns (S6F12_EventReportAck) {}
+	rpc SendS6F11_053_TscAutoComplete(Report_ID_0) returns (S6F12_EventReportAck) {}
+	rpc SendS6F11_055_TscPauseComplete(Report_ID_0) returns (S6F12_EventReportAck) {}
+	rpc SendS6F11_101_TransferAbortCompleted(Report_ID_2) returns (S6F12_EventReportAck) {}
+	rpc SendS6F11_102_TransferAbortFailed(Report_ID_1) returns (S6F12_EventReportAck) {}
+	rpc SendS6F11_103_TransferAbortInitiated(Report_ID_1) returns (S6F12_EventReportAck) {}
+	rpc SendS6F11_104_TransferCancelCompleted(Report_ID_1) returns (S6F12_EventReportAck) {}
+	rpc SendS6F11_105_TransferCancelFailed(Report_ID_1) returns (S6F12_EventReportAck) {}
+	rpc SendS6F11_106_TransferCancelInitiated(Report_ID_1) returns (S6F12_EventReportAck) {}
+	rpc SendS6F11_107_TransferCompleted(Report_ID_3) returns (S6F12_EventReportAck) {}
+	rpc SendS6F11_108_TransferInitiated(Report_ID_1) returns (S6F12_EventReportAck) {}
+	rpc SendS6F11_109_TransferPaused(Report_ID_1) returns (S6F12_EventReportAck) {}
+	rpc SendS6F11_110_TransferResumed(Report_ID_1) returns (S6F12_EventReportAck) {}
+	rpc SendS6F11_111_Transferring(Report_ID_1) returns (S6F12_EventReportAck) {}
+	rpc SendS6F11_151_CarrierInstalled(Report_ID_8) returns (S6F12_EventReportAck) {}
+	rpc SendS6F11_152_CarrierRemoved(Report_ID_9) returns (S6F12_EventReportAck) {}
+	rpc SendS6F11_201_VehicleArrived(Report_ID_6) returns (S6F12_EventReportAck) {}
+	rpc SendS6F11_202_VehicleAcquireStarted(Report_ID_7) returns (S6F12_EventReportAck) {}
+	rpc SendS6F11_203_VehicleAcquireCompleted(Report_ID_7) returns (S6F12_EventReportAck) {}
+	rpc SendS6F11_204_VehicleAssigned(Report_ID_5) returns (S6F12_EventReportAck) {}
+	rpc SendS6F11_205_VehicleDeparted(Report_ID_6) returns (S6F12_EventReportAck) {}
+	rpc SendS6F11_206_VehicleDepositStarted(Report_ID_7) returns (S6F12_EventReportAck) {}
+	rpc SendS6F11_207_VehicleDepositCompleted(Report_ID_7) returns (S6F12_EventReportAck) {}
+	rpc SendS6F11_208_VehicleInstalled(Report_ID_4) returns (S6F12_EventReportAck) {}
+	rpc SendS6F11_209_VehicleRemoved(Report_ID_4) returns (S6F12_EventReportAck) {}
+	rpc SendS6F11_210_VehicleUnassinged(Report_ID_5) returns (S6F12_EventReportAck) {}
+	rpc SendS6F11_601_OperatorInitiatedAction(Report_ID_10) returns (S6F12_EventReportAck) {}
+	rpc SendS6F11_901_UnitErrorCleared(Report_ID_11) returns (S6F12_EventReportAck) {}
+	rpc SendS6F11_902_UnitErrorSet(Report_ID_11) returns (S6F12_EventReportAck) {}
+}
+
+enum RESULT_CODE
+{
+	successful =0;
+	unsuccessful =1;
+	disable_unload =2;
+	disable_load =3;
+	bcr_read_error = 4;
+	carrier_id_unmatch =5;
+}
+
+
+message Report_ID_0 {
+	string eq_name = 1;
+}
+message Report_ID_1 {
+	string command_id = 1;
+	int32  priority = 2;
+	int32  replace = 3;
+	string carrier_id = 4;
+	string source_port = 5;
+	string dest_port = 6;
+}
+message Report_ID_2 {
+	string command_id = 1;
+	int32  priority = 2;
+	int32  replace = 3;
+	string carrier_id = 4;
+	string source_port = 5;
+	string dest_port = 6;
+	string carrier_loc = 7;
+	string next_stocker_port = 8;
+}
+message Report_ID_3 {
+	string command_id = 1;
+	int32  priority = 2;
+	int32  replace = 3;
+	string carrier_id = 4;
+	string source_port = 5;
+	string dest_port = 6;
+	string carrier_loc = 7;
+	RESULT_CODE  result_code = 8;
+	string next_stocker_port = 9;
+}
+message Report_ID_4 {
+	string vehicle_id = 1;
+}
+message Report_ID_5 {
+	string vehicle_id = 1;
+	string command_id = 2;
+}
+message Report_ID_6 {
+	string vehicle_id = 1;
+	string transfer_port = 2;
+}
+message Report_ID_7 {
+	string vehicle_id = 1;
+	string carrier_id = 2;
+	string transfer_port = 3;
+}
+message Report_ID_8 {
+    string carrier_id= 1;
+	string vehicle_id = 2;
+	string carrier_loc = 3;
+	string next_stocker_port = 4;
+}
+message Report_ID_9 {
+    string carrier_id= 1;
+	string vehicle_id = 2;
+	string carrier_loc = 3;
+}
+message Report_ID_10 {
+    string command_type = 1;
+	string command_id = 2;
+	int32  priority = 3;
+	string carrier_id = 4;
+	string source_port = 5;
+	string dest_port= 6;
+}
+message Report_ID_11 {
+    string alarm_id = 1;
+	string alaem_text = 2;
+	string unit_id = 3;
+	int32  error_code = 4;
+}
+message Report_ID_12 {
+    string port_id = 1;
+	int32  port_evt_state = 2;
+}
+message Report_ID_13 {
+    string vehicle_id = 1;
+	string charger_id = 2;
+	int32  current_node = 3;
+}
+message S6F12_EventReportAck {
+	int32 ackc6 = 1;
+}

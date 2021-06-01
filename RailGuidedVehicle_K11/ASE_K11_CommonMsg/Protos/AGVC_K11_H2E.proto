@@ -1,0 +1,241 @@
+﻿syntax = "proto3";
+
+option csharp_namespace = "com.mirle.AK0.RGV.HostMessage.H2E";
+// The greeting service definition.
+service RGV_K11_H2E {
+	// Sends a greeting
+	rpc SendSnF0_AbortTran (SnF0_AbortTransaction) returns (SnF_Ack) {}
+	rpc SendS1F1_AreYouThereReq (S1F1_AreYouThereRequest) returns (S1F2_OnLineData) {}
+	rpc SendS1F3_SelectedEquipmentStatusReq (S1F3_SelectedEquipmentStatusRequest) returns (S1F4_SelectedEquipmentStatusData) {}
+	rpc SendS1F17_ReqOnLine (S1F17_RequestOnLine) returns (S1F18_OnLineAck) {}
+	rpc SendS2F17_DateAndTimeReq (S2F17_DateAndTimeRequest) returns (S2F18_DateAndTimeData) {}
+	rpc SendS2F31_DateAndTimeSetReq (S2F31_DateAndTimeSetRequest) returns (S2F32_DateAndTimeSetAck) {}
+	rpc SendS2F41_HostCmdSend (S2F41_HostCommandSend) returns (S2F42_HostCommandAck) {}
+	rpc SendS2F49_TranCommand (S2F49_EnhancedRemoteCommand) returns (S2F50_EnhancedRemoteCommandAck) {}
+	rpc SendS9F1_UnrecDeviceID (S9F1_UmrecognizedDeviceID) returns (S9F_Ack) {}
+	rpc SendS9F3_UnrecStreamType (S9F3_UmrecognizedStreamType) returns (S9F_Ack) {}
+	rpc SendS9F5_UnrecFunctionType (S9F5_UmrecognizedFunctionType) returns (S9F_Ack) {}
+	rpc SendS9F7_IllData (S9F7_IllegalData) returns (S9F_Ack) {}
+	rpc SendS9F9_TranTimerTimeout (S9F9_TransactionTimerTimeout) returns (S9F_Ack) {}
+	rpc SendS9F11_DataLong (S9F11_DataTooLong) returns (S9F_Ack) {}
+}
+
+enum HCACK
+{
+	ack_command_has_been_performed =0;
+	command_does_not_exist =1;
+	cannot_perform_now =2;
+	at_least_one_parameter_is_invalid=3;
+	ack=4;
+	rejected =5;
+	no_such_obj_exist =6;
+}
+
+enum ONLACK
+{
+	on_line_accepted = 0;
+	on_line_not_allowed = 1;
+	equipment_already_on_line = 2;
+}
+
+enum TIACK
+{
+	ok = 0;
+	error = 1;
+}
+
+enum ACKC6
+{
+	accepted = 0;
+	nor_accepted = 1;
+}
+enum RCMD
+{
+	abort = 0;
+	cancel = 1;
+	pause = 2;
+	resume = 3;
+}
+enum TRAN_STATE
+{
+	queue = 0;
+	transferring = 1;
+	paused = 2;
+	canceling = 3;
+	abortling = 4;
+	waiting = 5;
+}
+
+enum TSCState
+{
+	TSCState_pause = 0;
+	TSCState_auto = 1;
+}
+enum ControlState
+{
+	ControlState_offline = 0;
+	ControlState_online_local = 1;
+	ControlState_online_remote = 2;
+}
+
+message SnF0_AbortTransaction {
+	
+}
+
+message SnF_Ack {
+	
+	}
+
+message S1F1_AreYouThereRequest {
+	string command_id = 1;
+}
+
+message S1F2_OnLineData {
+	string mdln = 1;
+	string softrev = 2;
+	}
+
+message S1F3_SelectedEquipmentStatusRequest {
+	int32 svid = 1;
+}
+
+message S1F4_SelectedEquipmentStatusData {
+	VID_4_AlarmSet set_alarms = 1;
+	VID_6_ControlState control_state = 2;
+	VID_73_TSCState tsc_state = 3;
+	VID_62_EnhancedCarriers carriers_info = 4;
+	VID_63_EnhancedTransfers transfers_info = 5;
+	}
+
+message VID_4_AlarmSet {
+	repeated Report_ID_11 current_set_alarms = 1;
+}
+
+message Report_ID_11 {
+    string alarm_id = 1;
+	string alaem_text = 2;
+	string unit_id = 3;
+	int32  error_code = 4;
+}
+
+message S1F17_RequestOnLine {
+
+}
+
+message S1F18_OnLineAck {
+	ONLACK onlack = 1;
+	}
+
+message S2F17_DateAndTimeRequest {
+	
+}
+
+message S2F18_DateAndTimeData {
+	string time = 1;
+	}
+
+message S2F31_DateAndTimeSetRequest {
+	string time = 1;	
+}
+
+message S2F32_DateAndTimeSetAck {
+	TIACK tiack = 1;
+	}
+
+message S2F41_HostCommandSend {
+    RCMD remote_command = 1;
+	string command_id = 2;	
+}
+
+message S2F42_HostCommandAck {
+	HCACK hcack = 1;
+	}
+
+message S2F49_EnhancedRemoteCommand {
+	int32  data_id = 1;
+	string obj_spec = 2;
+	string command_id = 3;
+	string priority = 4;
+	string replace = 5;
+	string carrier_id = 6;
+	string source_port = 7;
+	string dest_port = 8;
+	//google.protobuf.Timestamp birthday=2;
+}
+
+// The response message containing the greetings
+message S2F50_EnhancedRemoteCommandAck {
+	HCACK hcack = 1;
+}
+
+
+message VID_6_ControlState {
+	ControlState control_state = 1;
+}
+message VID_73_TSCState {
+	TSCState tsc_state = 1;
+}
+message VID_62_EnhancedCarriers {
+	repeated VID_EnhancedCarrierInfo CarrierInfos = 1;
+}
+message VID_EnhancedCarrierInfo {
+	string carrier_id = 1;
+	string vehicle_id = 2;
+	string carrier_loc = 3;
+	int64 install_time = 4;
+}
+message VID_63_EnhancedTransfers {
+	repeated VID_EnhancedTransferCommand TransferCommands = 1;
+}
+message VID_EnhancedTransferCommand {
+	string command_id = 1;
+	string priority = 2;
+	string replace = 3;
+	TRAN_STATE transfer_state = 4;
+	string carrier_id = 5;
+	string source_port = 6;
+	string dest_port = 7;
+}
+
+
+message S6F11_EventReportSent {
+	int32 data_id = 1;
+	int32 ceid = 2;
+	int32 rptid = 3;
+}
+
+message S6F12_EventReportAck {
+	ACKC6 ackc6 = 1;
+	}
+
+message S9F1_UmrecognizedDeviceID {
+	bytes mhead = 1;
+}
+
+
+message S9F3_UmrecognizedStreamType {
+	bytes mhead = 1;
+}
+
+
+message S9F5_UmrecognizedFunctionType {
+	bytes mhead = 1;
+}
+
+
+message S9F7_IllegalData {
+	bytes mhead = 1;
+}
+
+
+message S9F9_TransactionTimerTimeout {
+	bytes shead = 1;
+}
+
+message S9F11_DataTooLong {
+	bytes mhead = 1;
+}
+
+message S9F_Ack {
+	
+	}
