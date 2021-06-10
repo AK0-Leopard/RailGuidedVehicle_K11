@@ -15,7 +15,7 @@ using System.Threading.Tasks;
 
 namespace com.mirle.ibg3k0.sc
 {
-    public partial class VTRANSFER
+    public partial class VTRANSFER : IFormatProvider
     {
 
         public ACMD ConvertToCmd(BLL.PortStationBLL portStationBLL, BLL.SequenceBLL sequenceBLL, AVEHICLE assignVehicle)
@@ -149,6 +149,10 @@ namespace com.mirle.ibg3k0.sc
             return $"Command:{this.ID},source:{this.HOSTSOURCE},desc:{this.HOSTDESTINATION},inser time:{CMD_INSER_TIME.ToString()}";
         }
 
+        public object GetFormat(Type formatType)
+        {
+            return this;
+        }
     }
 
 }

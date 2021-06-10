@@ -75,6 +75,7 @@ message Timestamp {
 	EmptyRetrieval = 16;
 	Scan = 17;
 	CSTTypeMismatch = 18;
+	AvoideReq = 19;
 	BlockRelease = 21;
 	HIDRelease = 22;
 	BlockHIDRelease = 23;

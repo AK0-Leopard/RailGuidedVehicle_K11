@@ -82,15 +82,9 @@ namespace com.mirle.ibg3k0.sc.BLL
             VHModeStatus modeStat = default(VHModeStatus);
             if (vh_current_mode_status == VHModeStatus.AutoRemote)
             {
-                if (eqpt.MODE_STATUS == VHModeStatus.AutoLocal ||
-                    eqpt.MODE_STATUS == VHModeStatus.AutoCharging ||
-                    eqpt.MODE_STATUS == VHModeStatus.AutoZoneChange)
+                if (eqpt.MODE_STATUS == VHModeStatus.AutoLocal )
                 {
                     modeStat = eqpt.MODE_STATUS;
-                }
-                else if (batteryCapacity < AVEHICLE.BATTERYLEVELVALUE_LOW)
-                {
-                    modeStat = VHModeStatus.AutoCharging;
                 }
                 else
                 {

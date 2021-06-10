@@ -583,7 +583,8 @@ namespace com.mirle.ibg3k0.sc.BLL
         }
         public bool getAddressID(string adr_port_id, out string adr, out E_VH_TYPE vh_type)
         {
-            APORTSTATION port = scApp.MapBLL.getPortByPortID(adr_port_id);
+            //APORTSTATION port = scApp.MapBLL.getPortByPortID(adr_port_id);
+            APORTSTATION port = scApp.PortStationBLL.OperateCatch.getPortStation(adr_port_id);
             if (port != null)
             {
                 adr = port.ADR_ID.Trim();

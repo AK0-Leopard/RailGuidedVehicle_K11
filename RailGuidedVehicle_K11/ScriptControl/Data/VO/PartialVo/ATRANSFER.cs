@@ -130,6 +130,29 @@ namespace com.mirle.ibg3k0.sc
                 REPLACE = this.REPLACE
             };
         }
+        public VTRANSFER ToVTRANSFER()
+        {
+            return new VTRANSFER()
+            {
+                ID = this.ID,
+                LOT_ID = this.LOT_ID,
+                CARRIER_ID = this.CARRIER_ID,
+                TRANSFERSTATE = this.TRANSFERSTATE,
+                COMMANDSTATE = this.COMMANDSTATE,
+                HOSTSOURCE = this.HOSTSOURCE,
+                HOSTDESTINATION = this.HOSTDESTINATION,
+                PRIORITY = this.PRIORITY,
+                CHECKCODE = this.CHECKCODE,
+                PAUSEFLAG = this.PAUSEFLAG,
+                CMD_INSER_TIME = this.CMD_INSER_TIME,
+                CMD_START_TIME = this.CMD_START_TIME,
+                CMD_FINISH_TIME = this.CMD_FINISH_TIME,
+                TIME_PRIORITY = this.TIME_PRIORITY,
+                PORT_PRIORITY = this.PORT_PRIORITY,
+                PRIORITY_SUM = this.PRIORITY_SUM,
+                REPLACE = this.REPLACE
+            };
+        }
         public AEQPT getSourcePortEQ(BLL.EqptBLL eqptBLL)
         {
             var eq = eqptBLL.OperateCatch.GetEqpt(this.HOSTSOURCE);

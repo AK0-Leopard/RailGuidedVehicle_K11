@@ -21,57 +21,57 @@ namespace com.mirle.ibg3k0.sc.Data.SECSDriver
 
 
         #region Receive
-        protected abstract void S2F49ReceiveEnhancedRemoteCommandExtension(object sender, SECSEventArgs e);
-        protected abstract void S2F41ReceiveHostCommand(object sender, SECSEventArgs e);
+        protected abstract void S2F49_EnhancedRemoteCommandExtension(object sender, SECSEventArgs e);
+        protected abstract void S2F41_HostCommand(object sender, SECSEventArgs e);
         #endregion Receive
 
         #region Send
         #region Transfer Event
 
-        public abstract bool S6F11SendTransferAbortCompleted(string cmdID, List<AMCSREPORTQUEUE> reportQueues = null);
-        public abstract bool S6F11SendTransferAbortFailed(string cmdID, List<AMCSREPORTQUEUE> reportQueues = null);
-        public abstract bool S6F11SendTransferAbortInitial(string cmdID, List<AMCSREPORTQUEUE> reportQueues = null);
-        public abstract bool S6F11SendTransferCancelCompleted(string cmdID, List<AMCSREPORTQUEUE> reportQueues = null);
-        public abstract bool S6F11SendTransferCancelFailed(string cmdID, List<AMCSREPORTQUEUE> reportQueues = null);
-        public abstract bool S6F11SendTransferCancelInitial(string cmdID, List<AMCSREPORTQUEUE> reportQueues = null);
-        public abstract bool S6F11SendTransferPaused(string cmdID, List<AMCSREPORTQUEUE> reportQueues = null);
-        public abstract bool S6F11SendTransferResumed(string cmdID, List<AMCSREPORTQUEUE> reportQueues = null);
+        public abstract bool S6F11_TransferAbortCompleted(string cmdID, List<AMCSREPORTQUEUE> reportQueues = null);
+        public abstract bool S6F11_TransferAbortFailed(string cmdID, List<AMCSREPORTQUEUE> reportQueues = null);
+        public abstract bool S6F11_TransferAbortInitial(string cmdID, List<AMCSREPORTQUEUE> reportQueues = null);
+        public abstract bool S6F11_TransferCancelCompleted(string cmdID, List<AMCSREPORTQUEUE> reportQueues = null);
+        public abstract bool S6F11_TransferCancelFailed(string cmdID, List<AMCSREPORTQUEUE> reportQueues = null);
+        public abstract bool S6F11_TransferCancelInitial(string cmdID, List<AMCSREPORTQUEUE> reportQueues = null);
+        public abstract bool S6F11_TransferPaused(string cmdID, List<AMCSREPORTQUEUE> reportQueues = null);
+        public abstract bool S6F11_TransferResumed(string cmdID, List<AMCSREPORTQUEUE> reportQueues = null);
 
-        public abstract bool S6F11SendTransferInitial(string cmdID, List<AMCSREPORTQUEUE> reportQueues = null);
-        public abstract bool S6F11SendTransferring(string cmdID, List<AMCSREPORTQUEUE> reportQueues = null);
-        public abstract bool S6F11SendVehicleArrived(string cmdID, List<AMCSREPORTQUEUE> reportQueues = null);
-        public abstract bool S6F11SendVehicleAcquireStarted(string cmdID, List<AMCSREPORTQUEUE> reportQueues = null);
-        public abstract bool S6F11SendVehicleAcquireCompleted(string cmdID, List<AMCSREPORTQUEUE> reportQueues = null);
-        public abstract bool S6F11SendVehicleAssigned(string cmdID, List<AMCSREPORTQUEUE> reportQueues = null);
-        public abstract bool S6F11SendVehicleDeparted(string cmdID, List<AMCSREPORTQUEUE> reportQueues = null);
-        public abstract bool S6F11SendVehicleDepositStarted(string cmdID, List<AMCSREPORTQUEUE> reportQueues = null);
-        public abstract bool S6F11SendVehicleDepositCompleted(string cmdID, List<AMCSREPORTQUEUE> reportQueues = null);
-        public abstract bool S6F11SendCarrierInstalled(string vhID, string carrierID, string location, List<AMCSREPORTQUEUE> reportQueues = null);
-        public abstract bool S6F11SendCarrierInstalled(string cmdID, List<AMCSREPORTQUEUE> reportQueues = null);
-        public abstract bool S6F11SendCarrierRemoved(string vhID, string carrierID, string location, List<AMCSREPORTQUEUE> reportQueues = null);
-        public abstract bool S6F11SendCarrierRemoved(string cmdID, List<AMCSREPORTQUEUE> reportQueues = null);
-        public abstract bool S6F11SendVehicleUnassinged(string cmdID, List<AMCSREPORTQUEUE> reportQueues = null);
-        public abstract bool S6F11SendTransferCompleted(string cmdID, List<AMCSREPORTQUEUE> reportQueues = null);
-        public abstract bool S6F11SendTransferCompleted(VTRANSFER vtransfer, CompleteStatus completeStatus, List<AMCSREPORTQUEUE> reportQueues = null);
+        public abstract bool S6F11_TransferInitial(string cmdID, List<AMCSREPORTQUEUE> reportQueues = null);
+        public abstract bool S6F11_Transferring(string cmdID, List<AMCSREPORTQUEUE> reportQueues = null);
+        public abstract bool S6F11_VehicleArrived(string cmdID, List<AMCSREPORTQUEUE> reportQueues = null);
+        public abstract bool S6F11_VehicleAcquireStarted(string cmdID, List<AMCSREPORTQUEUE> reportQueues = null);
+        public abstract bool S6F11_VehicleAcquireCompleted(string cmdID, List<AMCSREPORTQUEUE> reportQueues = null);
+        public abstract bool S6F11_VehicleAssigned(string cmdID, List<AMCSREPORTQUEUE> reportQueues = null);
+        public abstract bool S6F11_VehicleDeparted(string cmdID, List<AMCSREPORTQUEUE> reportQueues = null);
+        public abstract bool S6F11_VehicleDepositStarted(string cmdID, List<AMCSREPORTQUEUE> reportQueues = null);
+        public abstract bool S6F11_VehicleDepositCompleted(string cmdID, List<AMCSREPORTQUEUE> reportQueues = null);
+        public abstract bool S6F11_CarrierInstalled(string vhID, string carrierID, string location, List<AMCSREPORTQUEUE> reportQueues = null);
+        public abstract bool S6F11_CarrierInstalled(string cmdID, List<AMCSREPORTQUEUE> reportQueues = null);
+        public abstract bool S6F11_CarrierRemoved(string vhID, string carrierID, string location, List<AMCSREPORTQUEUE> reportQueues = null);
+        public abstract bool S6F11_CarrierRemoved(string cmdID, List<AMCSREPORTQUEUE> reportQueues = null);
+        public abstract bool S6F11_VehicleUnassinged(string cmdID, List<AMCSREPORTQUEUE> reportQueues = null);
+        public abstract bool S6F11_TransferCompleted(string cmdID, List<AMCSREPORTQUEUE> reportQueues = null);
+        public abstract bool S6F11_TransferCompleted(VTRANSFER vtransfer, CompleteStatus completeStatus, List<AMCSREPORTQUEUE> reportQueues = null);
 
-        public abstract bool S6F11SendRunTimeStatus(string vhID, List<AMCSREPORTQUEUE> reportQueues = null);
-        public abstract bool S6F11SendVehicleInstalled(string cmdID, List<AMCSREPORTQUEUE> reportQueues = null);
-        public abstract bool S6F11SendVehicleRemoved(string cmdID, List<AMCSREPORTQUEUE> reportQueues = null);
+        public abstract bool S6F11_RunTimeStatus(string vhID, List<AMCSREPORTQUEUE> reportQueues = null);
+        public abstract bool S6F11_VehicleInstalled(string cmdID, List<AMCSREPORTQUEUE> reportQueues = null);
+        public abstract bool S6F11_VehicleRemoved(string cmdID, List<AMCSREPORTQUEUE> reportQueues = null);
         #endregion Transfer Event
         #region Port Event
-        public abstract bool S6F11PortEventStateChanged(string cmdID, List<AMCSREPORTQUEUE> reportQueues = null);
+        public abstract bool S6F11_PortEventStateChanged(string cmdID, List<AMCSREPORTQUEUE> reportQueues = null);
         #endregion Port Event
 
-        public abstract bool S6F11SendUnitAlarmCleared(string vhID, string transferID, string alarmID, string alarmTest, List<AMCSREPORTQUEUE> reportQueues = null);
-        public abstract bool S6F11SendUnitAlarmSet(string vhID, string transferID, string alarmID, string alarmTest, List<AMCSREPORTQUEUE> reportQueues = null);
+        public abstract bool S6F11_UnitAlarmCleared(string vhID, string transferID, string alarmID, string alarmTest, List<AMCSREPORTQUEUE> reportQueues = null);
+        public abstract bool S6F11_UnitAlarmSet(string vhID, string transferID, string alarmID, string alarmTest, List<AMCSREPORTQUEUE> reportQueues = null);
 
 
         #region TSC State Transition Event
-        public abstract bool S6F11SendTSCAutoCompleted();
-        public abstract bool S6F11SendTSCAutoInitiated();
-        public abstract bool S6F11SendTSCPauseCompleted();
-        public abstract bool S6F11SendTSCPaused();
-        public abstract bool S6F11SendTSCPauseInitiated();
+        public abstract bool S6F11_TSCAutoCompleted();
+        public abstract bool S6F11_TSCAutoInitiated();
+        public abstract bool S6F11_TSCPauseCompleted();
+        public abstract bool S6F11_TSCPaused();
+        public abstract bool S6F11_TSCPauseInitiated();
         #endregion TSC State Transition Event
 
 

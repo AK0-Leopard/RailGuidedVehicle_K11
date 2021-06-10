@@ -37,14 +37,18 @@ namespace com.mirle.ibg3k0.sc.Data.ValueDefMapAction.ASE.K11
 
         public override Task<S1F2_OnLineData> SendS1F1_AreYouThereReq(S1F1_AreYouThereRequest request, ServerCallContext context)
         {
-            return Task.FromResult(new S1F2_OnLineData
+            LogHelper.RecordHostReportInfo(request, method: "S1F1_AreYouThereReq");
+            var ask = new S1F2_OnLineData
             {
                 Softrev = SCAppConstants.getMainFormVersion("")
-            });
+            };
+            LogHelper.RecordHostReportInfoAsk(ask, method: "S1F1_AreYouThereReq");
+            return Task.FromResult(ask);
         }
         #region S1F4
         public override Task<S1F4_SelectedEquipmentStatusData> SendS1F3_SelectedEquipmentStatusReq(S1F3_SelectedEquipmentStatusRequest request, ServerCallContext context)
         {
+            LogHelper.RecordHostReportInfo(request, method: "S1F3_SelectedEquipmentStatusReq");
             SCApplication scApp = SCApplication.getInstance();
             S1F4_SelectedEquipmentStatusData s1f4 = new S1F4_SelectedEquipmentStatusData();
             buildAlarmSet(scApp, ref s1f4);
@@ -52,6 +56,7 @@ namespace com.mirle.ibg3k0.sc.Data.ValueDefMapAction.ASE.K11
             buildTSCState(scApp, ref s1f4);
             buildEnhancedCarriers(scApp, ref s1f4);
             buildEnhancedTransfers(scApp, ref s1f4);
+            LogHelper.RecordHostReportInfoAsk(s1f4, method: "S1F3_SelectedEquipmentStatusReq");
             return Task.FromResult(s1f4);
         }
 
@@ -173,6 +178,8 @@ namespace com.mirle.ibg3k0.sc.Data.ValueDefMapAction.ASE.K11
         public override Task<S1F18_OnLineAck> SendS1F17_ReqOnLine(S1F17_RequestOnLine request, ServerCallContext context)
         {
             string msg = "";
+            LogHelper.RecordHostReportInfo(request, method: "S1F17_ReqOnLine");
+
             SCApplication scApp = SCApplication.getInstance();
             ALINE line = scApp.getEQObjCacheManager().getLine();
             S1F18_OnLineAck s1f18 = new S1F18_OnLineAck();
@@ -195,11 +202,13 @@ namespace com.mirle.ibg3k0.sc.Data.ValueDefMapAction.ASE.K11
             {
                 scApp.LineService.OnlineWithHostByHost();
             }
+            LogHelper.RecordHostReportInfoAsk(s1f18, method: "S1F17_ReqOnLine");
 
             return Task.FromResult(s1f18);
         }
         public override Task<S2F32_DateAndTimeSetAck> SendS2F31_DateAndTimeSetReq(S2F31_DateAndTimeSetRequest request, ServerCallContext context)
         {
+            LogHelper.RecordHostReportInfo(request, method: "S2F31_DateAndTimeSetReq");
             S2F32_DateAndTimeSetAck s2f32 = new S2F32_DateAndTimeSetAck();
             DateTime mesDateTime = DateTime.Now;
             try
@@ -215,11 +224,13 @@ namespace com.mirle.ibg3k0.sc.Data.ValueDefMapAction.ASE.K11
             {
                 SCUtility.updateSystemTime(mesDateTime);
             }
+            LogHelper.RecordHostReportInfoAsk(s2f32, method: "S2F31_DateAndTimeSetReq");
             return Task.FromResult(s2f32);
         }
         #region S2F42
         public override Task<S2F42_HostCommandAck> SendS2F41_HostCmdSend(S2F41_HostCommandSend request, ServerCallContext context)
         {
+            LogHelper.RecordHostReportInfo(request, method: "S2F41_HostCmdSend");
             SCApplication scApp = SCApplication.getInstance();
             S2F42_HostCommandAck s2f42 = new S2F42_HostCommandAck();
             switch (request.RemoteCommand)
@@ -237,6 +248,7 @@ namespace com.mirle.ibg3k0.sc.Data.ValueDefMapAction.ASE.K11
                     procsscHostResumeCommand(scApp, ref s2f42);
                     break;
             }
+            LogHelper.RecordHostReportInfoAsk(s2f42, method: "S2F41_HostCmdSend");
             return Task.FromResult(s2f42);
         }
 
@@ -303,7 +315,11 @@ namespace com.mirle.ibg3k0.sc.Data.ValueDefMapAction.ASE.K11
 
         public override Task<S2F18_DateAndTimeData> SendS2F17_DateAndTimeReq(S2F17_DateAndTimeRequest request, ServerCallContext context)
         {
-            return base.SendS2F17_DateAndTimeReq(request, context);
+            LogHelper.RecordHostReportInfo(request, method: "S2F17_DateAndTimeReq");
+            S2F18_DateAndTimeData s2f18 = new S2F18_DateAndTimeData();
+            s2f18.Time = DateTime.Now.ToString("yyyyMMddHHmmss");
+            LogHelper.RecordHostReportInfoAsk(s2f18, method: "S2F17_DateAndTimeReq");
+            return Task.FromResult(s2f18);
         }
 
         public override Task<S2F50_EnhancedRemoteCommandAck> SendS2F49_TranCommand(S2F49_EnhancedRemoteCommand request, ServerCallContext context)
@@ -313,7 +329,10 @@ namespace com.mirle.ibg3k0.sc.Data.ValueDefMapAction.ASE.K11
             ALINE line = scApp.getEQObjCacheManager().getLine();
             try
             {
-                LogHelper.RecordReportInfo(request);
+                ATRANSFER transfer = request.ToATRANSFER(scApp.PortStationBLL);
+                VTRANSFER vtransfer = transfer.ToVTRANSFER();
+                LogHelper.RecordHostReportInfo(request, vtransfer);
+
                 if (line.ServerPreStop)
                 {
                     return Task.FromResult(new S2F50_EnhancedRemoteCommandAck
@@ -323,16 +342,12 @@ namespace com.mirle.ibg3k0.sc.Data.ValueDefMapAction.ASE.K11
                 }
                 string errorMsg = string.Empty;
 
-                LogHelper.Log(logger: logger, LogLevel: LogLevel.Info, Class: nameof(MCSDefaultMapActionReceive), Device: DEVICE_NAME_MCS,
-                   Data: request.ToString());
-
                 //s2f50.DataID = s2f49_transfer.SystemByte;需額外使用data id?
                 s2f50.Hcack = HCACK.Rejected;
 
                 string rtnStr = "";
                 var check_result = doCheckMCSCommand(scApp, request, ref s2f50, out rtnStr);
                 s2f50.Hcack = check_result.result;
-                ATRANSFER transfer = request.ToATRANSFER(scApp.PortStationBLL);
                 transfer.SetCheckResult(check_result.isSuccess, ((int)s2f50.Hcack).ToString());
                 bool is_process_success = scApp.TransferService.Creat(transfer);
                 if (!is_process_success)
@@ -353,14 +368,12 @@ namespace com.mirle.ibg3k0.sc.Data.ValueDefMapAction.ASE.K11
                                   XID: xid);
                     BCFApplication.onWarningMsg(this, new bcf.Common.LogEventArgs(rtnStr, xid));
                 }
-                LogHelper.Log(logger: logger, LogLevel: LogLevel.Info, Class: nameof(MCSDefaultMapActionReceive), Device: DEVICE_NAME_MCS,
-                   Data: s2f50.ToString());
+                LogHelper.RecordHostReportInfoAsk(s2f50, vtransfer);
             }
             catch (Exception ex)
             {
                 logger.Error("ASEMCSDefaultMapAction has Error[Line Name:{0}],[Error method:{1}],[Error Message:{2}", line.LINE_ID, "S2F49_Receive_Remote_Command", ex);
             }
-            LogHelper.RecordReportInfo(s2f50);
             return Task.FromResult(s2f50);
         }
         private (bool isSuccess, HCACK result) doCheckMCSCommand(SCApplication scApp, S2F49_EnhancedRemoteCommand request, ref S2F50_EnhancedRemoteCommandAck s2f50, out string check_result)

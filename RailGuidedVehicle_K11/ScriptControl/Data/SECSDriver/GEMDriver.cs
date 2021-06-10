@@ -796,11 +796,11 @@ namespace com.mirle.ibg3k0.sc.Data.SECSDriver
             return false;
         }
 
-        public abstract bool S6F11SendEquiptmentOffLine();
-        public abstract bool S6F11SendControlStateLocal();
-        public abstract bool S6F11SendControlStateRemote();
-        public abstract bool S6F11SendAlarmCleared();
-        public abstract bool S6F11SendAlarmSet();
+        public abstract bool S6F11_EquiptmentOffLine();
+        public abstract bool S6F11_ControlStateLocal();
+        public abstract bool S6F11_ControlStateRemote();
+        public abstract bool S6F11_SendAlarmCleared();
+        public abstract bool S6F11_SendAlarmSet();
 
 
 

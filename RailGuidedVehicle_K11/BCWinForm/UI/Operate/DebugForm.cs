@@ -1128,9 +1128,9 @@ namespace com.mirle.ibg3k0.bc.winform.UI
             //var id_136 = new sc.ProtocolFormat.OHTMessage.ID_136_TRANS_EVENT_REP()
             var id_136 = new com.mirle.AKA.ProtocolFormat.RGVMessage.ID_136_TRANS_EVENT_REP()
             {
-                EventType =  AKA.ProtocolFormat.RGVMessage.EventType.LoadArrivals,
+                EventType = AKA.ProtocolFormat.RGVMessage.EventType.LoadArrivals,
                 BOXID = cst_id,
-                BCRReadResult =  AKA.ProtocolFormat.RGVMessage.BCRReadResult.BcrNormal,
+                BCRReadResult = AKA.ProtocolFormat.RGVMessage.BCRReadResult.BcrNormal,
                 CmdID = cmd_id
             };
             var bcfApp = bcApp.SCApplication.getBCFApplication();

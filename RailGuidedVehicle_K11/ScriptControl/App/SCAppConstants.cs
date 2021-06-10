@@ -417,6 +417,7 @@ namespace com.mirle.ibg3k0.sc.App
             public const string VERSION_NAME_ASE_K21_DEMO = "ASE_K21_DEMO";
             public const string VERSION_NAME_TAICHUNG = "Taichung";
             public const string VERSION_NAME_AGC = "AGC";
+            public const string VERSION_NAME_ASE_K11 = "ASE_K11";
         }
 
         #endregion current work version

@@ -15,12 +15,9 @@ using System.Threading.Tasks;
 
 namespace com.mirle.ibg3k0.sc.ProtocolFormat.OHTMessage
 {
-    public partial class ID_134_TRANS_EVENT_REP : IFormatProvider
+    public partial class ID_131_TRANS_RESPONSE
     {
-        public object GetFormat(Type formatType)
-        {
-            return this;
-        }
+        public string Vehice_C_Ng_Reason = "";
     }
 
 }

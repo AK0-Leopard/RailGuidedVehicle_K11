@@ -241,13 +241,13 @@ namespace com.mirle.ibg3k0.sc.Data.ValueDefMapAction
         {
             ProtocolFormat.OHTMessage.ID_136_TRANS_EVENT_REP recive_str = rep.ConvertToVhMsg();
             dynamic receive_process = scApp.VehicleService.Receive;
-            receive_process.TranEventReport(bcfApp, eqpt, recive_str, 999);
+            receive_process.ID_136(bcfApp, eqpt, recive_str, 999);
         }
         protected void str136_Process(object sender, TcpIpEventArgs e)
         {
             ProtocolFormat.OHTMessage.ID_136_TRANS_EVENT_REP recive_str = ((AKA.ProtocolFormat.RGVMessage.ID_136_TRANS_EVENT_REP)e.objPacket).ConvertToVhMsg();
             dynamic receive_process = scApp.VehicleService.Receive;
-            receive_process.TranEventReport(bcfApp, eqpt, recive_str, e.iSeqNum);
+            receive_process.ID_136(bcfApp, eqpt, recive_str, e.iSeqNum);
         }
 
         protected void str138_Receive(object sender, TcpIpEventArgs e)
@@ -297,7 +297,7 @@ namespace com.mirle.ibg3k0.sc.Data.ValueDefMapAction
             //ID_144_STATUS_CHANGE_REP recive_str = (ID_144_STATUS_CHANGE_REP)e.objPacket;
             ProtocolFormat.OHTMessage.ID_144_STATUS_CHANGE_REP recive_str = ((AKA.ProtocolFormat.RGVMessage.ID_144_STATUS_CHANGE_REP)e.objPacket).ConvertToVhMsg();
             dynamic receive_process = scApp.VehicleService.Receive;
-            receive_process.StatusReport(bcfApp, eqpt, recive_str, e.iSeqNum);
+            receive_process.ID_144(bcfApp, eqpt, recive_str, e.iSeqNum);
         }
         protected void str152_Receive(object sender, TcpIpEventArgs e)
         {

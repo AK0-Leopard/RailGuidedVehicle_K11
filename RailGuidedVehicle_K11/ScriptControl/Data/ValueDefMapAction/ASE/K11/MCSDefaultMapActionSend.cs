@@ -34,7 +34,7 @@ namespace com.mirle.ibg3k0.sc.Data.ValueDefMapAction.ASE.K11
         sc.App.SCApplication scApp = null;
         public MCSDefaultMapActionSend()
         {
-            channel = new Channel("127.0.0.1", 7001, ChannelCredentials.Insecure);
+            channel = new Channel("localhost", 20001, ChannelCredentials.Insecure);
             client = new AGVC_K11_E2H.AGVC_K11_E2HClient(channel);
             scApp = sc.App.SCApplication.getInstance();
         }
@@ -44,29 +44,30 @@ namespace com.mirle.ibg3k0.sc.Data.ValueDefMapAction.ASE.K11
             return new AMCSREPORTQUEUE();
         }
 
-        public override bool S6F11PortEventStateChanged(string cmdID, List<AMCSREPORTQUEUE> reportQueues = null)
+        public override bool S6F11_PortEventStateChanged(string cmdID, List<AMCSREPORTQUEUE> reportQueues = null)
         {
             return true;
         }
 
-        public override bool S6F11SendAlarmCleared()
+        public override bool S6F11_SendAlarmCleared()
         {
             return true;
         }
 
-        public override bool S6F11SendAlarmSet()
+        public override bool S6F11_SendAlarmSet()
         {
             return true;
         }
 
-        public override bool S6F11SendCarrierInstalled(string vhID, string carrierID, string location, List<AMCSREPORTQUEUE> reportQueues = null)
+        public override bool S6F11_CarrierInstalled(string vhID, string carrierID, string location, List<AMCSREPORTQUEUE> reportQueues = null)
         {
             bool is_success = true;
             try
             {
                 Report_ID_8 report_obj = BulidReport8(vhID, carrierID, location);
-                LogHelper.RecordReportInfo(report_obj);
-                 client.SendS6F11_151_CarrierInstalled(report_obj);
+                LogHelper.RecordHostReportInfo(report_obj);
+                var ask = client.SendS6F11_151_CarrierInstalled(report_obj);
+                LogHelper.RecordHostReportInfoAsk(ask);
             }
             catch (Exception ex)
             {
@@ -76,13 +77,16 @@ namespace com.mirle.ibg3k0.sc.Data.ValueDefMapAction.ASE.K11
             return is_success;
         }
 
-        public override bool S6F11SendCarrierInstalled(string cmdID, List<AMCSREPORTQUEUE> reportQueues = null)
+        public override bool S6F11_CarrierInstalled(string cmdID, List<AMCSREPORTQUEUE> reportQueues = null)
         {
             bool is_success = true;
             try
             {
-                var report_obj = BulidReport8(cmdID).reportObj;
-                client.SendS6F11_151_CarrierInstalled(report_obj);
+                var report = BulidReport8(cmdID);
+                LogHelper.RecordHostReportInfo(report.reportObj, report.vtransfer);
+                var ask = client.SendS6F11_151_CarrierInstalled(report.reportObj);
+                LogHelper.RecordHostReportInfoAsk(ask, report.vtransfer);
+
             }
             catch (Exception ex)
             {
@@ -92,14 +96,15 @@ namespace com.mirle.ibg3k0.sc.Data.ValueDefMapAction.ASE.K11
             return is_success;
         }
 
-        public override bool S6F11SendCarrierRemoved(string vhID, string carrierID, string location, List<AMCSREPORTQUEUE> reportQueues = null)
+        public override bool S6F11_CarrierRemoved(string vhID, string carrierID, string location, List<AMCSREPORTQUEUE> reportQueues = null)
         {
             bool is_success = true;
             try
             {
                 var report_obj = BulidReport9(vhID, carrierID, location);
-                LogHelper.RecordReportInfo(report_obj);
-                client.SendS6F11_152_CarrierRemoved(report_obj);
+                LogHelper.RecordHostReportInfo(report_obj);
+                var ask = client.SendS6F11_152_CarrierRemoved(report_obj);
+                LogHelper.RecordHostReportInfoAsk(ask);
             }
             catch (Exception ex)
             {
@@ -109,14 +114,15 @@ namespace com.mirle.ibg3k0.sc.Data.ValueDefMapAction.ASE.K11
             return is_success;
         }
 
-        public override bool S6F11SendCarrierRemoved(string cmdID, List<AMCSREPORTQUEUE> reportQueues = null)
+        public override bool S6F11_CarrierRemoved(string cmdID, List<AMCSREPORTQUEUE> reportQueues = null)
         {
             bool is_success = true;
             try
             {
-                var report_obj = BulidReport9(cmdID).reportObj;
-                LogHelper.RecordReportInfo(report_obj);
-                client.SendS6F11_152_CarrierRemoved(report_obj);
+                var report = BulidReport9(cmdID);
+                LogHelper.RecordHostReportInfo(report.reportObj, report.vtransfer);
+                var ask = client.SendS6F11_152_CarrierRemoved(report.reportObj);
+                LogHelper.RecordHostReportInfoAsk(ask, report.vtransfer);
             }
             catch (Exception ex)
             {
@@ -126,27 +132,7 @@ namespace com.mirle.ibg3k0.sc.Data.ValueDefMapAction.ASE.K11
             return is_success;
         }
 
-        public override bool S6F11SendControlStateLocal()
-        {
-            bool is_success = true;
-            try
-            {
-                Report_ID_0 report_obj = new Report_ID_0()
-                {
-                    EqName = scApp.BC_ID
-                };
-                LogHelper.RecordReportInfo(report_obj);
-                client.SendS6F11_002_OnlineLocal(report_obj);
-            }
-            catch (Exception ex)
-            {
-                logger.Error(ex, "Exception");
-                is_success = false;
-            }
-            return is_success;
-        }
-
-        public override bool S6F11SendControlStateRemote()
+        public override bool S6F11_ControlStateLocal()
         {
             bool is_success = true;
             try
@@ -155,8 +141,10 @@ namespace com.mirle.ibg3k0.sc.Data.ValueDefMapAction.ASE.K11
                 {
                     EqName = scApp.BC_ID
                 };
-                LogHelper.RecordReportInfo(report_obj);
-                client.SendS6F11_003_OnlineRemote(report_obj);
+                LogHelper.RecordHostReportInfo(report_obj);
+                var ask = client.SendS6F11_002_OnlineLocal(report_obj);
+                LogHelper.RecordHostReportInfoAsk(ask);
+
             }
             catch (Exception ex)
             {
@@ -166,7 +154,7 @@ namespace com.mirle.ibg3k0.sc.Data.ValueDefMapAction.ASE.K11
             return is_success;
         }
 
-        public override bool S6F11SendEquiptmentOffLine()
+        public override bool S6F11_ControlStateRemote()
         {
             bool is_success = true;
             try
@@ -175,8 +163,31 @@ namespace com.mirle.ibg3k0.sc.Data.ValueDefMapAction.ASE.K11
                 {
                     EqName = scApp.BC_ID
                 };
-                LogHelper.RecordReportInfo(report_obj);
-                client.SendS6F11_001_Offline(report_obj);
+                LogHelper.RecordHostReportInfo(report_obj);
+                var ask = client.SendS6F11_003_OnlineRemote(report_obj);
+                LogHelper.RecordHostReportInfoAsk(ask);
+
+            }
+            catch (Exception ex)
+            {
+                logger.Error(ex, "Exception");
+                is_success = false;
+            }
+            return is_success;
+        }
+
+        public override bool S6F11_EquiptmentOffLine()
+        {
+            bool is_success = true;
+            try
+            {
+                Report_ID_0 report_obj = new Report_ID_0()
+                {
+                    EqName = scApp.BC_ID
+                };
+                LogHelper.RecordHostReportInfo(report_obj);
+                var ask = client.SendS6F11_001_Offline(report_obj);
+                LogHelper.RecordHostReportInfoAsk(ask);
             }
             catch (Exception ex)
             {
@@ -191,19 +202,21 @@ namespace com.mirle.ibg3k0.sc.Data.ValueDefMapAction.ASE.K11
             return true;
         }
 
-        public override bool S6F11SendRunTimeStatus(string vhID, List<AMCSREPORTQUEUE> reportQueues = null)
+        public override bool S6F11_RunTimeStatus(string vhID, List<AMCSREPORTQUEUE> reportQueues = null)
         {
             return true;
         }
 
-        public override bool S6F11SendTransferAbortCompleted(string cmdID, List<AMCSREPORTQUEUE> reportQueues = null)
+        public override bool S6F11_TransferAbortCompleted(string cmdID, List<AMCSREPORTQUEUE> reportQueues = null)
         {
             bool is_success = true;
             try
             {
-                Report_ID_2 report_obj = BulidReport2(cmdID).reportObj;
-                LogHelper.RecordReportInfo(report_obj);
-                client.SendS6F11_101_TransferAbortCompleted(report_obj);
+                var report = BulidReport2(cmdID);
+                LogHelper.RecordHostReportInfo(report.reportObj, report.vtransfer);
+                var ask = client.SendS6F11_101_TransferAbortCompleted(report.reportObj);
+                LogHelper.RecordHostReportInfoAsk(report.reportObj, report.vtransfer);
+
             }
             catch (Exception ex)
             {
@@ -243,14 +256,15 @@ namespace com.mirle.ibg3k0.sc.Data.ValueDefMapAction.ASE.K11
             }
         }
 
-        public override bool S6F11SendTransferAbortFailed(string cmdID, List<AMCSREPORTQUEUE> reportQueues = null)
+        public override bool S6F11_TransferAbortFailed(string cmdID, List<AMCSREPORTQUEUE> reportQueues = null)
         {
             bool is_success = true;
             try
             {
-                Report_ID_1 report_obj = BulidReport1(cmdID).reportObj;
-                LogHelper.RecordReportInfo(report_obj);
-                client.SendS6F11_102_TransferAbortFailed(report_obj);
+                var report = BulidReport1(cmdID);
+                LogHelper.RecordHostReportInfo(report.reportObj, report.vtransfer);
+                var ask = client.SendS6F11_102_TransferAbortFailed(report.reportObj);
+                LogHelper.RecordHostReportInfoAsk(ask, report.vtransfer);
             }
             catch (Exception ex)
             {
@@ -260,14 +274,15 @@ namespace com.mirle.ibg3k0.sc.Data.ValueDefMapAction.ASE.K11
             return is_success;
         }
 
-        public override bool S6F11SendTransferAbortInitial(string cmdID, List<AMCSREPORTQUEUE> reportQueues = null)
+        public override bool S6F11_TransferAbortInitial(string cmdID, List<AMCSREPORTQUEUE> reportQueues = null)
         {
             bool is_success = true;
             try
             {
-                Report_ID_1 report_obj = BulidReport1(cmdID).reportObj;
-                LogHelper.RecordReportInfo(report_obj);
-                client.SendS6F11_103_TransferAbortInitiated(report_obj);
+                var report = BulidReport1(cmdID);
+                LogHelper.RecordHostReportInfo(report.reportObj, report.vtransfer);
+                var ask = client.SendS6F11_103_TransferAbortInitiated(report.reportObj);
+                LogHelper.RecordHostReportInfoAsk(ask, report.vtransfer);
             }
             catch (Exception ex)
             {
@@ -277,14 +292,15 @@ namespace com.mirle.ibg3k0.sc.Data.ValueDefMapAction.ASE.K11
             return is_success;
         }
 
-        public override bool S6F11SendTransferCancelCompleted(string cmdID, List<AMCSREPORTQUEUE> reportQueues = null)
+        public override bool S6F11_TransferCancelCompleted(string cmdID, List<AMCSREPORTQUEUE> reportQueues = null)
         {
             bool is_success = true;
             try
             {
-                Report_ID_1 report_obj = BulidReport1(cmdID).reportObj;
-                LogHelper.RecordReportInfo(report_obj);
-                client.SendS6F11_104_TransferCancelCompleted(report_obj);
+                var report = BulidReport1(cmdID);
+                LogHelper.RecordHostReportInfo(report.reportObj, report.vtransfer);
+                var ask = client.SendS6F11_104_TransferCancelCompleted(report.reportObj);
+                LogHelper.RecordHostReportInfoAsk(ask, report.vtransfer);
             }
             catch (Exception ex)
             {
@@ -294,14 +310,15 @@ namespace com.mirle.ibg3k0.sc.Data.ValueDefMapAction.ASE.K11
             return is_success;
         }
 
-        public override bool S6F11SendTransferCancelFailed(string cmdID, List<AMCSREPORTQUEUE> reportQueues = null)
+        public override bool S6F11_TransferCancelFailed(string cmdID, List<AMCSREPORTQUEUE> reportQueues = null)
         {
             bool is_success = true;
             try
             {
-                Report_ID_1 report_obj = BulidReport1(cmdID).reportObj;
-                LogHelper.RecordReportInfo(report_obj);
-                client.SendS6F11_105_TransferCancelFailed(report_obj);
+                var report = BulidReport1(cmdID);
+                LogHelper.RecordHostReportInfo(report.reportObj, report.vtransfer);
+                var ask = client.SendS6F11_105_TransferCancelFailed(report.reportObj);
+                LogHelper.RecordHostReportInfoAsk(ask, report.vtransfer);
             }
             catch (Exception ex)
             {
@@ -311,14 +328,15 @@ namespace com.mirle.ibg3k0.sc.Data.ValueDefMapAction.ASE.K11
             return is_success;
         }
 
-        public override bool S6F11SendTransferCancelInitial(string cmdID, List<AMCSREPORTQUEUE> reportQueues = null)
+        public override bool S6F11_TransferCancelInitial(string cmdID, List<AMCSREPORTQUEUE> reportQueues = null)
         {
             bool is_success = true;
             try
             {
-                Report_ID_1 report_obj = BulidReport1(cmdID).reportObj;
-                LogHelper.RecordReportInfo(report_obj);
-                client.SendS6F11_106_TransferCancelInitiated(report_obj);
+                var report = BulidReport1(cmdID);
+                LogHelper.RecordHostReportInfo(report.reportObj, report.vtransfer);
+                var ask = client.SendS6F11_106_TransferCancelInitiated(report.reportObj);
+                LogHelper.RecordHostReportInfoAsk(ask, report.vtransfer);
             }
             catch (Exception ex)
             {
@@ -329,14 +347,16 @@ namespace com.mirle.ibg3k0.sc.Data.ValueDefMapAction.ASE.K11
 
         }
 
-        public override bool S6F11SendTransferCompleted(string cmdID, List<AMCSREPORTQUEUE> reportQueues = null)
+        public override bool S6F11_TransferCompleted(string cmdID, List<AMCSREPORTQUEUE> reportQueues = null)
         {
             bool is_success = true;
             try
             {
-                Report_ID_3 report_obj = BulidReport3(cmdID).reportObj;
-                LogHelper.RecordReportInfo(report_obj);
-                client.SendS6F11_107_TransferCompleted(report_obj);
+                var report = BulidReport3(cmdID);
+                LogHelper.RecordHostReportInfo(report.reportObj, report.vtransfer);
+                var ask = client.SendS6F11_107_TransferCompleted(report.reportObj);
+                LogHelper.RecordHostReportInfoAsk(ask, report.vtransfer);
+
             }
             catch (Exception ex)
             {
@@ -346,14 +366,15 @@ namespace com.mirle.ibg3k0.sc.Data.ValueDefMapAction.ASE.K11
             return is_success;
         }
 
-        public override bool S6F11SendTransferCompleted(VTRANSFER vtransfer, CompleteStatus completeStatus, List<AMCSREPORTQUEUE> reportQueues = null)
+        public override bool S6F11_TransferCompleted(VTRANSFER vtransfer, CompleteStatus completeStatus, List<AMCSREPORTQUEUE> reportQueues = null)
         {
             bool is_success = true;
             try
             {
-                Report_ID_3 report_obj = BulidReport3(vtransfer, completeStatus).reportObj;
-                LogHelper.RecordReportInfo(report_obj);
-                client.SendS6F11_107_TransferCompleted(report_obj);
+                var report = BulidReport3(vtransfer, completeStatus);
+                LogHelper.RecordHostReportInfo(report.reportObj, report.vtransfer);
+                var ask = client.SendS6F11_107_TransferCompleted(report.reportObj);
+                LogHelper.RecordHostReportInfoAsk(ask, report.vtransfer);
             }
             catch (Exception ex)
             {
@@ -363,14 +384,17 @@ namespace com.mirle.ibg3k0.sc.Data.ValueDefMapAction.ASE.K11
             return is_success;
         }
 
-        public override bool S6F11SendTransferInitial(string cmdID, List<AMCSREPORTQUEUE> reportQueues = null)
+        public override bool S6F11_TransferInitial(string cmdID, List<AMCSREPORTQUEUE> reportQueues = null)
         {
             bool is_success = true;
             try
             {
-                Report_ID_1 report_obj = BulidReport1(cmdID).reportObj;
-                LogHelper.RecordReportInfo(report_obj);
-                client.SendS6F11_108_TransferInitiated(report_obj);
+
+                var report = BulidReport1(cmdID);
+                Report_ID_1 report_obj = report.reportObj;
+                LogHelper.RecordHostReportInfo(report_obj, report.vtransfer);
+                var ask = client.SendS6F11_108_TransferInitiated(report_obj);
+                LogHelper.RecordHostReportInfoAsk(ask, report.vtransfer);
             }
             catch (Exception ex)
             {
@@ -380,14 +404,15 @@ namespace com.mirle.ibg3k0.sc.Data.ValueDefMapAction.ASE.K11
             return is_success;
         }
 
-        public override bool S6F11SendTransferPaused(string cmdID, List<AMCSREPORTQUEUE> reportQueues = null)
+        public override bool S6F11_TransferPaused(string cmdID, List<AMCSREPORTQUEUE> reportQueues = null)
         {
             bool is_success = true;
             try
             {
-                Report_ID_1 report_obj = BulidReport1(cmdID).reportObj;
-                LogHelper.RecordReportInfo(report_obj);
-                client.SendS6F11_109_TransferPaused(report_obj);
+                var report = BulidReport1(cmdID);
+                LogHelper.RecordHostReportInfo(report.reportObj, report.vtransfer);
+                client.SendS6F11_109_TransferPaused(report.reportObj);
+                LogHelper.RecordHostReportInfoAsk(report.reportObj, report.vtransfer);
             }
             catch (Exception ex)
             {
@@ -397,14 +422,15 @@ namespace com.mirle.ibg3k0.sc.Data.ValueDefMapAction.ASE.K11
             return is_success;
         }
 
-        public override bool S6F11SendTransferResumed(string cmdID, List<AMCSREPORTQUEUE> reportQueues = null)
+        public override bool S6F11_TransferResumed(string cmdID, List<AMCSREPORTQUEUE> reportQueues = null)
         {
             bool is_success = true;
             try
             {
-                Report_ID_1 report_obj = BulidReport1(cmdID).reportObj;
-                LogHelper.RecordReportInfo(report_obj);
-                client.SendS6F11_110_TransferResumed(report_obj);
+                var report = BulidReport1(cmdID);
+                LogHelper.RecordHostReportInfo(report.reportObj, report.vtransfer);
+                client.SendS6F11_110_TransferResumed(report.reportObj);
+                LogHelper.RecordHostReportInfoAsk(report.reportObj, report.vtransfer);
             }
             catch (Exception ex)
             {
@@ -414,14 +440,15 @@ namespace com.mirle.ibg3k0.sc.Data.ValueDefMapAction.ASE.K11
             return is_success;
         }
 
-        public override bool S6F11SendTransferring(string cmdID, List<AMCSREPORTQUEUE> reportQueues = null)
+        public override bool S6F11_Transferring(string cmdID, List<AMCSREPORTQUEUE> reportQueues = null)
         {
             bool is_success = true;
             try
             {
-                Report_ID_1 report_obj = BulidReport1(cmdID).reportObj;
-                LogHelper.RecordReportInfo(report_obj);
-                client.SendS6F11_111_Transferring(report_obj);
+                var report = BulidReport1(cmdID);
+                LogHelper.RecordHostReportInfo(report.reportObj, report.vtransfer);
+                var ask = client.SendS6F11_111_Transferring(report.reportObj);
+                LogHelper.RecordHostReportInfoAsk(ask, report.vtransfer);
             }
             catch (Exception ex)
             {
@@ -431,32 +458,7 @@ namespace com.mirle.ibg3k0.sc.Data.ValueDefMapAction.ASE.K11
             return is_success;
         }
 
-        public override bool S6F11SendTSCAutoCompleted()
-        {
-            bool is_success = true;
-            try
-            {
-                Report_ID_0 report_obj = new Report_ID_0()
-                {
-                    EqName = scApp.BC_ID
-                };
-                LogHelper.RecordReportInfo(report_obj);
-                client.SendS6F11_053_TscAutoComplete(report_obj);
-            }
-            catch (Exception ex)
-            {
-                logger.Error(ex, "Exception");
-                is_success = false;
-            }
-            return is_success;
-        }
-
-        public override bool S6F11SendTSCAutoInitiated()
-        {
-            return true;
-        }
-
-        public override bool S6F11SendTSCPauseCompleted()
+        public override bool S6F11_TSCAutoCompleted()
         {
             bool is_success = true;
             try
@@ -465,8 +467,9 @@ namespace com.mirle.ibg3k0.sc.Data.ValueDefMapAction.ASE.K11
                 {
                     EqName = scApp.BC_ID
                 };
-                LogHelper.RecordReportInfo(report_obj);
-                client.SendS6F11_055_TscPauseComplete(report_obj);
+                LogHelper.RecordHostReportInfo(report_obj);
+                var ask = client.SendS6F11_053_TscAutoComplete(report_obj);
+                LogHelper.RecordHostReportInfoAsk(ask);
             }
             catch (Exception ex)
             {
@@ -476,24 +479,52 @@ namespace com.mirle.ibg3k0.sc.Data.ValueDefMapAction.ASE.K11
             return is_success;
         }
 
-        public override bool S6F11SendTSCPaused()
+        public override bool S6F11_TSCAutoInitiated()
         {
             return true;
         }
 
-        public override bool S6F11SendTSCPauseInitiated()
+        public override bool S6F11_TSCPauseCompleted()
+        {
+            bool is_success = true;
+            try
+            {
+                Report_ID_0 report_obj = new Report_ID_0()
+                {
+                    EqName = scApp.BC_ID
+                };
+                LogHelper.RecordHostReportInfo(report_obj);
+                var ask = client.SendS6F11_055_TscPauseComplete(report_obj);
+                LogHelper.RecordHostReportInfoAsk(ask);
+
+            }
+            catch (Exception ex)
+            {
+                logger.Error(ex, "Exception");
+                is_success = false;
+            }
+            return is_success;
+        }
+
+        public override bool S6F11_TSCPaused()
         {
             return true;
         }
 
-        public override bool S6F11SendUnitAlarmCleared(string vhID, string transferID, string alarmID, string alarmTest, List<AMCSREPORTQUEUE> reportQueues = null)
+        public override bool S6F11_TSCPauseInitiated()
+        {
+            return true;
+        }
+
+        public override bool S6F11_UnitAlarmCleared(string vhID, string transferID, string alarmID, string alarmTest, List<AMCSREPORTQUEUE> reportQueues = null)
         {
             bool is_success = true;
             try
             {
                 Report_ID_11 report_obj = BulidReport11(vhID, alarmID, alarmTest);
-                LogHelper.RecordReportInfo(report_obj);
-                client.SendS6F11_901_UnitErrorCleared(report_obj);
+                LogHelper.RecordHostReportInfo(report_obj);
+                var ask = client.SendS6F11_901_UnitErrorCleared(report_obj);
+                LogHelper.RecordHostReportInfoAsk(ask);
             }
             catch (Exception ex)
             {
@@ -503,14 +534,15 @@ namespace com.mirle.ibg3k0.sc.Data.ValueDefMapAction.ASE.K11
             return is_success;
         }
 
-        public override bool S6F11SendUnitAlarmSet(string vhID, string transferID, string alarmID, string alarmTest, List<AMCSREPORTQUEUE> reportQueues = null)
+        public override bool S6F11_UnitAlarmSet(string vhID, string transferID, string alarmID, string alarmTest, List<AMCSREPORTQUEUE> reportQueues = null)
         {
             bool is_success = true;
             try
             {
                 Report_ID_11 report_obj = BulidReport11(vhID, alarmID, alarmTest);
-                LogHelper.RecordReportInfo(report_obj);
-                client.SendS6F11_902_UnitErrorSet(report_obj);
+                LogHelper.RecordHostReportInfo(report_obj);
+                var ask = client.SendS6F11_902_UnitErrorSet(report_obj);
+                LogHelper.RecordHostReportInfoAsk(ask);
             }
             catch (Exception ex)
             {
@@ -520,14 +552,15 @@ namespace com.mirle.ibg3k0.sc.Data.ValueDefMapAction.ASE.K11
             return is_success;
         }
 
-        public override bool S6F11SendVehicleAcquireCompleted(string cmdID, List<AMCSREPORTQUEUE> reportQueues = null)
+        public override bool S6F11_VehicleAcquireCompleted(string cmdID, List<AMCSREPORTQUEUE> reportQueues = null)
         {
             bool is_success = true;
             try
             {
-                var report_obj = BulidReport7(cmdID).reportObj;
-                LogHelper.RecordReportInfo(report_obj);
-                client.SendS6F11_203_VehicleAcquireCompleted(report_obj);
+                var report = BulidReport7(cmdID);
+                LogHelper.RecordHostReportInfo(report.reportObj, report.vtransfer);
+                var ask = client.SendS6F11_203_VehicleAcquireCompleted(report.reportObj);
+                LogHelper.RecordHostReportInfoAsk(ask, report.vtransfer);
             }
             catch (Exception ex)
             {
@@ -537,14 +570,15 @@ namespace com.mirle.ibg3k0.sc.Data.ValueDefMapAction.ASE.K11
             return is_success;
         }
 
-        public override bool S6F11SendVehicleAcquireStarted(string cmdID, List<AMCSREPORTQUEUE> reportQueues = null)
+        public override bool S6F11_VehicleAcquireStarted(string cmdID, List<AMCSREPORTQUEUE> reportQueues = null)
         {
             bool is_success = true;
             try
             {
-                var report_obj = BulidReport7(cmdID).reportObj;
-                LogHelper.RecordReportInfo(report_obj);
-                client.SendS6F11_202_VehicleAcquireStarted(report_obj);
+                var report = BulidReport7(cmdID);
+                LogHelper.RecordHostReportInfo(report.reportObj, report.vtransfer);
+                var ask = client.SendS6F11_202_VehicleAcquireStarted(report.reportObj);
+                LogHelper.RecordHostReportInfoAsk(ask, report.vtransfer);
             }
             catch (Exception ex)
             {
@@ -554,14 +588,16 @@ namespace com.mirle.ibg3k0.sc.Data.ValueDefMapAction.ASE.K11
             return is_success;
         }
 
-        public override bool S6F11SendVehicleArrived(string cmdID, List<AMCSREPORTQUEUE> reportQueues = null)
+        public override bool S6F11_VehicleArrived(string cmdID, List<AMCSREPORTQUEUE> reportQueues = null)
         {
             bool is_success = true;
             try
             {
-                var report_obj = BulidReport6(cmdID).reportObj;
-                LogHelper.RecordReportInfo(report_obj);
-                client.SendS6F11_201_VehicleArrived(report_obj);
+                var report = BulidReport6(cmdID);
+                LogHelper.RecordHostReportInfo(report.reportObj, report.vtransfer);
+                var ask = client.SendS6F11_201_VehicleArrived(report.reportObj);
+                LogHelper.RecordHostReportInfoAsk(ask, report.vtransfer);
+
             }
             catch (Exception ex)
             {
@@ -571,14 +607,15 @@ namespace com.mirle.ibg3k0.sc.Data.ValueDefMapAction.ASE.K11
             return is_success;
         }
 
-        public override bool S6F11SendVehicleAssigned(string cmdID, List<AMCSREPORTQUEUE> reportQueues = null)
+        public override bool S6F11_VehicleAssigned(string cmdID, List<AMCSREPORTQUEUE> reportQueues = null)
         {
             bool is_success = true;
             try
             {
-                var report_obj = BulidReport5(cmdID).reportObj;
-                LogHelper.RecordReportInfo(report_obj);
-                client.SendS6F11_204_VehicleAssigned(report_obj);
+                var report = BulidReport5(cmdID);
+                LogHelper.RecordHostReportInfo(report.reportObj, report.vtransfer);
+                var ask = client.SendS6F11_204_VehicleAssigned(report.reportObj);
+                LogHelper.RecordHostReportInfoAsk(ask, report.vtransfer);
             }
             catch (Exception ex)
             {
@@ -588,14 +625,16 @@ namespace com.mirle.ibg3k0.sc.Data.ValueDefMapAction.ASE.K11
             return is_success;
         }
 
-        public override bool S6F11SendVehicleDeparted(string cmdID, List<AMCSREPORTQUEUE> reportQueues = null)
+        public override bool S6F11_VehicleDeparted(string cmdID, List<AMCSREPORTQUEUE> reportQueues = null)
         {
             bool is_success = true;
             try
             {
-                var report_obj = BulidReport6(cmdID).reportObj;
-                LogHelper.RecordReportInfo(report_obj);
-                client.SendS6F11_205_VehicleDeparted(report_obj);
+                var report = BulidReport6(cmdID);
+                LogHelper.RecordHostReportInfo(report.reportObj, report.vtransfer);
+                var ask = client.SendS6F11_205_VehicleDeparted(report.reportObj);
+                LogHelper.RecordHostReportInfoAsk(ask, report.vtransfer);
+
             }
             catch (Exception ex)
             {
@@ -605,14 +644,15 @@ namespace com.mirle.ibg3k0.sc.Data.ValueDefMapAction.ASE.K11
             return is_success;
         }
 
-        public override bool S6F11SendVehicleDepositCompleted(string cmdID, List<AMCSREPORTQUEUE> reportQueues = null)
+        public override bool S6F11_VehicleDepositCompleted(string cmdID, List<AMCSREPORTQUEUE> reportQueues = null)
         {
             bool is_success = true;
             try
             {
-                var report_obj = BulidReport7(cmdID).reportObj;
-                LogHelper.RecordReportInfo(report_obj);
-                client.SendS6F11_207_VehicleDepositCompleted(report_obj);
+                var report = BulidReport7(cmdID);
+                LogHelper.RecordHostReportInfo(report.reportObj, report.vtransfer);
+                var ask = client.SendS6F11_207_VehicleDepositCompleted(report.reportObj);
+                LogHelper.RecordHostReportInfoAsk(ask, report.vtransfer);
             }
             catch (Exception ex)
             {
@@ -622,14 +662,15 @@ namespace com.mirle.ibg3k0.sc.Data.ValueDefMapAction.ASE.K11
             return is_success;
         }
 
-        public override bool S6F11SendVehicleDepositStarted(string cmdID, List<AMCSREPORTQUEUE> reportQueues = null)
+        public override bool S6F11_VehicleDepositStarted(string cmdID, List<AMCSREPORTQUEUE> reportQueues = null)
         {
             bool is_success = true;
             try
             {
-                var report_obj = BulidReport7(cmdID).reportObj;
-                LogHelper.RecordReportInfo(report_obj);
-                client.SendS6F11_206_VehicleDepositStarted(report_obj);
+                var report = BulidReport7(cmdID);
+                LogHelper.RecordHostReportInfo(report.reportObj, report.vtransfer);
+                var ask = client.SendS6F11_206_VehicleDepositStarted(report.reportObj);
+                LogHelper.RecordHostReportInfoAsk(ask, report.vtransfer);
             }
             catch (Exception ex)
             {
@@ -639,31 +680,15 @@ namespace com.mirle.ibg3k0.sc.Data.ValueDefMapAction.ASE.K11
             return is_success;
         }
 
-        public override bool S6F11SendVehicleInstalled(string vhID, List<AMCSREPORTQUEUE> reportQueues = null)
-        {
-            bool is_success = true;
-            try
-            {
-                var report_obj = BulidReport4(vhID);
-                LogHelper.RecordReportInfo(report_obj);
-                client.SendS6F11_208_VehicleInstalled(report_obj);
-            }
-            catch (Exception ex)
-            {
-                logger.Error(ex, "Exception");
-                is_success = false;
-            }
-            return is_success;
-        }
-
-        public override bool S6F11SendVehicleRemoved(string vhID, List<AMCSREPORTQUEUE> reportQueues = null)
+        public override bool S6F11_VehicleInstalled(string vhID, List<AMCSREPORTQUEUE> reportQueues = null)
         {
             bool is_success = true;
             try
             {
                 var report_obj = BulidReport4(vhID);
-                LogHelper.RecordReportInfo(report_obj);
-                client.SendS6F11_208_VehicleInstalled(report_obj);
+                LogHelper.RecordHostReportInfo(report_obj);
+                var ask = client.SendS6F11_208_VehicleInstalled(report_obj);
+                LogHelper.RecordHostReportInfoAsk(ask);
             }
             catch (Exception ex)
             {
@@ -673,14 +698,16 @@ namespace com.mirle.ibg3k0.sc.Data.ValueDefMapAction.ASE.K11
             return is_success;
         }
 
-        public override bool S6F11SendVehicleUnassinged(string cmdID, List<AMCSREPORTQUEUE> reportQueues = null)
+        public override bool S6F11_VehicleRemoved(string vhID, List<AMCSREPORTQUEUE> reportQueues = null)
         {
             bool is_success = true;
             try
             {
-                var report_obj = BulidReport5(cmdID).reportObj;
-                LogHelper.RecordReportInfo(report_obj);
-                client.SendS6F11_210_VehicleUnassinged(report_obj);
+                var report_obj = BulidReport4(vhID);
+                LogHelper.RecordHostReportInfo(report_obj);
+                var ask = client.SendS6F11_208_VehicleInstalled(report_obj);
+                LogHelper.RecordHostReportInfoAsk(ask);
+
             }
             catch (Exception ex)
             {
@@ -690,12 +717,30 @@ namespace com.mirle.ibg3k0.sc.Data.ValueDefMapAction.ASE.K11
             return is_success;
         }
 
-        protected override void S2F41ReceiveHostCommand(object sender, SECSEventArgs e)
+        public override bool S6F11_VehicleUnassinged(string cmdID, List<AMCSREPORTQUEUE> reportQueues = null)
+        {
+            bool is_success = true;
+            try
+            {
+                var report = BulidReport5(cmdID);
+                LogHelper.RecordHostReportInfo(report.reportObj, report.vtransfer);
+                var ask = client.SendS6F11_210_VehicleUnassinged(report.reportObj);
+                LogHelper.RecordHostReportInfoAsk(ask, report.vtransfer);
+            }
+            catch (Exception ex)
+            {
+                logger.Error(ex, "Exception");
+                is_success = false;
+            }
+            return is_success;
+        }
+
+        protected override void S2F41_HostCommand(object sender, SECSEventArgs e)
         {
             return;
         }
 
-        protected override void S2F49ReceiveEnhancedRemoteCommandExtension(object sender, SECSEventArgs e)
+        protected override void S2F49_EnhancedRemoteCommandExtension(object sender, SECSEventArgs e)
         {
             return;
         }

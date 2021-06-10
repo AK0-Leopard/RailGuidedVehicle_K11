@@ -185,8 +185,7 @@
       <HintPath>..\packages\Newtonsoft.Json.10.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="NLog, Version=4.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
-      <HintPath>..\packages\NLog.4.7.8\lib\net45\NLog.dll</HintPath>
-      <Private>True</Private>
+      <HintPath>..\packages\NLog.4.7.10\lib\net45\NLog.dll</HintPath>
     </Reference>
     <Reference Include="NLog.Targets.Seq, Version=1.0.0.0, Culture=neutral, PublicKeyToken=aec39280ded1b3a7, processorArchitecture=MSIL">
       <HintPath>..\packages\NLog.Targets.Seq.2.0.0\lib\net462\NLog.Targets.Seq.dll</HintPath>
@@ -512,7 +511,7 @@
     <Compile Include="BLL\AddressesBLL.cs" />
     <Compile Include="BLL\SegmentBLL.cs" />
     <Compile Include="BLL\ZoneBLL.cs" />
-    <Compile Include="Common\LayOutRenderer\VhIDLayoutRenderer.cs" />
+    <Compile Include="Common\LayOutRenderer\VhSecIDLayoutRenderer.cs" />
     <Compile Include="Common\RecordReportInfoObj.cs" />
     <Compile Include="Data\BackgroundWorkProcVehiclePosition.cs" />
     <Compile Include="Data\DAO\FireDoorDao.cs" />
@@ -583,6 +582,7 @@
     <Compile Include="Data\ValueDefMapAction\FireDoorDefaultValueDefMapAction.cs" />
     <Compile Include="Data\ValueDefMapAction\FireDoorInfoDefaultValueDefMapAction.cs" />
     <Compile Include="Data\VO\PartialVo\ACMD.cs" />
+    <Compile Include="Data\VO\PartialVo\gpb\ID_131_TRANS_RESPONSE.cs" />
     <Compile Include="Data\VO\PartialVo\gpb\PORT_INFO.cs" />
     <Compile Include="Data\VO\PartialVo\VTRANSFER.cs" />
     <Compile Include="Data\VO\PartialVo\ATRANSFER.cs" />
@@ -1086,10 +1086,6 @@
     <Content Include="DLL\log4net.dll" />
     <Content Include="DLL\NHibernate.dll" />
     <Content Include="DLL\NHibernate.xml" />
-    <Content Include="DLL\NLog.dll" />
-    <Content Include="DLL\NLog.Extended.dll" />
-    <Content Include="DLL\NLog.Extended.xml" />
-    <Content Include="DLL\NLog.xml" />
     <Content Include="DLL\QS2305A2_Retail.exe" />
     <Content Include="DLL\SECSTrxControl.xml" />
     <Content Include="DLL\SQLite.Designer.dll" />

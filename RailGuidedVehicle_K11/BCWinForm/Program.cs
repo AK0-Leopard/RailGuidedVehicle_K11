@@ -118,10 +118,17 @@ namespace com.mirle.ibg3k0.bc.winform
                 //    }
                 //    return;
                 //}
-                NLog.LayoutRenderers.LayoutRenderer.Register<sc.Common.LayOutRenderer.VhIDLayoutRenderer>("vehicle_id");
 
-                NLog.LogManager.GetLogger("SEQ_TEST").Log(LogLevel.Info,
-                "vh:{vhID}", "OHT01");
+
+                NLog.LayoutRenderers.LayoutRenderer.Register<sc.Common.LayOutRenderer.VhSecIDLayoutRenderer>("vehicle_sec_id");
+                NLog.LayoutRenderers.LayoutRenderer.Register<sc.Common.LayOutRenderer.VhAdrIDLayoutRenderer>("vehicle_adr_id");
+
+                //string vhID = "OHT01";
+                //string secID = "SEC01";
+                //NLog.LogManager.GetLogger("SEQ_TEST").WithProperty("","").Log(LogLevel.Info,
+                //                "vh:{vhID},sec:{secID}", vhID, secID);
+
+
 
                 AppDomain currentDomain = AppDomain.CurrentDomain;                                  //A0.12
                 currentDomain.UnhandledException += new UnhandledExceptionEventHandler(MyHandler);  //A0.12
