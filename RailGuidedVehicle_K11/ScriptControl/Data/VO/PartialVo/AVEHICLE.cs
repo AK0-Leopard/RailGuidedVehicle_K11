@@ -107,6 +107,11 @@ namespace com.mirle.ibg3k0.sc
             CommandActionTimer = new Stopwatch();
             IdleTimer = new Stopwatch();
             StartLoadingUnloadingTime = new Stopwatch();
+            CarrierLocation = new List<Location>()
+            {
+                new Location(""),
+                new Location(""),
+            };
         }
 
 

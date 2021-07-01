@@ -824,7 +824,7 @@ namespace com.mirle.ibg3k0.sc.ProtocolFormat.Converter.ASE_K11
                 var info = new AKA.ProtocolFormat.RGVMessage.GuideInfo();
                 info.FromTo = convertToRGVMsgContent(c.FromTo);
                 info.GuideAddresses.AddRange(c.GuideAddresses);
-                info.GuideAddresses.AddRange(c.GuideSections);
+                info.GuideSections.AddRange(c.GuideSections);
                 list.Add(info);
             }
             return list;

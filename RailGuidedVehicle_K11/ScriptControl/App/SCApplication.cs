@@ -539,6 +539,14 @@ namespace com.mirle.ibg3k0.sc.App
                                                                     //因此先將Segment作為Sectiong使用
                 }
             }
+            var secs = SectionBLL.cache.GetSections();
+            foreach (var sec in secs)
+            {
+                int.TryParse(sec.FROM_ADR_ID, out int ifrom_adr_id);
+                int.TryParse(sec.TO_ADR_ID, out int ito_adr_id);
+                NewRouteGuide.banRouteOneDirect(ito_adr_id, ifrom_adr_id);
+            }
+
             foreach (string ban_sec in ForceBanSections)
             {
                 NewRouteGuide.banRouteTwoDirect(ban_sec);

@@ -18,6 +18,13 @@ namespace com.mirle.ibg3k0.sc
     public partial class VTRANSFER : IFormatProvider
     {
 
+        public string getRealVhID(BLL.VehicleBLL vehicleBLL)
+        {
+            var vh = vehicleBLL.cache.getVehicle(VH_ID);
+            if (vh == null) return VH_ID;
+            return vh.Real_ID;
+        }
+
         public ACMD ConvertToCmd(BLL.PortStationBLL portStationBLL, BLL.SequenceBLL sequenceBLL, AVEHICLE assignVehicle)
         {
             var source_port_station = portStationBLL.OperateCatch.getPortStation(this.HOSTSOURCE);

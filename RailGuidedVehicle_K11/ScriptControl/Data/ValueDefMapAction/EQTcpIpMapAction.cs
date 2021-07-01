@@ -194,6 +194,7 @@ namespace com.mirle.ibg3k0.sc.Data.ValueDefMapAction
                 //ID_134_TRANS_EVENT_REP recive_str = (ID_134_TRANS_EVENT_REP)e.objPacket;
                 ProtocolFormat.OHTMessage.ID_134_TRANS_EVENT_REP recive_str = ((AKA.ProtocolFormat.RGVMessage.ID_134_TRANS_EVENT_REP)e.objPacket).ConvertToVhMsg();
                 SCUtility.RecodeReportInfo(eqpt.VEHICLE_ID, 0, recive_str);
+
                 dynamic receive_process = scApp.VehicleService.Receive;
                 receive_process.PositionReport(bcfApp, eqpt, recive_str, e.iSeqNum);
             }

@@ -34,7 +34,7 @@ namespace com.mirle.ibg3k0.sc.Data.ValueDefMapAction.ASE.K11
         sc.App.SCApplication scApp = null;
         public MCSDefaultMapActionSend()
         {
-            channel = new Channel("localhost", 20001, ChannelCredentials.Insecure);
+            channel = new Channel("192.168.1.2", 7001, ChannelCredentials.Insecure);
             client = new AGVC_K11_E2H.AGVC_K11_E2HClient(channel);
             scApp = sc.App.SCApplication.getInstance();
         }
@@ -508,12 +508,46 @@ namespace com.mirle.ibg3k0.sc.Data.ValueDefMapAction.ASE.K11
 
         public override bool S6F11_TSCPaused()
         {
-            return true;
+            bool is_success = true;
+            try
+            {
+                Report_ID_0 report_obj = new Report_ID_0()
+                {
+                    EqName = scApp.BC_ID
+                };
+                LogHelper.RecordHostReportInfo(report_obj);
+                var ask = client.SendS6F11_056_TscPaused(report_obj);
+                LogHelper.RecordHostReportInfoAsk(ask);
+
+            }
+            catch (Exception ex)
+            {
+                logger.Error(ex, "Exception");
+                is_success = false;
+            }
+            return is_success;
         }
 
         public override bool S6F11_TSCPauseInitiated()
         {
-            return true;
+            bool is_success = true;
+            try
+            {
+                Report_ID_0 report_obj = new Report_ID_0()
+                {
+                    EqName = scApp.BC_ID
+                };
+                LogHelper.RecordHostReportInfo(report_obj);
+                var ask = client.SendS6F11_057_TscPauseInitiated(report_obj);
+                LogHelper.RecordHostReportInfoAsk(ask);
+
+            }
+            catch (Exception ex)
+            {
+                logger.Error(ex, "Exception");
+                is_success = false;
+            }
+            return is_success;
         }
 
         public override bool S6F11_UnitAlarmCleared(string vhID, string transferID, string alarmID, string alarmTest, List<AMCSREPORTQUEUE> reportQueues = null)
@@ -829,7 +863,8 @@ namespace com.mirle.ibg3k0.sc.Data.ValueDefMapAction.ASE.K11
             var report_obj = new Report_ID_5()
             {
                 CommandId = vtransfer.ID,
-                VehicleId = vtransfer.VH_ID,
+                //VehicleId = vtransfer.VH_ID,
+                VehicleId = vtransfer.getRealVhID(scApp.VehicleBLL),
             };
             return (report_obj, vtransfer);
         }
@@ -839,7 +874,7 @@ namespace com.mirle.ibg3k0.sc.Data.ValueDefMapAction.ASE.K11
             sc.Common.SCUtility.TrimAllParameter(vtransfer);
             var report_obj = new Report_ID_6()
             {
-                VehicleId = vtransfer.VH_ID,
+                VehicleId = vtransfer.getRealVhID(scApp.VehicleBLL),
                 TransferPort = getTransferPort(vtransfer.COMMANDSTATE, vtransfer.HOSTSOURCE, vtransfer.HOSTDESTINATION),
             };
             return (report_obj, vtransfer);
@@ -850,7 +885,7 @@ namespace com.mirle.ibg3k0.sc.Data.ValueDefMapAction.ASE.K11
             sc.Common.SCUtility.TrimAllParameter(vtransfer);
             var report_obj = new Report_ID_7()
             {
-                VehicleId = vtransfer.VH_ID,
+                VehicleId = vtransfer.getRealVhID(scApp.VehicleBLL),
                 CarrierId = vtransfer.CARRIER_ID,
                 TransferPort = getTransferPort(vtransfer.COMMANDSTATE, vtransfer.HOSTSOURCE, vtransfer.HOSTDESTINATION),
             };
@@ -862,7 +897,7 @@ namespace com.mirle.ibg3k0.sc.Data.ValueDefMapAction.ASE.K11
             sc.Common.SCUtility.TrimAllParameter(vtransfer);
             var report_obj = new Report_ID_8()
             {
-                VehicleId = vtransfer.VH_ID,
+                VehicleId = vtransfer.getRealVhID(scApp.VehicleBLL),
                 CarrierId = vtransfer.CARRIER_ID,
                 CarrierLoc = vtransfer.CARRIER_LOCATION,
                 NextStockerPort = ""
@@ -887,7 +922,7 @@ namespace com.mirle.ibg3k0.sc.Data.ValueDefMapAction.ASE.K11
             sc.Common.SCUtility.TrimAllParameter(vtransfer);
             var report_obj = new Report_ID_9()
             {
-                VehicleId = vtransfer.VH_ID,
+                VehicleId = vtransfer.getRealVhID(scApp.VehicleBLL),
                 CarrierId = vtransfer.CARRIER_ID,
                 CarrierLoc = vtransfer.CARRIER_LOCATION,
 

@@ -7,11 +7,13 @@ service RGV_K11_H2E {
 	rpc SendSnF0_AbortTran (SnF0_AbortTransaction) returns (SnF_Ack) {}
 	rpc SendS1F1_AreYouThereReq (S1F1_AreYouThereRequest) returns (S1F2_OnLineData) {}
 	rpc SendS1F3_SelectedEquipmentStatusReq (S1F3_SelectedEquipmentStatusRequest) returns (S1F4_SelectedEquipmentStatusData) {}
+	rpc SendS1F15_ReqOffLine (S1F15_RequestOffLine) returns (S1F16_OffLineAck) {}
 	rpc SendS1F17_ReqOnLine (S1F17_RequestOnLine) returns (S1F18_OnLineAck) {}
 	rpc SendS2F17_DateAndTimeReq (S2F17_DateAndTimeRequest) returns (S2F18_DateAndTimeData) {}
 	rpc SendS2F31_DateAndTimeSetReq (S2F31_DateAndTimeSetRequest) returns (S2F32_DateAndTimeSetAck) {}
 	rpc SendS2F41_HostCmdSend (S2F41_HostCommandSend) returns (S2F42_HostCommandAck) {}
 	rpc SendS2F49_TranCommand (S2F49_EnhancedRemoteCommand) returns (S2F50_EnhancedRemoteCommandAck) {}
+	rpc SendS6F11_H2E_EventRptSent (S6F11_H2E_EventReportSent) returns (S6F12_H2E_EventReportAck) {}
 	rpc SendS9F1_UnrecDeviceID (S9F1_UmrecognizedDeviceID) returns (S9F_Ack) {}
 	rpc SendS9F3_UnrecStreamType (S9F3_UmrecognizedStreamType) returns (S9F_Ack) {}
 	rpc SendS9F5_UnrecFunctionType (S9F5_UmrecognizedFunctionType) returns (S9F_Ack) {}
@@ -118,6 +120,14 @@ message Report_ID_11 {
 	int32  error_code = 4;
 }
 
+message S1F15_RequestOffLine {
+
+}
+
+message S1F16_OffLineAck {
+	int32 oflack = 1;
+	}
+
 message S1F17_RequestOnLine {
 
 }
@@ -167,6 +177,16 @@ message S2F49_EnhancedRemoteCommand {
 message S2F50_EnhancedRemoteCommandAck {
 	HCACK hcack = 1;
 }
+
+message S6F11_H2E_EventReportSent {
+	int32 data_id = 1;
+	int32 ceid = 2;
+	int32 rptid = 3;
+}
+
+message S6F12_H2E_EventReportAck {
+	ACKC6 ackc6 = 1;
+	}
 
 
 message VID_6_ControlState {

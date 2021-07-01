@@ -202,9 +202,22 @@ namespace com.mirle.ibg3k0.sc.Data.ValueDefMapAction.ASE.K11
             {
                 scApp.LineService.OnlineWithHostByHost();
             }
-            LogHelper.RecordHostReportInfoAsk(s1f18, method: "S1F17_ReqOnLine");
 
+            LogHelper.RecordHostReportInfoAsk(s1f18, method: "S1F17_ReqOnLine");
             return Task.FromResult(s1f18);
+        }
+        public override Task<S1F16_OffLineAck> SendS1F15_ReqOffLine(S1F15_RequestOffLine request, ServerCallContext context)
+        {
+            LogHelper.RecordHostReportInfo(request, method: "S1F15_ReqOffLine");
+            SCApplication scApp = SCApplication.getInstance();
+            ALINE line = scApp.getEQObjCacheManager().getLine();
+            var s1f16 = new S1F16_OffLineAck();
+            if (line.Host_Control_State != SCAppConstants.LineHostControlState.HostControlState.EQ_Off_line)
+            {
+                scApp.LineService.OfflineWithHost();
+            }
+            LogHelper.RecordHostReportInfoAsk(s1f16, method: "S1F15_ReqOffLine");
+            return Task.FromResult(s1f16);
         }
         public override Task<S2F32_DateAndTimeSetAck> SendS2F31_DateAndTimeSetReq(S2F31_DateAndTimeSetRequest request, ServerCallContext context)
         {

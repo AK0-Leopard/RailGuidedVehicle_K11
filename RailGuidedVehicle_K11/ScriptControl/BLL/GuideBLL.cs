@@ -32,16 +32,46 @@ namespace com.mirle.ibg3k0.sc.BLL
         //}
 
         public (bool isSuccess, List<string> guideSegmentIds, List<string> guideSectionIds, List<string> guideAddressIds, int totalCost)
-            getGuideInfo(string startAddress, string targetAddress, List<string> byPassSectionIDs = null)
+            getGuideInfo(string startAddress, string targetAddress, List<string> byPassSectionIDs = null, bool isCircle = true)
         {
-            if (SCUtility.isMatche(startAddress, targetAddress))
+            string target_address_temp = targetAddress;
+            bool is_circle_guide = false;
+            string target_section_id = "";
+            List<string> start_append_section = new List<string>();
+            List<string> end_append_section = new List<string>();
+
+            List<string> start_append_address = new List<string>();
+            List<string> end_append_address = new List<string>();
+
+
+            //if (SCUtility.isMatche(startAddress, targetAddress))
+            if (SCUtility.isMatche(startAddress, target_address_temp))
             {
-                return (true, new List<string>(), new List<string>(), new List<string>(), 0);
+
+                if (isCircle && SCUtility.isMatche(startAddress, "10019"))
+                {
+                    is_circle_guide = true;
+                    startAddress = "10001";
+                    targetAddress = "10017";
+                    start_append_section.Add("10202");
+                    start_append_section.Add("10201");
+                    start_append_section.Add("10117");
+
+                    start_append_address.Add("10019");
+                    start_append_address.Add("10018");
+                    start_append_address.Add("10017");
+
+                }
+                else
+                {
+                    return (true, new List<string>(), new List<string>(), new List<string>(), 0);
+                }
             }
 
             bool is_success = false;
             int.TryParse(startAddress, out int i_start_address);
-            int.TryParse(targetAddress, out int i_target_address);
+            //int.TryParse(targetAddress, out int i_target_address);
+            int.TryParse(target_address_temp, out int i_target_address);
 
             List<RouteInfo> stratFromRouteInfoList = null;
             if (byPassSectionIDs == null || byPassSectionIDs.Count == 0)
@@ -63,7 +93,28 @@ namespace com.mirle.ibg3k0.sc.BLL
                 return (false, null, null, null, int.MaxValue);
             }
 
-            return (is_success, null, min_stratFromRouteInfo.GetSectionIDs(), min_stratFromRouteInfo.GetAddressesIDs(), min_stratFromRouteInfo.total_cost);
+            List<string> section_ids = new List<string>();
+            List<string> address_ids = new List<string>();
+            int total_cost = 0;
+            if (is_success)
+            {
+                if (is_circle_guide)
+                {
+                    section_ids.AddRange(start_append_section);
+                    address_ids.AddRange(start_append_address);
+                }
+                section_ids.AddRange(min_stratFromRouteInfo.GetSectionIDs());
+                address_ids.AddRange(min_stratFromRouteInfo.GetAddressesIDs());
+                if (is_circle_guide)
+                {
+                    section_ids.AddRange(end_append_section);
+                    address_ids.AddRange(end_append_address);
+                }
+                total_cost = min_stratFromRouteInfo.total_cost;
+
+            }
+            //return (is_success, null, min_stratFromRouteInfo.GetSectionIDs(), min_stratFromRouteInfo.GetAddressesIDs(), min_stratFromRouteInfo.total_cost);
+            return (is_success, null, section_ids, address_ids, total_cost);
         }
 
 
@@ -1031,8 +1082,8 @@ namespace com.mirle.ibg3k0.sc.BLL
         }
         public void clearAllDirGuideQuickSearchInfo()
         {
-            DebugParameter.GuideQuickSearchTimes=0;
-            DebugParameter.GuideSearchTimes=0;
+            DebugParameter.GuideQuickSearchTimes = 0;
+            DebugParameter.GuideSearchTimes = 0;
 
             dicGuideQuickSearch.Clear();
         }
