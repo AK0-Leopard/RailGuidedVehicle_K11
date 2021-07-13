@@ -310,9 +310,9 @@ namespace com.mirle.ibg3k0.sc.Common
             {
                 var id_134 = message as ID_134_TRANS_EVENT_REP;
                 var attenion_vaule = new { secID = id_134.CurrentSecID, adrID = id_134.CurrentSecID, distance = id_134.SecDistance };
-                LogManager.GetLogger("RecordReportInfo").WithProperty("msgDetail", detail).Info(vh, "{vhID}|{method}|{seqNum} {attenion_vaule}"
-                                                                , vhID
+                LogManager.GetLogger("RecordReportInfo").WithProperty("msgDetail", detail).Info(vh, "{method} | {vhID} | {seqNum} {attenion_vaule}"
                                                                 , function
+                                                                , vhID
                                                                 , seqNum
                                                                 , attenion_vaule);
                 //LogManager.GetLogger("RecordReportInfo").WithProperty

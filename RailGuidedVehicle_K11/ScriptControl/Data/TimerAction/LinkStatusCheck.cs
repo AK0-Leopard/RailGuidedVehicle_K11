@@ -75,7 +75,7 @@ namespace com.mirle.ibg3k0.sc.Data.TimerAction
             line = scApp.getEQObjCacheManager().getLine();
         }
 
-
+        const int checkMCSCommunicationTimeout = 15000;
         private long syncPoint = 0;
         /// <summary>
         /// Timer Action的執行動作
@@ -88,15 +88,16 @@ namespace com.mirle.ibg3k0.sc.Data.TimerAction
 
                 try
                 {
-                    doCheckIPLinkStatus();
+                    line.Secs_Link_Stat = line.CommunicationIntervalWithMCS.ElapsedMilliseconds < checkMCSCommunicationTimeout ?
+                        SCAppConstants.LinkStatus.LinkOK : SCAppConstants.LinkStatus.LinkFail;
                     scApp.CheckSystemEventHandler.CheckCheckSystemIsExist();
-
                     InlineEfficiencyMonitor();
                     if (SCUtility.getCallContext<bool>(ALINE.CONTEXT_KEY_WORD_LINE_STATUS_HAS_CHANGE))
                     {
                         line.NotifyLineStatusChange();
                         SCUtility.setCallContext(ALINE.CONTEXT_KEY_WORD_LINE_STATUS_HAS_CHANGE, null);
                     }
+                    Task.Run(() => doCheckIPLinkStatus());
                 }
                 catch (Exception ex)
                 {

@@ -291,6 +291,12 @@ namespace com.mirle.ibg3k0.sc.RouteKit
                     moveCost_1 = moveCost_1 + (int)(section_dis * movecostR_weight);
                     moveCost_2 = moveCost_2 + (int)(section_dis * movecostF_weight);
                 }
+
+                if (sec.SEC_COST_From2To == -1)
+                    moveCost_1 = 0;
+                if (sec.SEC_COST_To2From == -1)
+                    moveCost_2 = 0;
+
                 string changeSec_1 = SCUtility.Trim(sec.ADR1_CHG_SEC_ID_1);
                 int interCost_1 = sec.ADR1_CHG_SEC_COST_1;
                 string changeSec_2 = SCUtility.Trim(sec.ADR1_CHG_SEC_ID_2);
@@ -2605,6 +2611,12 @@ namespace com.mirle.ibg3k0.sc.RouteKit
                     moveCost_1 = moveCost_1 + (int)(seg_dis * movecostR_weight);  //M0.05
                     moveCost_2 = moveCost_2 + (int)(seg_dis * movecostF_weight);  //M0.05
                 }
+                if (moveCost_1 == -1)
+                    moveCost_1 = 0;
+                if (moveCost_2 == -1)
+                    moveCost_2 = 0;
+
+
                 string changeSec_1 = SCUtility.Trim(seg.ADR1_CHG_SEG_ID_1);
                 int interCost_1 = seg.ADR1_CHG_SEG_COST_1;
                 string changeSec_2 = SCUtility.Trim(seg.ADR1_CHG_SEG_ID_2);

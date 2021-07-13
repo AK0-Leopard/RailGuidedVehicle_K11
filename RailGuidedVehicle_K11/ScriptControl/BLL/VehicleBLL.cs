@@ -82,7 +82,7 @@ namespace com.mirle.ibg3k0.sc.BLL
             VHModeStatus modeStat = default(VHModeStatus);
             if (vh_current_mode_status == VHModeStatus.AutoRemote)
             {
-                if (eqpt.MODE_STATUS == VHModeStatus.AutoLocal )
+                if (eqpt.MODE_STATUS == VHModeStatus.AutoLocal)
                 {
                     modeStat = eqpt.MODE_STATUS;
                 }
@@ -272,55 +272,26 @@ namespace com.mirle.ibg3k0.sc.BLL
             double last_y_axis = vh.Y_Axis;
 
             uint sec_dis = report_obj.SecDistance;
-            lock (vh.PositionRefresh_Sync)
-            {
-                cache.updateVheiclePosition_CacheManager(vhID, current_adr_id, current_sec_id, current_seg_id, sec_dis, drive_dirction, current_x_axis, current_y_axis, dir_angle, vh_angle);
 
-                var update_result = updateVheiclePositionToReserveControlModule(scApp.ReserveBLL, vh, current_sec_id, current_x_axis, current_y_axis, dir_angle, vh_angle, dri_speed,
-                                                                                Mirle.Hlts.Utils.HltDirection.Forward, Mirle.Hlts.Utils.HltDirection.None);
-                if (!update_result.OK)
+            cache.updateVheiclePosition_CacheManager(vhID, current_adr_id, current_sec_id, current_seg_id, sec_dis, drive_dirction, current_x_axis, current_y_axis, dir_angle, vh_angle);
+
+            var update_result = updateVheiclePositionToReserveControlModule(scApp.ReserveBLL, vh, current_sec_id, current_x_axis, current_y_axis, dir_angle, vh_angle, dri_speed,
+                                                                            Mirle.Hlts.Utils.HltDirection.Forward, Mirle.Hlts.Utils.HltDirection.None);
+
+            ALINE line = scApp.getEQObjCacheManager().getLine();
+            if (line.ServiceMode == SCAppConstants.AppServiceMode.Active)
+            {
+                if (!SCUtility.isMatche(last_sec_id, current_sec_id))
                 {
-                    string message = $"The vehicles bumped, vh:{vh.VEHICLE_ID} with vh:{update_result.VehicleID}";
-                    LogHelper.Log(logger: logger, LogLevel: LogLevel.Warn, Class: nameof(VehicleBLL), Device: Service.VehicleService.DEVICE_NAME_AGV,
-                       Data: message,
-                       Details: update_result.Description,
-                       VehicleID: vh.VEHICLE_ID,
-                       CST_ID_L: vh.CST_ID_L,
-                       CST_ID_R: vh.CST_ID_R);
-                    //如果發生碰撞或踩入別人預約的不是虛擬車的話，則就要對兩台車下達EMS
-                    if (!update_result.VehicleID.StartsWith(Service.VehicleService.AvoidProcessor.VehicleVirtualSymbol))
-                    {
-                        bcf.App.BCFApplication.onErrorMsg(message);
-                        LogHelper.Log(logger: logger, LogLevel: LogLevel.Warn, Class: nameof(VehicleBLL), Device: Service.VehicleService.DEVICE_NAME_AGV,
-                           Data: $"The vehicles bumped will happend. send ems to {vhID}",
-                           VehicleID: vh.VEHICLE_ID,
-                           CST_ID_L: vh.CST_ID_L,
-                           CST_ID_R: vh.CST_ID_R);
-                        //scApp.VehicleService.Send.Cancel(vh.VEHICLE_ID, "", CancelActionType.CmdEms);
-                        AVEHICLE will_bumped_vh = cache.getVehicle(update_result.VehicleID);
-                        LogHelper.Log(logger: logger, LogLevel: LogLevel.Warn, Class: nameof(VehicleBLL), Device: Service.VehicleService.DEVICE_NAME_AGV,
-                           Data: $"The vehicles bumped will happend. send ems to {update_result.VehicleID}",
-                           VehicleID: vh.VEHICLE_ID,
-                           CST_ID_L: vh.CST_ID_L,
-                           CST_ID_R: vh.CST_ID_R);
-                        //scApp.VehicleService.Send.Cancel(will_bumped_vh.VEHICLE_ID, "", CancelActionType.CmdEms);
-                    }
+                    vh.onLocationChange(current_sec_id, last_sec_id);
                 }
-                ALINE line = scApp.getEQObjCacheManager().getLine();
-                if (line.ServiceMode == SCAppConstants.AppServiceMode.Active)
+                if (!SCUtility.isMatche(current_seg_id, last_seg_id))
                 {
-                    if (!SCUtility.isMatche(last_sec_id, current_sec_id))
-                    {
-                        vh.onLocationChange(current_sec_id, last_sec_id);
-                    }
-                    if (!SCUtility.isMatche(current_seg_id, last_seg_id))
-                    {
-                        vh.onSegmentChange(current_seg_id, last_seg_id);
-                    }
-                    if (last_x_axis != current_x_axis || last_y_axis != current_y_axis)
-                    {
-                        vh.onPositionChange(last_x_axis, last_y_axis, current_x_axis, current_y_axis);
-                    }
+                    vh.onSegmentChange(current_seg_id, last_seg_id);
+                }
+                if (last_x_axis != current_x_axis || last_y_axis != current_y_axis)
+                {
+                    vh.onPositionChange(last_x_axis, last_y_axis, current_x_axis, current_y_axis);
                 }
             }
         }

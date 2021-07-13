@@ -627,13 +627,14 @@ namespace com.mirle.ibg3k0.bc.winform.UI.Components
             {
                 try
                 {
-                    //如果車子目前是位於9開頭的Address 就把他換成用Address的座標來定位
-                    if (vh.CUR_ADR_ID != null && vh.CUR_ADR_ID.StartsWith("9"))
+                    if (vh.IsOnAdr)
                     {
-                        string replaced_cur_adr = replaceFirstChar(vh.CUR_ADR_ID);
-                        uctlAddress uctlAdr = Uctl_Map.getuctAddressByAdrID(replaced_cur_adr);
-                        if (uctlAdr == null) return;
-                        PrcSetLocation(uctlAdr.p_LocX, uctlAdr.p_LocY);
+                        uctlAddress uctlAdr = Uctl_Map.getuctAddressByAdrID(vh.CUR_ADR_ID);
+                        if (uctlAdr != null)
+                            PrcSetLocation(uctlAdr.p_LocX, uctlAdr.p_LocY);
+                        else
+                            PrcSetLocation((UNKNOW_DEFAULT_X_LOCATION_VALUE * Num) + 2, UNKNOW_DEFAULT_Y_LOCATION_VALUE);
+
                     }
                     else
                     {

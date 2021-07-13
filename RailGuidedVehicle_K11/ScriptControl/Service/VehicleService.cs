@@ -1949,6 +1949,8 @@ namespace com.mirle.ibg3k0.sc.Service
             {
                 AVEHICLE vh = scApp.VehicleBLL.cache.getVehicle(vhID);
                 scApp.VehicleBLL.cache.SetCSTL(vhID, hasCst);
+                LogHelper.RecordReportInfo(scApp.CMDBLL, vh, new ID_144_STATUS_CHANGE_REP(), 0);
+
             }
             [ClassAOPAspect]
             public void ID_144(BCFApplication bcfApp, AVEHICLE vh, ID_144_STATUS_CHANGE_REP recive_str, int seq_num)

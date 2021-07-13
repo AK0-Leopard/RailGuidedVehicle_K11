@@ -37,12 +37,15 @@ namespace com.mirle.ibg3k0.sc.Data.ValueDefMapAction.ASE.K11
 
         public override Task<S1F2_OnLineData> SendS1F1_AreYouThereReq(S1F1_AreYouThereRequest request, ServerCallContext context)
         {
+            SCApplication scApp = SCApplication.getInstance();
+            ALINE line = scApp.getEQObjCacheManager().getLine();
             LogHelper.RecordHostReportInfo(request, method: "S1F1_AreYouThereReq");
             var ask = new S1F2_OnLineData
             {
                 Softrev = SCAppConstants.getMainFormVersion("")
             };
             LogHelper.RecordHostReportInfoAsk(ask, method: "S1F1_AreYouThereReq");
+            line.CommunicationIntervalWithMCS.Restart();
             return Task.FromResult(ask);
         }
         #region S1F4

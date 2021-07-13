@@ -449,6 +449,8 @@ namespace com.mirle.ibg3k0.sc
         [JsonIgnore]
         public virtual string ToSectionID { get; set; } = string.Empty;
         [JsonIgnore]
+        public virtual bool IsOnAdr { get { return SCUtility.isEmpty(CUR_SEC_ID); } }
+        [JsonIgnore]
         public virtual DriveDirction CurrentDriveDirction { get; set; }
         [JsonIgnore]
         public virtual double Speed { get; set; }

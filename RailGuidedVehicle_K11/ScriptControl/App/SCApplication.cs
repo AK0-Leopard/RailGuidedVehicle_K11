@@ -532,20 +532,19 @@ namespace com.mirle.ibg3k0.sc.App
                 //}
                 if (seg.STATUS == E_SEG_STATUS.Closed)
                 {
-
                     //NewRouteGuide.banRouteTwoDirect(seg.SEG_ID);//由於目前AGV的圖資資料Section=Segment，之後會將牠們分開，
                     foreach (var sec in seg.Sections)
                         NewRouteGuide.banRouteTwoDirect(sec.SEC_ID);//由於目前AGV的圖資資料Section=Segment，之後會將牠們分開，
                                                                     //因此先將Segment作為Sectiong使用
                 }
             }
-            var secs = SectionBLL.cache.GetSections();
-            foreach (var sec in secs)
-            {
-                int.TryParse(sec.FROM_ADR_ID, out int ifrom_adr_id);
-                int.TryParse(sec.TO_ADR_ID, out int ito_adr_id);
-                NewRouteGuide.banRouteOneDirect(ito_adr_id, ifrom_adr_id);
-            }
+            //var secs = SectionBLL.cache.GetSections();
+            //foreach (var sec in secs)
+            //{
+            //    int.TryParse(sec.FROM_ADR_ID, out int ifrom_adr_id);
+            //    int.TryParse(sec.TO_ADR_ID, out int ito_adr_id);
+            //    NewRouteGuide.banRouteOneDirect(ito_adr_id, ifrom_adr_id);
+            //}
 
             foreach (string ban_sec in ForceBanSections)
             {
@@ -1054,10 +1053,13 @@ namespace com.mirle.ibg3k0.sc.App
             connectionInfoService = new ConnectionInfoService();
             userControlService = new UserControlService();
             transferService = new TransferService();
+
+            string s_grpc_server_port = getString("gRPCServerPort", "7001");
+            int.TryParse(s_grpc_server_port, out int i_grpc_server_port);
             gRPC_With_MCS = new Grpc.Core.Server()
             {
                 Services = { AK0.RGV.HostMessage.H2E.RGV_K11_H2E.BindService(new MCSDefaultMapActionReceive()) },
-                Ports = { new Grpc.Core.ServerPort("0.0.0.0", 7001, Grpc.Core.ServerCredentials.Insecure) },
+                Ports = { new Grpc.Core.ServerPort("0.0.0.0", i_grpc_server_port, Grpc.Core.ServerCredentials.Insecure) },
             };
         }
 
@@ -1177,7 +1179,7 @@ namespace com.mirle.ibg3k0.sc.App
             return rtn;
         }
 
-        private string getString(string key, string defaultValue)
+        public string getString(string key, string defaultValue)
         {
             string rtn = defaultValue;
             try
