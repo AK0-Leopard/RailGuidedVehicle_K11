@@ -20,6 +20,7 @@ namespace com.mirle.ibg3k0.sc.Common
         public const string CALL_CONTEXT_KEY_WORD_SERVICE_ID = "SERVICE_ID";
         static ObjectPool<LogObj> LogObjPool = new ObjectPool<LogObj>(() => new LogObj());
         static Logger logger = LogManager.GetLogger("RecordReportInfo");
+        static Logger SxFylogger = LogManager.GetLogger("SXFYLogger");
 
 
         public static void setCallContextKey_ServiceID(string service_id)
@@ -224,6 +225,12 @@ namespace com.mirle.ibg3k0.sc.Common
                 }
             }
             return name;
+        }
+
+        public static void RecordReportInfoAsync(BLL.CMDBLL cmdBLL, AVEHICLE vh, IMessage message, int seqNum, [CallerMemberName] string Method = "")
+        {
+            //Task.Run(() => RecordReportInfo(cmdBLL, vh, message, seqNum, Method));
+            RecordReportInfo(cmdBLL, vh, message, seqNum, Method);
         }
         public static void RecordReportInfo(BLL.CMDBLL cmdBLL, AVEHICLE vh, IMessage message, int seqNum, [CallerMemberName] string Method = "")
         {
@@ -582,6 +589,8 @@ namespace com.mirle.ibg3k0.sc.Common
         }
         public static void RecordHostReportInfo(IMessage message, VTRANSFER vTrn = null, [CallerMemberName] string method = "", int seqNum = 0)
         {
+            recodeLog(message, "MCS", method, "", "", method.Contains("Ask"));
+
             string tran_id = "";
             string ExcuteVhCmdID = "";
             string ExcuteVhID = "";
@@ -609,8 +618,61 @@ namespace com.mirle.ibg3k0.sc.Common
 
         }
 
-    }
+        public const string TITLE_NAME_EQID = "EQ ID";
+        public const string TITLE_NAME_TIME = "T";
+        public const string TITLE_NAME_FUNNAME = "Name";
+        public const string TITLE_NAME_ID = "ID";
+        public const string TITLE_NAME_SEQ_NO = "Seq no";
+        public const string TITLE_NAME_TYPE = "Type";
+        public const string TITLE_NAME_KEYWORD = "Key Word";
 
+        public const string CHAR_TRILE_STAR = "-";
+        public const string CHAR_LEFT_BRACKETS = "[";
+        public const string CHAR_RIGHT_BRACKETS = "]";
+        public const string CHAR_COLON = ":";
+        public const string CHAR_BREAK = " ";
+        public const string CHAR_TAB_BREAK = "  ";
+        public const string CHAR_EQUAL = "=";
+
+        public static void recodeLog(IMessage msg, string eq_name, string fun_name, string id, string seq_no, bool isRece)
+        {
+            StringBuilder sb = new StringBuilder();
+            sb.AppendLine();
+            sb.
+            Append(CHAR_TRILE_STAR).Append(TITLE_NAME_EQID).Append(CHAR_COLON).
+            Append(CHAR_LEFT_BRACKETS).Append(eq_name).
+            AppendLine(CHAR_RIGHT_BRACKETS).
+
+            Append(CHAR_TRILE_STAR).Append(TITLE_NAME_FUNNAME).Append(CHAR_COLON).
+            Append(CHAR_LEFT_BRACKETS).Append(fun_name).
+            AppendLine(CHAR_RIGHT_BRACKETS).
+
+            //Append(CHAR_TRILE_STAR).Append(TITLE_NAME_ID).Append(CHAR_COLON).
+            //Append(CHAR_LEFT_BRACKETS).Append(id).
+            //AppendLine(CHAR_RIGHT_BRACKETS).
+
+            //Append(CHAR_TRILE_STAR).Append(TITLE_NAME_SEQ_NO).Append(CHAR_COLON).
+            //Append(CHAR_LEFT_BRACKETS).Append(seq_no).
+            //AppendLine(CHAR_RIGHT_BRACKETS).
+
+            Append(CHAR_TRILE_STAR).Append(TITLE_NAME_TYPE).Append(CHAR_COLON).
+            Append(CHAR_LEFT_BRACKETS).Append(isRece ? "Receive" : "Send").
+            AppendLine(CHAR_RIGHT_BRACKETS);
+
+            foreach (var field in msg.Descriptor.Fields.InDeclarationOrder())
+            {
+                object obj = field.Accessor.GetValue(msg);
+                sb.Append(CHAR_TAB_BREAK);
+                sb.Append(CHAR_TAB_BREAK);
+                sb.Append(field.Name);
+                sb.Append(CHAR_BREAK);
+                sb.Append(CHAR_EQUAL);
+                sb.Append(CHAR_BREAK);
+                sb.AppendLine(obj.ToString());
+            }
+            SxFylogger.Info(sb.ToString());
+        }
+    }
     public static class LogConstants
     {
         public enum Type
@@ -620,3 +682,4 @@ namespace com.mirle.ibg3k0.sc.Common
         }
     }
 }
+

@@ -164,10 +164,10 @@ namespace com.mirle.ibg3k0.sc.Service
                         UnloadPortID = unloadPort ?? string.Empty
                     };
 
-                    LogHelper.RecordReportInfo(scApp.CMDBLL, vh, send_gpp, 0);
+                    LogHelper.RecordReportInfoAsync(scApp.CMDBLL, vh, send_gpp, 0);
                     isSuccess = vh.send_Str31(send_gpp, out receive_gpp, out reason);
                     receive_gpp.Vehice_C_Ng_Reason = reason;
-                    LogHelper.RecordReportInfo(scApp.CMDBLL, vh, receive_gpp, 0);
+                    LogHelper.RecordReportInfoAsync(scApp.CMDBLL, vh, receive_gpp, 0);
                 }
                 if (isSuccess)
                 {
@@ -235,9 +235,9 @@ namespace com.mirle.ibg3k0.sc.Service
                     CmdID = cmd_id,
                     CancelAction = actType
                 };
-                LogHelper.RecordReportInfo(scApp.CMDBLL, vh, stSend, 0);
+                LogHelper.RecordReportInfoAsync(scApp.CMDBLL, vh, stSend, 0);
                 isSuccess = vh.send_Str37(stSend, out stRecv);
-                LogHelper.RecordReportInfo(scApp.CMDBLL, vh, stRecv, 0);
+                LogHelper.RecordReportInfoAsync(scApp.CMDBLL, vh, stRecv, 0);
                 return isSuccess;
             }
             #endregion ID_37 Cancel
@@ -363,10 +363,10 @@ namespace com.mirle.ibg3k0.sc.Service
                 {
                     SystemTime = DateTime.Now.ToString(SCAppConstants.TimestampFormat_16)
                 };
-                LogHelper.RecordReportInfo(scApp.CMDBLL, vh, send_gpp, 0);
+                LogHelper.RecordReportInfoAsync(scApp.CMDBLL, vh, send_gpp, 0);
                 isSuccess = vh.send_S43(send_gpp, out statusResponse);
                 if (isSuccess)
-                    LogHelper.RecordReportInfo(scApp.CMDBLL, vh, statusResponse, 0);
+                    LogHelper.RecordReportInfoAsync(scApp.CMDBLL, vh, statusResponse, 0);
                 return (isSuccess, statusResponse);
             }
             #endregion ID_43 StatusRequest
@@ -385,6 +385,52 @@ namespace com.mirle.ibg3k0.sc.Service
             }
             #endregion ID_45 PowerOperatorChange
             #region ID_51 Avoid
+            public (bool is_success, string result) SimpleAvoid(string vh_id)
+            {
+                AVEHICLE vh = vehicleBLL.cache.getVehicle(vh_id);
+                List<string> guide_segment_ids = null;
+                List<string> guide_section_ids = null;
+                List<string> guide_address_ids = null;
+                int total_cost = 0;
+                bool is_success = true;
+                string result = "";
+                string start_adr = "";
+                string end_adr = "";
+                string start_section = "";
+                try
+                {
+
+                    string vh_current_address = SCUtility.Trim(vh.CUR_ADR_ID, true);
+                    ASECTION section = scApp.SectionBLL.cache.GetSectionsByToAddress(vh.CUR_ADR_ID).First();
+                    start_adr = section.TO_ADR_ID;
+                    end_adr = section.FROM_ADR_ID;
+                    start_section = section.SEC_ID;
+                    (is_success, guide_segment_ids, guide_section_ids, guide_address_ids, total_cost) =
+                        guideBLL.getGuideInfo(start_adr, end_adr);
+                    if (is_success)
+                    {
+                        guide_section_ids.Add(start_section);
+                        guide_address_ids.Add(start_adr);
+                        is_success = sendMessage_ID_51_AVOID_REQUEST(vh_id, start_adr, guide_section_ids.ToArray(), guide_address_ids.ToArray());
+                        if (!is_success)
+                        {
+                            result = $"send avoid to vh fail.vh:{vh_id}, vh current adr:{vh_current_address} ,avoid address:{start_adr}.";
+                        }
+                    }
+                    else
+                    {
+                        result = $"find avoid path fail.vh:{vh_id}, vh current adr:{vh_current_address} ,avoid address:{start_adr}.";
+                    }
+                }
+                catch (Exception ex)
+                {
+                    LogHelper.Log(logger: logger, LogLevel: LogLevel.Warn, Class: nameof(VehicleService), Device: DEVICE_NAME_AGV,
+                       Data: ex,
+                       Details: $"AvoidRequest fail.vh:{vh_id}, vh current adr:{vh.CUR_ADR_ID} ,avoid address:{start_adr}.",
+                       VehicleID: vh_id);
+                }
+                return (is_success, result);
+            }
             public (bool is_success, string result) Avoid(string vh_id, string avoidAddress)
             {
                 AVEHICLE vh = vehicleBLL.cache.getVehicle(vh_id);
@@ -517,9 +563,9 @@ namespace com.mirle.ibg3k0.sc.Service
                     PauseType = pauseType,
                     EventType = pause_event
                 };
-                LogHelper.RecordReportInfo(scApp.CMDBLL, vh, send_gpp, 0);
+                LogHelper.RecordReportInfoAsync(scApp.CMDBLL, vh, send_gpp, 0);
                 isSuccess = vh.send_Str39(send_gpp, out receive_gpp);
-                LogHelper.RecordReportInfo(scApp.CMDBLL, vh, receive_gpp, 0);
+                LogHelper.RecordReportInfoAsync(scApp.CMDBLL, vh, receive_gpp, 0);
                 return isSuccess;
             }
             #endregion ID_39 Pause
@@ -583,7 +629,7 @@ namespace com.mirle.ibg3k0.sc.Service
 
                 if (scApp.getEQObjCacheManager().getLine().ServerPreStop)
                     return;
-                LogHelper.RecordReportInfo(scApp.CMDBLL, vh, recive_str, seq_num);
+                LogHelper.RecordReportInfoAsync(scApp.CMDBLL, vh, recive_str, seq_num);
                 string cmd_id = recive_str.CmdID;
                 int travel_dis = recive_str.CmdDistance;
                 CompleteStatus completeStatus = recive_str.CmpStatus;
@@ -668,7 +714,7 @@ namespace com.mirle.ibg3k0.sc.Service
                     TranCmpResp = send_str
                 };
                 Boolean resp_cmp = vh.sendMessage(wrapper, true);
-                LogHelper.RecordReportInfo(scApp.CMDBLL, vh, send_str, seq_num);
+                LogHelper.RecordReportInfoAsync(scApp.CMDBLL, vh, send_str, seq_num);
                 return resp_cmp;
             }
 
@@ -688,7 +734,7 @@ namespace com.mirle.ibg3k0.sc.Service
             {
                 if (scApp.getEQObjCacheManager().getLine().ServerPreStop)
                     return;
-                LogHelper.RecordReportInfo(scApp.CMDBLL, vh, receiveStr, current_seq_num);
+                LogHelper.RecordReportInfoAsync(scApp.CMDBLL, vh, receiveStr, current_seq_num);
                 int pre_position_seq_num = vh.PrePositionSeqNum;
                 bool need_process_position = checkPositionSeqNum(current_seq_num, pre_position_seq_num);
                 vh.PrePositionSeqNum = current_seq_num;
@@ -761,7 +807,7 @@ namespace com.mirle.ibg3k0.sc.Service
                    VehicleID: vh.VEHICLE_ID,
                    CST_ID_L: vh.CST_ID_L,
                    CST_ID_R: vh.CST_ID_R);
-                LogHelper.RecordReportInfo(scApp.CMDBLL, vh, recive_str, seq_num);
+                LogHelper.RecordReportInfoAsync(scApp.CMDBLL, vh, recive_str, seq_num);
                 EventType eventType = recive_str.EventType;
                 string current_adr_id = recive_str.CurrentAdrID;
                 string current_sec_id = recive_str.CurrentSecID;
@@ -813,10 +859,27 @@ namespace com.mirle.ibg3k0.sc.Service
                     case EventType.Cstremove:
                         TranEventReport_CSTRemove(bcfApp, vh, seq_num, eventType, cst_location, carrier_id, excute_cmd_id);
                         break;
+                    case EventType.AvoidReq:
+                        TranEventReport_AvoidReq(bcfApp, vh, seq_num, eventType, excute_cmd_id);
+                        break;
                     default:
                         ID_036(bcfApp, eventType, vh, seq_num, excute_cmd_id);
                         break;
                 }
+            }
+            private void TranEventReport_AvoidReq(BCFApplication bcfApp, AVEHICLE vh, int seq_num, EventType eventType, string excute_cmd_id)
+            {
+                LogHelper.Log(logger: logger, LogLevel: LogLevel.Debug, Class: nameof(VehicleService), Device: DEVICE_NAME_AGV,
+                           Data: $"Process event:{eventType}",
+                           VehicleID: vh.VEHICLE_ID,
+                           CST_ID_L: vh.CST_ID_L,
+                           CST_ID_R: vh.CST_ID_R);
+
+
+                ID_036(bcfApp, eventType, vh, seq_num, excute_cmd_id);
+
+                service.Send.SimpleAvoid(vh.VEHICLE_ID);
+
             }
 
             private void TranEventReport_CSTRemove(BCFApplication bcfApp, AVEHICLE vh, int seq_num, EventType eventType, AGVLocation Location, string cstID, string excute_cmd_id)
@@ -1720,7 +1783,7 @@ namespace com.mirle.ibg3k0.sc.Service
                     ImpTransEventResp = send_str
                 };
                 Boolean resp_cmp = vh.sendMessage(wrapper, true);
-                LogHelper.RecordReportInfo(scApp.CMDBLL, vh, send_str, seq_num);
+                LogHelper.RecordReportInfoAsync(scApp.CMDBLL, vh, send_str, seq_num);
                 return resp_cmp;
             }
             #endregion ID_136 TransferEventReport
@@ -1731,7 +1794,7 @@ namespace com.mirle.ibg3k0.sc.Service
                 if (scApp.getEQObjCacheManager().getLine().ServerPreStop)
                     return;
 
-                LogHelper.RecordReportInfo(scApp.CMDBLL, vh, recive_str, seq_num);
+                LogHelper.RecordReportInfoAsync(scApp.CMDBLL, vh, recive_str, seq_num);
 
                 var request_from_to_list = recive_str.FromToAdrList;
 
@@ -1929,7 +1992,7 @@ namespace com.mirle.ibg3k0.sc.Service
                     GuideInfoResp = send_str
                 };
                 Boolean resp_cmp = vh.sendMessage(wrapper, true);
-                LogHelper.RecordReportInfo(scApp.CMDBLL, vh, send_str, seq_num);
+                LogHelper.RecordReportInfoAsync(scApp.CMDBLL, vh, send_str, seq_num);
                 return resp_cmp;
             }
 
@@ -1949,7 +2012,7 @@ namespace com.mirle.ibg3k0.sc.Service
             {
                 AVEHICLE vh = scApp.VehicleBLL.cache.getVehicle(vhID);
                 scApp.VehicleBLL.cache.SetCSTL(vhID, hasCst);
-                LogHelper.RecordReportInfo(scApp.CMDBLL, vh, new ID_144_STATUS_CHANGE_REP(), 0);
+                LogHelper.RecordReportInfoAsync(scApp.CMDBLL, vh, new ID_144_STATUS_CHANGE_REP(), 0);
 
             }
             [ClassAOPAspect]
@@ -1957,7 +2020,7 @@ namespace com.mirle.ibg3k0.sc.Service
             {
                 if (scApp.getEQObjCacheManager().getLine().ServerPreStop)
                     return;
-                LogHelper.RecordReportInfo(scApp.CMDBLL, vh, recive_str, seq_num);
+                LogHelper.RecordReportInfoAsync(scApp.CMDBLL, vh, recive_str, seq_num);
 
                 uint batteryCapacity = recive_str.BatteryCapacity;
                 VHModeStatus modeStat = scApp.VehicleBLL.DecideVhModeStatus(vh.VEHICLE_ID, recive_str.ModeStatus, batteryCapacity);

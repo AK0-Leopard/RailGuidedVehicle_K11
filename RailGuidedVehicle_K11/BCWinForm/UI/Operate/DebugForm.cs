@@ -678,10 +678,11 @@ namespace com.mirle.ibg3k0.bc.winform.UI
         {
             sc.ProtocolFormat.OHTMessage.CancelActionType type;
             Enum.TryParse(cb_Abort_Type.SelectedValue.ToString(), out type);
-
+            string cancel_cmd_id = cmb_command_ids.Text;
             Task.Run(() =>
             {
-                bcApp.SCApplication.VehicleService.Send.Cancel(noticeCar.VEHICLE_ID, noticeCar.CMD_ID_1, sc.ProtocolFormat.OHTMessage.CancelActionType.CmdCancel);
+                //bcApp.SCApplication.VehicleService.Send.Cancel(noticeCar.VEHICLE_ID, noticeCar.CMD_ID_1, sc.ProtocolFormat.OHTMessage.CancelActionType.CmdCancel);
+                bcApp.SCApplication.VehicleService.Send.Cancel(noticeCar.VEHICLE_ID, cancel_cmd_id, type);
                 //noticeCar.sned_Str37(noticeCar.OHTC_CMD, type); //todo kevin 要填入Command id
             });
 
@@ -1128,7 +1129,7 @@ namespace com.mirle.ibg3k0.bc.winform.UI
             //var id_136 = new sc.ProtocolFormat.OHTMessage.ID_136_TRANS_EVENT_REP()
             var id_136 = new com.mirle.AKA.ProtocolFormat.RGVMessage.ID_136_TRANS_EVENT_REP()
             {
-                EventType = AKA.ProtocolFormat.RGVMessage.EventType.LoadArrivals,
+                EventType = AKA.ProtocolFormat.RGVMessage.EventType.AvoideReq,
                 BOXID = cst_id,
                 BCRReadResult = AKA.ProtocolFormat.RGVMessage.BCRReadResult.BcrNormal,
                 CmdID = cmd_id
@@ -1615,6 +1616,12 @@ namespace com.mirle.ibg3k0.bc.winform.UI
         private void num_after_loading_unloading_action_time_ValueChanged(object sender, EventArgs e)
         {
             sc.App.SystemParameter.setAFTER_LOADING_UNLOADING_N_MILLISECOND((int)num_after_loading_unloading_action_time.Value);
+        }
+
+        private void btn_avoid_req_Click(object sender, EventArgs e)
+        {
+            var report_event = sc.ProtocolFormat.OHTMessage.EventType.AvoidReq;
+            McsReportEventTest(report_event);
         }
     }
 }

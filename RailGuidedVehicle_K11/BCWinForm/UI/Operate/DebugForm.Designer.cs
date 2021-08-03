@@ -117,6 +117,8 @@
             this.uctl_SendAllFun = new com.mirle.ibg3k0.bc.winform.UI.Components.uctlButton();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
+            this.label104 = new System.Windows.Forms.Label();
+            this.num_after_loading_unloading_action_time = new System.Windows.Forms.NumericUpDown();
             this.cb_test_ForceByPassWaitTransferEvent = new System.Windows.Forms.CheckBox();
             this.label97 = new System.Windows.Forms.Label();
             this.num_vh_idle_time = new System.Windows.Forms.NumericUpDown();
@@ -413,8 +415,7 @@
             this.comboBox_port11 = new System.Windows.Forms.ComboBox();
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.btn_online = new System.Windows.Forms.Button();
-            this.label104 = new System.Windows.Forms.Label();
-            this.num_after_loading_unloading_action_time = new System.Windows.Forms.NumericUpDown();
+            this.btn_avoid_req = new System.Windows.Forms.Button();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox3.SuspendLayout();
@@ -429,6 +430,7 @@
             this.groupBox5.SuspendLayout();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.num_after_loading_unloading_action_time)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.num_vh_idle_time)).BeginInit();
             this.groupBox19.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numer_commandWaitTime)).BeginInit();
@@ -463,7 +465,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.num_BatteryLowBoundaryValue)).BeginInit();
             this.DIO_DEVICE_TEST.SuspendLayout();
             this.tabPage2.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.num_after_loading_unloading_action_time)).BeginInit();
             this.SuspendLayout();
             // 
             // cmb_tcpipctr_Vehicle
@@ -1486,6 +1487,28 @@
             this.tabPage1.Text = "TcpIp Control";
             this.tabPage1.UseVisualStyleBackColor = true;
             // 
+            // label104
+            // 
+            this.label104.AutoSize = true;
+            this.label104.Location = new System.Drawing.Point(846, 830);
+            this.label104.Name = "label104";
+            this.label104.Size = new System.Drawing.Size(370, 22);
+            this.label104.TabIndex = 56;
+            this.label104.Text = "After Loading / Unloding Action Time";
+            // 
+            // num_after_loading_unloading_action_time
+            // 
+            this.num_after_loading_unloading_action_time.Location = new System.Drawing.Point(850, 855);
+            this.num_after_loading_unloading_action_time.Maximum = new decimal(new int[] {
+            600000,
+            0,
+            0,
+            0});
+            this.num_after_loading_unloading_action_time.Name = "num_after_loading_unloading_action_time";
+            this.num_after_loading_unloading_action_time.Size = new System.Drawing.Size(120, 30);
+            this.num_after_loading_unloading_action_time.TabIndex = 57;
+            this.num_after_loading_unloading_action_time.ValueChanged += new System.EventHandler(this.num_after_loading_unloading_action_time_ValueChanged);
+            // 
             // cb_test_ForceByPassWaitTransferEvent
             // 
             this.cb_test_ForceByPassWaitTransferEvent.AutoSize = true;
@@ -1921,7 +1944,7 @@
             // 
             this.cb_Cache_data_Name.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.cb_Cache_data_Name.FormattingEnabled = true;
-            this.cb_Cache_data_Name.Location = new System.Drawing.Point(234, 10);
+            this.cb_Cache_data_Name.Location = new System.Drawing.Point(234, 5);
             this.cb_Cache_data_Name.Name = "cb_Cache_data_Name";
             this.cb_Cache_data_Name.Size = new System.Drawing.Size(164, 30);
             this.cb_Cache_data_Name.TabIndex = 1;
@@ -2464,6 +2487,7 @@
             // 
             // groupBox18
             // 
+            this.groupBox18.Controls.Add(this.btn_avoid_req);
             this.groupBox18.Controls.Add(this.btn_cmp_vh_complete);
             this.groupBox18.Controls.Add(this.btn_cmp_vh_abort);
             this.groupBox18.Controls.Add(this.btn_idReadError);
@@ -4496,27 +4520,15 @@
             this.btn_online.UseVisualStyleBackColor = true;
             this.btn_online.Click += new System.EventHandler(this.btn_online_Click);
             // 
-            // label104
+            // btn_avoid_req
             // 
-            this.label104.AutoSize = true;
-            this.label104.Location = new System.Drawing.Point(846, 830);
-            this.label104.Name = "label104";
-            this.label104.Size = new System.Drawing.Size(370, 22);
-            this.label104.TabIndex = 56;
-            this.label104.Text = "After Loading / Unloding Action Time";
-            // 
-            // num_after_loading_unloading_action_time
-            // 
-            this.num_after_loading_unloading_action_time.Location = new System.Drawing.Point(850, 855);
-            this.num_after_loading_unloading_action_time.Maximum = new decimal(new int[] {
-            600000,
-            0,
-            0,
-            0});
-            this.num_after_loading_unloading_action_time.Name = "num_after_loading_unloading_action_time";
-            this.num_after_loading_unloading_action_time.Size = new System.Drawing.Size(120, 30);
-            this.num_after_loading_unloading_action_time.TabIndex = 57;
-            this.num_after_loading_unloading_action_time.ValueChanged += new System.EventHandler(this.num_after_loading_unloading_action_time_ValueChanged);
+            this.btn_avoid_req.Location = new System.Drawing.Point(256, 603);
+            this.btn_avoid_req.Name = "btn_avoid_req";
+            this.btn_avoid_req.Size = new System.Drawing.Size(201, 30);
+            this.btn_avoid_req.TabIndex = 54;
+            this.btn_avoid_req.Text = "Avoid Req";
+            this.btn_avoid_req.UseVisualStyleBackColor = true;
+            this.btn_avoid_req.Click += new System.EventHandler(this.btn_avoid_req_Click);
             // 
             // DebugForm
             // 
@@ -4555,6 +4567,7 @@
             this.tabControl1.ResumeLayout(false);
             this.tabPage1.ResumeLayout(false);
             this.tabPage1.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.num_after_loading_unloading_action_time)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.num_vh_idle_time)).EndInit();
             this.groupBox19.ResumeLayout(false);
             this.groupBox19.PerformLayout();
@@ -4607,7 +4620,6 @@
             this.DIO_DEVICE_TEST.ResumeLayout(false);
             this.DIO_DEVICE_TEST.PerformLayout();
             this.tabPage2.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.num_after_loading_unloading_action_time)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -5000,5 +5012,6 @@
         private System.Windows.Forms.CheckBox cb_test_ForceByPassWaitTransferEvent;
         private System.Windows.Forms.Label label104;
         private System.Windows.Forms.NumericUpDown num_after_loading_unloading_action_time;
+        private System.Windows.Forms.Button btn_avoid_req;
     }
 }

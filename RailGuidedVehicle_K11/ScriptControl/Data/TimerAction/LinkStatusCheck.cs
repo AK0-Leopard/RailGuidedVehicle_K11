@@ -88,8 +88,11 @@ namespace com.mirle.ibg3k0.sc.Data.TimerAction
 
                 try
                 {
-                    line.Secs_Link_Stat = line.CommunicationIntervalWithMCS.ElapsedMilliseconds < checkMCSCommunicationTimeout ?
+                    line.Secs_Link_Stat =
+                        line.CommunicationIntervalWithMCS.IsRunning &&
+                        line.CommunicationIntervalWithMCS.ElapsedMilliseconds < checkMCSCommunicationTimeout ?
                         SCAppConstants.LinkStatus.LinkOK : SCAppConstants.LinkStatus.LinkFail;
+
                     scApp.CheckSystemEventHandler.CheckCheckSystemIsExist();
                     InlineEfficiencyMonitor();
                     if (SCUtility.getCallContext<bool>(ALINE.CONTEXT_KEY_WORD_LINE_STATUS_HAS_CHANGE))

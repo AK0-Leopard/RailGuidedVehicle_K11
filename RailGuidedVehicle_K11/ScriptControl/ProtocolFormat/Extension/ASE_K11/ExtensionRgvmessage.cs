@@ -251,6 +251,8 @@ namespace com.mirle.ibg3k0.sc.ProtocolFormat.Converter.ASE_K11
                     return OHTMessage.EventType.Vhloading;
                 case AKA.ProtocolFormat.RGVMessage.EventType.Vhunloading:
                     return OHTMessage.EventType.Vhunloading;
+                case AKA.ProtocolFormat.RGVMessage.EventType.AvoideReq:
+                    return OHTMessage.EventType.AvoidReq;
                 case AKA.ProtocolFormat.RGVMessage.EventType.Scan:
                 case AKA.ProtocolFormat.RGVMessage.EventType.MoveRestart:
                 case AKA.ProtocolFormat.RGVMessage.EventType.MovePause:

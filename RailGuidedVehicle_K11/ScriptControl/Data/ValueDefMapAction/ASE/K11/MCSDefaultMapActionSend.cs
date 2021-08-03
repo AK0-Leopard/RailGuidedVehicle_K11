@@ -14,6 +14,7 @@
 //**********************************************************************************
 
 using com.mirle.AK0.RGV.HostMessage.E2H;
+using com.mirle.ibg3k0.bcf.Common;
 using com.mirle.ibg3k0.sc.Common;
 using com.mirle.ibg3k0.sc.Data.SECSDriver;
 using com.mirle.ibg3k0.sc.ProtocolFormat.OHTMessage;
@@ -38,9 +39,18 @@ namespace com.mirle.ibg3k0.sc.Data.ValueDefMapAction.ASE.K11
             string s_grpc_client_ip = scApp.getString("gRPCClientIP", "127.0.0.1");
             string s_grpc_client_port = scApp.getString("gRPCClientPort", "7001");
             int.TryParse(s_grpc_client_port, out int i_grpc_client_port);
-
+            line = scApp.getEQObjCacheManager().getLine();
             channel = new Channel(s_grpc_client_ip, i_grpc_client_port, ChannelCredentials.Insecure);
             client = new AGVC_K11_E2H.AGVC_K11_E2HClient(channel);
+
+            line.addEventHandler(nameof(MCSDefaultMapActionSend)
+            , BCFUtility.getPropertyName(() => line.Secs_Link_Stat)
+                , (s1, e1) =>
+                {
+                    if (line.Secs_Link_Stat == App.SCAppConstants.LinkStatus.LinkFail)
+                        scApp.LineService.OfflineWithHost();
+                }
+                );
         }
 
         public override AMCSREPORTQUEUE S6F11BulibMessage(string ceid, object Vids)

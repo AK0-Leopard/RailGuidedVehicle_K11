@@ -65,6 +65,7 @@ message Timestamp {
 	DoubleStorage = 15;
 	EmptyRetrieval = 16;
 	CSTTypeMismatch = 18;
+	AvoidReq = 19;
 	BlockRelease = 21;
 	Initial = 31;
 	PIOError = 91;
