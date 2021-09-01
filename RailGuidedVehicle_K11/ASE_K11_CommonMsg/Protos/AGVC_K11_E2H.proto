@@ -4,6 +4,7 @@ option csharp_namespace = "com.mirle.AK0.RGV.HostMessage.E2H";
 // The greeting service definition.
 service AGVC_K11_E2H {
 	// Sends a greeting
+	rpc SendS1F1_AreYouThereReq (S1F1_AreYouThereRequest) returns (S1F2_AreYouThereRequestAsk) {}
 	rpc SendS6F11_001_Offline(Report_ID_0) returns (S6F12_EventReportAck) {}
 	rpc SendS6F11_002_OnlineLocal(Report_ID_0) returns (S6F12_EventReportAck) {}
 	rpc SendS6F11_003_OnlineRemote(Report_ID_0) returns (S6F12_EventReportAck) {}
@@ -40,6 +41,16 @@ service AGVC_K11_E2H {
 	rpc SendS6F11_901_UnitErrorCleared(Report_ID_11) returns (S6F12_EventReportAck) {}
 	rpc SendS6F11_902_UnitErrorSet(Report_ID_11) returns (S6F12_EventReportAck) {}
 }
+
+message S1F1_AreYouThereRequest {
+	string command_id = 1;
+}
+
+message S1F2_AreYouThereRequestAsk {
+	string mdln = 1;
+	string softrev = 2;
+	}
+
 
 enum RESULT_CODE
 {

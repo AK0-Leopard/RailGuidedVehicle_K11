@@ -924,8 +924,9 @@ namespace com.mirle.ibg3k0.sc.ProtocolFormat.Converter.ASE_K11
             var remote_msg = new AKA.ProtocolFormat.RGVMessage.ID_51_AVOID_REQUEST()
             {
                 DestinationAdr = msg.DestinationAdr,
-
             };
+            remote_msg.GuideAddresses.AddRange(msg.GuideAddresses);
+            remote_msg.GuideSections.AddRange(msg.GuideSections);
             return remote_msg;
         }
         #endregion ID_51

@@ -429,6 +429,12 @@ namespace com.mirle.ibg3k0.sc.BLL
             isSuccsess = isSuccsess && iBSEMDriver.S6F11_RunTimeStatus(vhID, null);
             return isSuccsess;
         }
+        public bool newReportVehicleCircling(string cmdID)
+        {
+            bool isSuccsess = true;
+            isSuccsess = isSuccsess && iBSEMDriver.S6F11_VehicleCircling(cmdID, null);
+            return isSuccsess;
+        }
 
         public bool ReportTransferResult2MCS(string cmdID, CompleteStatus completeStatus)
         {

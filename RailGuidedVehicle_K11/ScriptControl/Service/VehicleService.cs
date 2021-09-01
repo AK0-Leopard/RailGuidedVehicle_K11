@@ -401,7 +401,16 @@ namespace com.mirle.ibg3k0.sc.Service
                 {
 
                     string vh_current_address = SCUtility.Trim(vh.CUR_ADR_ID, true);
-                    ASECTION section = scApp.SectionBLL.cache.GetSectionsByToAddress(vh.CUR_ADR_ID).First();
+                    string vh_current_section = SCUtility.Trim(vh.CUR_SEC_ID, true);
+                    ASECTION section = null;
+                    if (vh.IsOnAdr)
+                    {
+                        section = scApp.SectionBLL.cache.GetSectionsByToAddress(vh.CUR_ADR_ID).First();
+                    }
+                    else
+                    {
+                        section = scApp.SectionBLL.cache.GetSection(vh.CUR_SEC_ID);
+                    }
                     start_adr = section.TO_ADR_ID;
                     end_adr = section.FROM_ADR_ID;
                     start_section = section.SEC_ID;
@@ -412,14 +421,19 @@ namespace com.mirle.ibg3k0.sc.Service
                         guide_section_ids.Add(start_section);
                         guide_address_ids.Add(start_adr);
                         is_success = sendMessage_ID_51_AVOID_REQUEST(vh_id, start_adr, guide_section_ids.ToArray(), guide_address_ids.ToArray());
-                        if (!is_success)
+                        if (is_success)
                         {
-                            result = $"send avoid to vh fail.vh:{vh_id}, vh current adr:{vh_current_address} ,avoid address:{start_adr}.";
+                            //not thing...
                         }
+                        else
+                        {
+                            result = $"send avoid to vh fail.vh:{vh_id}, vh current adr:{vh_current_address}, vh current sec:{vh_current_section} ,avoid address:{start_adr}.";
+                        }
+
                     }
                     else
                     {
-                        result = $"find avoid path fail.vh:{vh_id}, vh current adr:{vh_current_address} ,avoid address:{start_adr}.";
+                        result = $"find avoid path fail.vh:{vh_id}, vh current adr:{vh_current_address}, vh current sec:{vh_current_section} ,avoid address:{start_adr}.";
                     }
                 }
                 catch (Exception ex)
@@ -878,8 +892,16 @@ namespace com.mirle.ibg3k0.sc.Service
 
                 ID_036(bcfApp, eventType, vh, seq_num, excute_cmd_id);
 
-                service.Send.SimpleAvoid(vh.VEHICLE_ID);
-
+                var send_result = service.Send.SimpleAvoid(vh.VEHICLE_ID);
+                if (send_result.is_success)
+                {
+                    reportBLL.newReportVehicleCircling(excute_cmd_id);
+                }
+                LogHelper.Log(logger: logger, LogLevel: LogLevel.Debug, Class: nameof(VehicleService), Device: DEVICE_NAME_AGV,
+                           Data: $"Process event:{eventType},is success{send_result.is_success},result:{send_result.result}",
+                           VehicleID: vh.VEHICLE_ID,
+                           CST_ID_L: vh.CST_ID_L,
+                           CST_ID_R: vh.CST_ID_R);
             }
 
             private void TranEventReport_CSTRemove(BCFApplication bcfApp, AVEHICLE vh, int seq_num, EventType eventType, AGVLocation Location, string cstID, string excute_cmd_id)
