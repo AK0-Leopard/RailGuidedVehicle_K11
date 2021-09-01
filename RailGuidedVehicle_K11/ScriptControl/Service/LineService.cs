@@ -222,7 +222,7 @@ namespace com.mirle.ibg3k0.sc.Service
         {
             bool isSuccess = true;
             isSuccess = isSuccess && reportBLL.AskAreYouThere();
-            isSuccess = isSuccess && reportBLL.AskDateAndTimeRequest();
+            //isSuccess = isSuccess && reportBLL.AskDateAndTimeRequest();
             isSuccess = isSuccess && reportBLL.ReportControlStateRemote();
             isSuccess = isSuccess && lineBLL.updateHostControlState(SCAppConstants.LineHostControlState.HostControlState.On_Line_Remote);
             isSuccess = isSuccess && TSCStateToPause();

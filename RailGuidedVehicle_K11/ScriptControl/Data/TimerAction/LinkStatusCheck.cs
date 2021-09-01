@@ -88,11 +88,7 @@ namespace com.mirle.ibg3k0.sc.Data.TimerAction
 
                 try
                 {
-                    line.Secs_Link_Stat =
-                        line.CommunicationIntervalWithMCS.IsRunning &&
-                        line.CommunicationIntervalWithMCS.ElapsedMilliseconds < checkMCSCommunicationTimeout ?
-                        SCAppConstants.LinkStatus.LinkOK : SCAppConstants.LinkStatus.LinkFail;
-
+                    hostConnectionCehck();
                     scApp.CheckSystemEventHandler.CheckCheckSystemIsExist();
                     InlineEfficiencyMonitor();
                     if (SCUtility.getCallContext<bool>(ALINE.CONTEXT_KEY_WORD_LINE_STATUS_HAS_CHANGE))
@@ -114,6 +110,35 @@ namespace com.mirle.ibg3k0.sc.Data.TimerAction
             //if (++excute_count % 2 == 0)
             //    Task.Run(() => doChcekPLCLinkStatus());
             //Task.Run(() => doReadPLCAlive());
+        }
+        private int AskAreYouThereFailTimes = 0;
+        private const int MAX_ASK_ARE_YOU_THERE_FAIL_TIMES = 3;
+        private void hostConnectionCehck()
+        {
+            bool is_host_has_ask = line.CommunicationIntervalWithMCS.IsRunning &&
+                                   line.CommunicationIntervalWithMCS.ElapsedMilliseconds < checkMCSCommunicationTimeout;
+
+            if (is_host_has_ask)
+            {
+                line.Secs_Link_Stat = SCAppConstants.LinkStatus.LinkOK;
+                AskAreYouThereFailTimes = 0;
+                return;
+            }
+            bool is_ask_are_there_success = scApp.ReportBLL.AskAreYouThere();
+            if (is_ask_are_there_success)
+            {
+                line.Secs_Link_Stat = SCAppConstants.LinkStatus.LinkOK;
+                AskAreYouThereFailTimes = 0;
+                return;
+            }
+            else
+            {
+                AskAreYouThereFailTimes++;
+                if (AskAreYouThereFailTimes >= MAX_ASK_ARE_YOU_THERE_FAIL_TIMES)
+                {
+                    line.Secs_Link_Stat = SCAppConstants.LinkStatus.LinkFail;
+                }
+            }
         }
 
         private void InlineEfficiencyMonitor()

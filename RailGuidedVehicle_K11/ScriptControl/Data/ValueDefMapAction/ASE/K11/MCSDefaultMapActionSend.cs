@@ -72,7 +72,23 @@ namespace com.mirle.ibg3k0.sc.Data.ValueDefMapAction.ASE.K11
         {
             return true;
         }
-
+        public override bool S1F1SendAreYouThere()
+        {
+            try
+            {
+                var s1f1 = new S1F1_AreYouThereRequest();
+                LogHelper.RecordHostReportInfo(s1f1);
+                var ask = client.SendS1F1_AreYouThereReq(s1f1);
+                LogHelper.RecordHostReportInfoAsk(ask);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                logger.Error("MESDefaultMapAction has Error[Line Name:{0}],[Error method:{1}],[Error Message:{2}",
+                    line.LINE_ID, "S1F1SendAreYouThere", ex.ToString());
+                return false;
+            }
+        }
         public override bool S6F11_CarrierInstalled(string vhID, string carrierID, string location, List<AMCSREPORTQUEUE> reportQueues = null)
         {
             bool is_success = true;
@@ -782,6 +798,23 @@ namespace com.mirle.ibg3k0.sc.Data.ValueDefMapAction.ASE.K11
             }
             return is_success;
         }
+        public override bool S6F11_VehicleCircling(string cmdID, List<AMCSREPORTQUEUE> reportQueues = null)
+        {
+            bool is_success = true;
+            try
+            {
+                var report = BulidReport14(cmdID);
+                LogHelper.RecordHostReportInfo(report.reportObj, report.vtransfer);
+                var ask = client.SendS6F11_606_VehicleCircling(report.reportObj);
+                LogHelper.RecordHostReportInfoAsk(ask, report.vtransfer);
+            }
+            catch (Exception ex)
+            {
+                logger.Error(ex, "Exception");
+                is_success = false;
+            }
+            return is_success;
+        }
 
         protected override void S2F41_HostCommand(object sender, SECSEventArgs e)
         {
@@ -975,6 +1008,18 @@ namespace com.mirle.ibg3k0.sc.Data.ValueDefMapAction.ASE.K11
                 AlaemText = alarmText
             };
             return (report_obj);
+        }
+        private (Report_ID_14 reportObj, VTRANSFER vtransfer) BulidReport14(string cmdID)
+        {
+            VTRANSFER vtransfer = scApp.TransferBLL.db.vTransfer.GetVTransferByTransferID(cmdID);
+            sc.Common.SCUtility.TrimAllParameter(vtransfer);
+            var report_obj = new Report_ID_14()
+            {
+                VehicleId = vtransfer.getRealVhID(scApp.VehicleBLL),
+                CarrierId = SCUtility.Trim(vtransfer.CARRIER_ID, true),
+                CommandId = SCUtility.Trim(vtransfer.ID, true),
+            };
+            return (report_obj, vtransfer);
         }
 
     }
