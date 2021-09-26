@@ -16,6 +16,13 @@ namespace com.mirle.ibg3k0.sc
 {
     public partial class ACMD
     {
+        public bool isTrnasferCmd
+        {
+            get
+            {
+                return !Common.SCUtility.isEmpty(TRANSFER_ID);
+            }
+        }
         public bool IsMoveCommand
         {
             get
@@ -99,6 +106,13 @@ namespace com.mirle.ibg3k0.sc
                 return (false);
             }
         }
+
+        public bool isTransferring(BLL.VehicleBLL vehicleBLL)
+        {
+            bool is_carry_cmd_cst = vehicleBLL.cache.IsCarryCstByCstID(VH_ID, CARRIER_ID);
+            return is_carry_cmd_cst;
+        }
+
         public HCMD ToHCMD()
         {
             return new HCMD()

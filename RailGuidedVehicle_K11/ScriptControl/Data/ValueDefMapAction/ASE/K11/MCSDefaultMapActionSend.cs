@@ -815,6 +815,23 @@ namespace com.mirle.ibg3k0.sc.Data.ValueDefMapAction.ASE.K11
             }
             return is_success;
         }
+        public override bool S6F11_VehicleCircleComplete(string cmdID, List<AMCSREPORTQUEUE> reportQueues = null)
+        {
+            bool is_success = true;
+            try
+            {
+                var report = BulidReport14(cmdID);
+                LogHelper.RecordHostReportInfo(report.reportObj, report.vtransfer);
+                var ask = client.SendS6F11_607_VehicleCircleComplete(report.reportObj);
+                LogHelper.RecordHostReportInfoAsk(ask, report.vtransfer);
+            }
+            catch (Exception ex)
+            {
+                logger.Error(ex, "Exception");
+                is_success = false;
+            }
+            return is_success;
+        }
 
         protected override void S2F41_HostCommand(object sender, SECSEventArgs e)
         {

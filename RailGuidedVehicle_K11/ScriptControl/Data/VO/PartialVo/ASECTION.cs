@@ -127,6 +127,15 @@ namespace com.mirle.ibg3k0.sc
             }
         }
 
+        public List<AVEHICLE> GetVhs(BLL.VehicleBLL vehicleBLL)
+        {
+            var vhs = vehicleBLL.cache.loadAllVh();
+            vhs = vhs.Where(v => SCUtility.isMatche(v.CUR_SEC_ID, SEC_ID)
+                              || SCUtility.isMatche(v.CUR_ADR_ID, TO_ADR_ID)
+                                  ).ToList();
+            return vhs;
+        }
+
         public void Leave(string vh_id)
         {
             string vVh_id = string.Empty;

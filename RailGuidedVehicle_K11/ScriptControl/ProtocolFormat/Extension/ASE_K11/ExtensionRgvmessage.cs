@@ -602,7 +602,8 @@ namespace com.mirle.ibg3k0.sc.ProtocolFormat.Converter.ASE_K11
         {
             var local_msg = new OHTMessage.ID_152_AVOID_COMPLETE_REPORT()
             {
-                CmpStatus = msg.CmpStatus
+                CmpStatus = msg.CmpStatus,
+                CmdID = msg.CmdID
             };
 
             return local_msg;

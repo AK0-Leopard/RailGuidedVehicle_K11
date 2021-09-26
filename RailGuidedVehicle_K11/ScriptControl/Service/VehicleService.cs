@@ -385,7 +385,7 @@ namespace com.mirle.ibg3k0.sc.Service
             }
             #endregion ID_45 PowerOperatorChange
             #region ID_51 Avoid
-            public (bool is_success, string result) SimpleAvoid(string vh_id)
+            public (bool is_success, string result) SimpleAvoid(string vh_id, string excuteCmdID)
             {
                 AVEHICLE vh = vehicleBLL.cache.getVehicle(vh_id);
                 List<string> guide_segment_ids = null;
@@ -420,7 +420,7 @@ namespace com.mirle.ibg3k0.sc.Service
                     {
                         guide_section_ids.Add(start_section);
                         guide_address_ids.Add(start_adr);
-                        is_success = sendMessage_ID_51_AVOID_REQUEST(vh_id, start_adr, guide_section_ids.ToArray(), guide_address_ids.ToArray());
+                        is_success = sendMessage_ID_51_AVOID_REQUEST(vh_id, excuteCmdID, start_adr, guide_section_ids.ToArray(), guide_address_ids.ToArray());
                         if (is_success)
                         {
                             //not thing...
@@ -529,11 +529,11 @@ namespace com.mirle.ibg3k0.sc.Service
                         string vh_current_section = SCUtility.Trim(vh.CUR_SEC_ID, true);
                         if (is_success)
                         {
-                            is_success = sendMessage_ID_51_AVOID_REQUEST(vh_id, avoidAddress, guide_section_ids.ToArray(), guide_address_ids.ToArray());
-                            if (!is_success)
-                            {
-                                result = $"send avoid to vh fail.vh:{vh_id}, vh current adr:{vh_current_address} ,avoid address:{avoidAddress}.";
-                            }
+                            //is_success = sendMessage_ID_51_AVOID_REQUEST(vh_id, avoidAddress, guide_section_ids.ToArray(), guide_address_ids.ToArray());
+                            //if (!is_success)
+                            //{
+                            //    result = $"send avoid to vh fail.vh:{vh_id}, vh current adr:{vh_current_address} ,avoid address:{avoidAddress}.";
+                            //}
                         }
                         else
                         {
@@ -550,7 +550,7 @@ namespace com.mirle.ibg3k0.sc.Service
                 }
                 return (is_success, result);
             }
-            private bool sendMessage_ID_51_AVOID_REQUEST(string vh_id, string avoidAddress, string[] guideSection, string[] guideAddresses)
+            private bool sendMessage_ID_51_AVOID_REQUEST(string vh_id, string excuteCmdID, string avoidAddress, string[] guideSection, string[] guideAddresses)
             {
                 bool isSuccess = false;
                 AVEHICLE vh = vehicleBLL.cache.getVehicle(vh_id);
@@ -559,6 +559,7 @@ namespace com.mirle.ibg3k0.sc.Service
                 send_gpp.DestinationAdr = avoidAddress;
                 send_gpp.GuideSections.AddRange(guideSection);
                 send_gpp.GuideAddresses.AddRange(guideAddresses);
+                send_gpp.CmdID = excuteCmdID;
 
                 SCUtility.RecodeReportInfo(vh.VEHICLE_ID, 0, send_gpp);
                 isSuccess = vh.send_Str51(send_gpp, out receive_gpp);
@@ -834,6 +835,7 @@ namespace com.mirle.ibg3k0.sc.Service
                 var reserveInfos = recive_str.ReserveInfos;
                 BCRReadResult bCRReadResult = recive_str.BCRReadResult;
                 AGVLocation cst_location = recive_str.Location;
+                bool is_need_avoid = recive_str.IsNeedAvoid;
                 vh.LastTranEventType = eventType;
                 switch (eventType)
                 {
@@ -874,14 +876,14 @@ namespace com.mirle.ibg3k0.sc.Service
                         TranEventReport_CSTRemove(bcfApp, vh, seq_num, eventType, cst_location, carrier_id, excute_cmd_id);
                         break;
                     case EventType.AvoidReq:
-                        TranEventReport_AvoidReq(bcfApp, vh, seq_num, eventType, excute_cmd_id);
+                        TranEventReport_AvoidReq(bcfApp, vh, seq_num, eventType, excute_cmd_id, is_need_avoid);
                         break;
                     default:
                         ID_036(bcfApp, eventType, vh, seq_num, excute_cmd_id);
                         break;
                 }
             }
-            private void TranEventReport_AvoidReq(BCFApplication bcfApp, AVEHICLE vh, int seq_num, EventType eventType, string excute_cmd_id)
+            private void TranEventReport_AvoidReq(BCFApplication bcfApp, AVEHICLE vh, int seq_num, EventType eventType, string excute_cmd_id, bool isNeedAvoid)
             {
                 LogHelper.Log(logger: logger, LogLevel: LogLevel.Debug, Class: nameof(VehicleService), Device: DEVICE_NAME_AGV,
                            Data: $"Process event:{eventType}",
@@ -892,23 +894,33 @@ namespace com.mirle.ibg3k0.sc.Service
 
                 ID_036(bcfApp, eventType, vh, seq_num, excute_cmd_id);
 
-
-                var send_result = service.Send.SimpleAvoid(vh.VEHICLE_ID);
-                if (send_result.is_success)
+                if (isNeedAvoid)
+                {
+                    var send_result = service.Send.SimpleAvoid(vh.VEHICLE_ID, excute_cmd_id);
+                    if (send_result.is_success)
+                    {
+                        ACMD cmd = scApp.CMDBLL.GetCMD_OHTCByID(excute_cmd_id);
+                        if (cmd != null)
+                        {
+                            if (cmd.isTrnasferCmd)
+                                reportBLL.newReportVehicleCircling(cmd.TRANSFER_ID);
+                        }
+                    }
+                    LogHelper.Log(logger: logger, LogLevel: LogLevel.Debug, Class: nameof(VehicleService), Device: DEVICE_NAME_AGV,
+                               Data: $"Process event:{eventType} excute avoid script,is success:{send_result.is_success},result:{send_result.result}",
+                               VehicleID: vh.VEHICLE_ID,
+                               CST_ID_L: vh.CST_ID_L,
+                               CST_ID_R: vh.CST_ID_R);
+                }
+                else
                 {
                     ACMD cmd = scApp.CMDBLL.GetCMD_OHTCByID(excute_cmd_id);
                     if (cmd != null)
                     {
-                        bool is_transfer = !SCUtility.isEmpty(cmd.TRANSFER_ID);
-                        if (is_transfer)
-                            reportBLL.newReportVehicleCircling(cmd.TRANSFER_ID);
+                        if (cmd.isTrnasferCmd)
+                            reportBLL.newReportVehicleCircleComplete(cmd.TRANSFER_ID);
                     }
                 }
-                LogHelper.Log(logger: logger, LogLevel: LogLevel.Debug, Class: nameof(VehicleService), Device: DEVICE_NAME_AGV,
-                           Data: $"Process event:{eventType},is success{send_result.is_success},result:{send_result.result}",
-                           VehicleID: vh.VEHICLE_ID,
-                           CST_ID_L: vh.CST_ID_L,
-                           CST_ID_R: vh.CST_ID_R);
             }
 
             private void TranEventReport_CSTRemove(BCFApplication bcfApp, AVEHICLE vh, int seq_num, EventType eventType, AGVLocation Location, string cstID, string excute_cmd_id)
@@ -2178,6 +2190,7 @@ namespace com.mirle.ibg3k0.sc.Service
 
                 ID_52_AVOID_COMPLETE_RESPONSE send_str = null;
                 SCUtility.RecodeReportInfo(vh.VEHICLE_ID, seq_num, recive_str);
+                string excute_cmd_id = recive_str.CmdID;
                 send_str = new ID_52_AVOID_COMPLETE_RESPONSE
                 {
                     ReplyCode = 0
@@ -2193,15 +2206,57 @@ namespace com.mirle.ibg3k0.sc.Service
 
                 SCUtility.RecodeReportInfo(vh.VEHICLE_ID, seq_num, send_str, resp_cmp.ToString());
 
+                List<ACMD> cmds = scApp.CMDBLL.loadUnfinishCmd(vh.VEHICLE_ID);
+                ACMD cmd = cmds.Where(c => SCUtility.isMatche(c.ID, excute_cmd_id)).FirstOrDefault();
+                if (cmd == null)
+                    return;
+                if (!cmd.isTrnasferCmd)
+                    return;
+                LogHelper.Log(logger: logger, LogLevel: LogLevel.Debug, Class: nameof(VehicleService), Device: DEVICE_NAME_AGV,
+                   Data: $"Report vehicle circle complete,transfer id:{SCUtility.Trim(cmd.TRANSFER_ID, true)}",
+                   VehicleID: vh.VEHICLE_ID,
+                   CST_ID_L: vh.CST_ID_L,
+                   CST_ID_R: vh.CST_ID_R);
+
+                reportBLL.newReportVehicleCircleComplete(cmd.TRANSFER_ID);
+
+                //如果已經在搬送中
+                //確認另一筆命令是否要送去的地方是同一個
+                //是的話要補報CircleComplete
+                if (!cmd.isTransferring(scApp.VehicleBLL))
+                    return;
+
+                LogHelper.Log(logger: logger, LogLevel: LogLevel.Debug, Class: nameof(VehicleService), Device: DEVICE_NAME_AGV,
+                   Data: $"Transfer id:{SCUtility.Trim(cmd.TRANSFER_ID, true)} is transferring need check orther cmd of unload port is same...",
+                   VehicleID: vh.VEHICLE_ID,
+                   CST_ID_L: vh.CST_ID_L,
+                   CST_ID_R: vh.CST_ID_R);
+
+
+                foreach (var c in cmds)
+                {
+                    if (SCUtility.isMatche(c.ID, excute_cmd_id))
+                        continue;
+                    if (!c.isTrnasferCmd)
+                        continue;
+                    if (!c.isTransferring(scApp.VehicleBLL))
+                        continue;
+                    if (SCUtility.isMatche(cmd.DESTINATION_PORT, c.DESTINATION_PORT))
+                    {
+                        reportBLL.newReportVehicleCircleComplete(c.TRANSFER_ID);
+                    }
+                }
+
                 //在避車完成之後，先清除掉原本已經預約的路徑，接著再將自己當下的路徑預約回來，確保不會被預約走
-                scApp.ReserveBLL.RemoveAllReservedSectionsByVehicleID(vh.VEHICLE_ID);
-                //SpinWait.SpinUntil(() => false, 1000);
-                var result = scApp.ReserveBLL.TryAddReservedSection(vh.VEHICLE_ID, vh.CUR_SEC_ID,
-                                                                    sensorDir: Mirle.Hlts.Utils.HltDirection.None,
-                                                                    forkDir: Mirle.Hlts.Utils.HltDirection.None);
-                LogHelper.Log(logger: logger, LogLevel: LogLevel.Info, Class: nameof(ReserveBLL), Device: "AGV",
-                   Data: $"vh:{vh.VEHICLE_ID} reserve section:{vh.CUR_SEC_ID} after remove all reserved(avoid complete),result:{result.ToString()}",
-                   VehicleID: vh.VEHICLE_ID);
+                //scApp.ReserveBLL.RemoveAllReservedSectionsByVehicleID(vh.VEHICLE_ID);
+                ////SpinWait.SpinUntil(() => false, 1000);
+                //var result = scApp.ReserveBLL.TryAddReservedSection(vh.VEHICLE_ID, vh.CUR_SEC_ID,
+                //                                                    sensorDir: Mirle.Hlts.Utils.HltDirection.None,
+                //                                                    forkDir: Mirle.Hlts.Utils.HltDirection.None);
+                //LogHelper.Log(logger: logger, LogLevel: LogLevel.Info, Class: nameof(ReserveBLL), Device: "AGV",
+                //   Data: $"vh:{vh.VEHICLE_ID} reserve section:{vh.CUR_SEC_ID} after remove all reserved(avoid complete),result:{result.ToString()}",
+                //   VehicleID: vh.VEHICLE_ID);
+
 
             }
             #endregion ID_152 AvoidCompeteReport
@@ -2609,6 +2664,80 @@ namespace com.mirle.ibg3k0.sc.Service
             {
                 service = _service;
             }
+            public void tryDriveOutTheVhByAdvance(AVEHICLE vh)
+            {
+                try
+                {
+                    LogHelper.Log(logger: logger, LogLevel: LogLevel.Debug, Class: nameof(CMDBLL), Device: string.Empty,
+                       Data: $"Start check is need advance drive out by vh:{vh.VEHICLE_ID}...",
+                       VehicleID: vh.VEHICLE_ID);
+                    if (vh.WillPassSectionID == null || vh.WillPassSectionID.Count == 0) return;
+                    string current_section = "";
+                    if (SCUtility.isEmpty(vh.CUR_SEC_ID))
+                    {
+                        ASECTION from_sec = scApp.SectionBLL.cache.GetSectionsByFromAddress(vh.CUR_ADR_ID).FirstOrDefault();
+                        if (from_sec == null)
+                        {
+                            return;
+                        }
+                        else
+                        {
+                            current_section = from_sec.SEC_ID;
+                        }
+                    }
+                    else
+                    {
+                        current_section = vh.CUR_SEC_ID;
+                    }
+                    int sec_index = vh.WillPassSectionID.IndexOf(current_section);
+                    if (sec_index < 0) return;
+                    int will_pass_sec_count = vh.WillPassSectionID.Count;
+                    //for (int start_index = sec_index; checked_distance < ADVANCE_DRIVE_OUT_DISTANCE_MM; start_index++)
+                    for (int start_index = sec_index; start_index < will_pass_sec_count; start_index++)
+                    {
+                        string sec_id = vh.WillPassSectionID[start_index];
+                        ASECTION sec_obj = scApp.SectionBLL.cache.GetSection(sec_id);
+                        var on_section_vhs = sec_obj.GetVhs(scApp.VehicleBLL);
+                        foreach (var avoidVh in on_section_vhs)
+                        {
+                            LogHelper.Log(logger: logger, LogLevel: LogLevel.Debug, Class: nameof(CMDBLL), Device: string.Empty,
+                               Data: $"Has vh:{avoidVh.VEHICLE_ID} , on section :{sec_obj.SEC_ID},try to avoid it...",
+                               VehicleID: vh.VEHICLE_ID);
+
+                            var check_can_creat_avoid_command = canCreatAvoidCommand(avoidVh);
+                            if (check_can_creat_avoid_command.is_can)
+                            {
+                                var find_avoid_result = findClosestAvoidAdr(avoidVh.CUR_ADR_ID);
+                                if (find_avoid_result.isFind)
+                                {
+                                    var avoid_request_result =
+                                        service.Command.Move(avoidVh.VEHICLE_ID, find_avoid_result.canAvoidAdrID);
+
+                                    LogHelper.Log(logger: logger, LogLevel: LogLevel.Debug, Class: nameof(CMDBLL), Device: string.Empty,
+                                       Data: $"vh:{avoidVh.VEHICLE_ID} creat avoid command result:{avoid_request_result.isSuccess} avoid adr:{find_avoid_result.canAvoidAdrID}.",
+                                       VehicleID: vh.VEHICLE_ID);
+                                }
+                                else
+                                {
+                                    LogHelper.Log(logger: logger, LogLevel: LogLevel.Debug, Class: nameof(CMDBLL), Device: string.Empty,
+                                       Data: $"vh:{avoidVh.VEHICLE_ID} can't avoid,no find avoid adr.",
+                                       VehicleID: vh.VEHICLE_ID);
+                                }
+                            }
+                            else
+                            {
+                                LogHelper.Log(logger: logger, LogLevel: LogLevel.Debug, Class: nameof(CMDBLL), Device: string.Empty,
+                                   Data: $"vh:{avoidVh.VEHICLE_ID} can't avoid ,status not ready.",
+                                   VehicleID: vh.VEHICLE_ID);
+                            }
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    logger.Error(ex, "Exception");
+                }
+            }
             public const string VehicleVirtualSymbol = "virtual";
             public void tryNotifyVhAvoid(string requestVhID, string reservedVhID)
             {
@@ -2779,26 +2908,11 @@ namespace com.mirle.ibg3k0.sc.Service
             }
             private (bool is_can, CAN_NOT_AVOID_RESULT result) canCreatAvoidCommand(AVEHICLE reservedVh)
             {
-                if (reservedVh.ACT_STATUS == VHActionStatus.NoCommand &&
-                    reservedVh.IsOnCharge(scApp.AddressesBLL) &&
-                    reservedVh.IsNeedToLongCharge())
-                {
-                    return (false, CAN_NOT_AVOID_RESULT.VehicleInLongCharge);
-                }
-                else if (reservedVh.IsError)
-                {
-                    return (false, CAN_NOT_AVOID_RESULT.VehicleInError);
-                }
-                else
-                {
-                    bool is_can = reservedVh.isTcpIpConnect &&
-                           (reservedVh.MODE_STATUS == VHModeStatus.AutoRemote || reservedVh.MODE_STATUS == VHModeStatus.AutoCharging) &&
-                           reservedVh.ACT_STATUS == VHActionStatus.NoCommand &&
-                           !scApp.CMDBLL.isCMD_OHTCQueueByVh(reservedVh.VEHICLE_ID);
-                    //!scApp.CMDBLL.HasCMD_MCSInQueue();
-                    return (is_can, CAN_NOT_AVOID_RESULT.Normal);
-                }
-
+                bool is_can = reservedVh.isTcpIpConnect &&
+                       (reservedVh.MODE_STATUS == VHModeStatus.AutoRemote || reservedVh.MODE_STATUS == VHModeStatus.AutoLocal) &&
+                       reservedVh.ACT_STATUS == VHActionStatus.NoCommand &&
+                       !scApp.CMDBLL.isCMDExcuteByVh(reservedVh.VEHICLE_ID);
+                return (is_can, CAN_NOT_AVOID_RESULT.Normal);
             }
             private (bool isFind, ASECTION notConflictSection, string entryAdr, string avoidAdr) findNotConflictSectionAndAvoidAddressNew
                 (AVEHICLE willPassVh, AVEHICLE findAvoidAdrOfVh, bool isDeadLock)
@@ -4063,7 +4177,7 @@ namespace com.mirle.ibg3k0.sc.Service
                    Data: $"vh:{vh.VEHICLE_ID} leave section {leave_section.SEC_ID},remove reserved.",
                    VehicleID: vh.VEHICLE_ID);
             }
-            scApp.VehicleBLL.cache.removeAlreadyPassedSection(vh.VEHICLE_ID, e.LeaveSection);
+            //scApp.VehicleBLL.cache.removeAlreadyPassedSection(vh.VEHICLE_ID, e.LeaveSection);
 
             //如果在進入該Section後，還有在該Section之前的Section沒有清掉的，就把它全部釋放
             if (entry_section != null)

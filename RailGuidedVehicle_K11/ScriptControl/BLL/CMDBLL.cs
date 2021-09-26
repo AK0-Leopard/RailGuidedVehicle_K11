@@ -1284,6 +1284,15 @@ namespace com.mirle.ibg3k0.sc.BLL
             }
             return count != 0;
         }
+        public bool isCMDExcuteByVh(string vh_id)
+        {
+            int count = 0;
+            using (DBConnection_EF con = DBConnection_EF.GetUContext())
+            {
+                count = cmd_ohtcDAO.getVhAssignCMDConut(con, vh_id);
+            }
+            return count != 0;
+        }
 
 
         public bool HasCmdIsGoing(List<string> addresses)

@@ -38,6 +38,7 @@ service AGVC_K11_E2H {
 	rpc SendS6F11_210_VehicleUnassinged(Report_ID_5) returns (S6F12_EventReportAck) {}
 	rpc SendS6F11_601_OperatorInitiatedAction(Report_ID_10) returns (S6F12_EventReportAck) {}
 	rpc SendS6F11_606_VehicleCircling(Report_ID_14) returns (S6F12_EventReportAck) {}
+	rpc SendS6F11_607_VehicleCircleComplete(Report_ID_14) returns (S6F12_EventReportAck) {}
 	rpc SendS6F11_901_UnitErrorCleared(Report_ID_11) returns (S6F12_EventReportAck) {}
 	rpc SendS6F11_902_UnitErrorSet(Report_ID_11) returns (S6F12_EventReportAck) {}
 }
