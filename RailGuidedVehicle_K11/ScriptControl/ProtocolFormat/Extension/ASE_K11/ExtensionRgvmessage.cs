@@ -156,7 +156,8 @@ namespace com.mirle.ibg3k0.sc.ProtocolFormat.Converter.ASE_K11
                 Location = convertToVhMsgContent(msg.Location),
                 RequestBlockID = msg.RequestBlockID,
                 //ReserveInfos = convertToVhMsgContent(msg.ReserveInfos),
-                SecDistance = msg.SecDistance
+                SecDistance = msg.SecDistance,
+                IsNeedAvoid = msg.IsNeedAvoid
             };
             local_msg.ReserveInfos.AddRange(convertToVhMsgContent(msg.ReserveInfos));
 
@@ -927,6 +928,7 @@ namespace com.mirle.ibg3k0.sc.ProtocolFormat.Converter.ASE_K11
             };
             remote_msg.GuideAddresses.AddRange(msg.GuideAddresses);
             remote_msg.GuideSections.AddRange(msg.GuideSections);
+            remote_msg.CmdID = msg.CmdID;
             return remote_msg;
         }
         #endregion ID_51

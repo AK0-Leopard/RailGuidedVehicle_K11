@@ -348,3 +348,4 @@ MigrationBackup/
 
 # Ionide (cross platform F# VS Code tools) working folder
 .ionide/
+/RailGuidedVehicle_K11/ASE_K11_CommonMsg/Protos/RGVMessage/ASE_K11_RGVC Format_1.0.4.zip

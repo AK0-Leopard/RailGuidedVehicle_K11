@@ -411,8 +411,15 @@ namespace com.mirle.ibg3k0.sc.Data.ValueDefMapAction.ASE.K11
                 var cmd_obj = scApp.CMDBLL.GetTransferByID(command_id);
                 if (cmd_obj != null)
                 {
-                    check_result = $"MCS command id:{command_id} already exist.";
-                    return (false, HCACK.Rejected);
+                    if(cmd_obj.IsExcute)
+                    {
+                        check_result = $"MCS command id:{command_id} already exist.";
+                        return (false, HCACK.Rejected);
+                    }
+                    else
+                    {
+                        scApp.TransferBLL.db.MoveTransferToHistory(command_id);
+                    }
                 }
             }
             //確認參數是否正確 Todo

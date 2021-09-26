@@ -15,6 +15,12 @@ namespace com.mirle.ibg3k0.sc.Data.DAO
             con.ATRANSFER.Add(rail);
             con.SaveChanges();
         }
+        public void Remove(DBConnection_EF con, ATRANSFER tran)
+        {
+            con.Entry(tran).State = EntityState.Deleted;
+            con.ATRANSFER.Remove(tran);
+            con.SaveChanges();
+        }
         public void RemoteByBatch(DBConnection_EF con, List<ATRANSFER> cmd_mcss)
         {
             cmd_mcss.ForEach(entity => con.Entry(entity).State = EntityState.Deleted);
@@ -36,6 +42,14 @@ namespace com.mirle.ibg3k0.sc.Data.DAO
             return query.SingleOrDefault();
         }
 
+        public ATRANSFER getExcuteCMDByID(DBConnection_EF con, String id)
+        {
+            var query = from cmd in con.ATRANSFER
+                        where (cmd.TRANSFERSTATE >= E_TRAN_STATUS.Queue && cmd.TRANSFERSTATE <= E_TRAN_STATUS.Aborting) &&
+                               cmd.ID.Trim() == id.Trim()
+                        select cmd;
+            return query.FirstOrDefault();
+        }
 
         public ATRANSFER getExcuteCMDByCSTID(DBConnection_EF con, String carrierID)
         {

@@ -575,6 +575,7 @@
     <Compile Include="Data\SECS\AGVC\ASE\SECSConst.cs" />
     <Compile Include="Data\TimerAction\CouplerCheckTimerAction.cs" />
     <Compile Include="Data\TimerAction\AGVStationCheckTimerAction.cs" />
+    <Compile Include="Data\TimerAction\LinkStatusCheckV2.cs" />
     <Compile Include="Data\TimerAction\RandomGeneratesCommandTimerActionTiming.cs" />
     <Compile Include="Data\TimerAction\TransferCommandV2TimerAction.cs" />
     <Compile Include="Data\ValueDefMapAction\ASE\K11\MCSDefaultMapActionSend.cs" />

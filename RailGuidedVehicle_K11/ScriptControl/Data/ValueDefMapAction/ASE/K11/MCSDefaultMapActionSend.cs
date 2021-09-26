@@ -851,7 +851,8 @@ namespace com.mirle.ibg3k0.sc.Data.ValueDefMapAction.ASE.K11
             {
                 CommandId = vtransfer.ID,
                 CarrierId = vtransfer.CARRIER_ID,
-                CarrierLoc = vtransfer.CARRIER_ID,
+                //CarrierLoc = vtransfer.CARRIER_ID,
+                CarrierLoc = vtransfer.CARRIER_LOCATION,
                 SourcePort = vtransfer.HOSTSOURCE,
                 DestPort = vtransfer.HOSTDESTINATION,
                 Priority = vtransfer.PRIORITY,

@@ -892,10 +892,17 @@ namespace com.mirle.ibg3k0.sc.Service
 
                 ID_036(bcfApp, eventType, vh, seq_num, excute_cmd_id);
 
+
                 var send_result = service.Send.SimpleAvoid(vh.VEHICLE_ID);
                 if (send_result.is_success)
                 {
-                    reportBLL.newReportVehicleCircling(excute_cmd_id);
+                    ACMD cmd = scApp.CMDBLL.GetCMD_OHTCByID(excute_cmd_id);
+                    if (cmd != null)
+                    {
+                        bool is_transfer = !SCUtility.isEmpty(cmd.TRANSFER_ID);
+                        if (is_transfer)
+                            reportBLL.newReportVehicleCircling(cmd.TRANSFER_ID);
+                    }
                 }
                 LogHelper.Log(logger: logger, LogLevel: LogLevel.Debug, Class: nameof(VehicleService), Device: DEVICE_NAME_AGV,
                            Data: $"Process event:{eventType},is success{send_result.is_success},result:{send_result.result}",

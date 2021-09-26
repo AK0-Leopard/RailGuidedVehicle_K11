@@ -39,9 +39,24 @@ namespace com.mirle.ibg3k0.sc.BLL
                 vTransfer = new VTransfer(scApp);
                 hTransfer = new HTransfer(scApp);
             }
+            public void MoveTransferToHistory(string cmdID)
+            {
+                ATRANSFER tran = null;
+                //using (DBConnection_EF con = new DBConnection_EF())
+                using (DBConnection_EF con = DBConnection_EF.GetUContext())
+                {
+                    tran = transfer.tranDao.getByID(con, cmdID);
+                    if (tran != null)
+                    {
+                        transfer.tranDao.Remove(con, tran);
+                        hTransfer.htranDao.add(con, tran.ToHCMD_MCS());
+                    }
+                }
+            }
+
             public class Transfer
             {
-                TransferDao tranDao = null;
+                public TransferDao tranDao { get; private set; } = null;
                 public Transfer(SCApplication scApp)
                 {
                     tranDao = scApp.TransferDao;
@@ -154,6 +169,7 @@ namespace com.mirle.ibg3k0.sc.BLL
                 }
 
                 #endregion Query
+
             }
             public class VTransfer
             {
@@ -213,11 +229,20 @@ namespace com.mirle.ibg3k0.sc.BLL
             }
             public class HTransfer
             {
-                HTransferDao htranDao = null;
+                public HTransferDao htranDao { get; private set; } = null;
                 public HTransfer(SCApplication scApp)
                 {
                     htranDao = scApp.HTransferDao;
                 }
+                #region Inster
+                public void add(HTRANSFER transfer)
+                {
+                    using (DBConnection_EF con = DBConnection_EF.GetUContext())
+                    {
+                        htranDao.add(con, transfer);
+                    }
+                }
+                #endregion Inster
             }
         }
 
@@ -434,7 +459,7 @@ namespace com.mirle.ibg3k0.sc.BLL
                     logger.Error(ex, $"Exception:{url}");
                 }
             }
-            public bool checkIsNeedWaitForLoad(IAGVStationType agvStation,int waitTimeOut)
+            public bool checkIsNeedWaitForLoad(IAGVStationType agvStation, int waitTimeOut)
             {
                 string result = "";
                 string url = "";

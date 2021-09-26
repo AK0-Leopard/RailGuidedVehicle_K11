@@ -172,7 +172,13 @@ namespace com.mirle.ibg3k0.sc
             if (port_station == null) return false;
             return port_station.GetEqpt(eqptBLL) is IAGVStationType;
         }
-
+        public bool IsExcute
+        {
+            get
+            {
+                return this.TRANSFERSTATE >= E_TRAN_STATUS.Queue && this.TRANSFERSTATE <= E_TRAN_STATUS.Aborting;
+            }
+        }
         public override string ToString()
         {
             return $"Command:{this.ID},source:{this.HOSTSOURCE},desc:{this.HOSTDESTINATION},inser time:{CMD_INSER_TIME.ToString()}";

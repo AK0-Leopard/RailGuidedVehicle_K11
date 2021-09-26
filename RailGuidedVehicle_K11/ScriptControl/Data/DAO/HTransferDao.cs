@@ -10,6 +10,12 @@ namespace com.mirle.ibg3k0.sc.Data.DAO
 {
     public class HTransferDao
     {
+        public void add(DBConnection_EF con, HTRANSFER hTran)
+        {
+            con.HTRANSFER.Add(hTran);
+            con.SaveChanges();
+        }
+
         public void AddByBatch(DBConnection_EF con, List<HTRANSFER> cmd_ohtcs)
         {
             con.HTRANSFER.AddRange(cmd_ohtcs);
