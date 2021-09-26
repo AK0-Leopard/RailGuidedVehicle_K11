@@ -470,6 +470,7 @@ message Timestamp {
 	BCRReadResult BCRReadResult =15;
 	string Cmd_ID =16;
 	AGVLocation Location = 17;
+    bool IsNeedAvoid = 18;
   }
 
   message ID_36_TRANS_EVENT_RESPONSE {
@@ -681,6 +682,7 @@ message Timestamp {
 	string DestinationAdr = 1;
 	repeated string Guide_Sections = 2;
 	repeated string Guide_Addresses = 3;
+  	string Cmd_ID = 4;
   }
   message ID_151_AVOID_RESPONSE {
 	int32 ReplyCode = 1;
@@ -689,6 +691,7 @@ message Timestamp {
   
   message ID_152_AVOID_COMPLETE_REPORT {
 	int32 CmpStatus = 1;
+  	string Cmd_ID = 2;
   }
   message ID_52_AVOID_COMPLETE_RESPONSE {
 	int32 ReplyCode = 1;

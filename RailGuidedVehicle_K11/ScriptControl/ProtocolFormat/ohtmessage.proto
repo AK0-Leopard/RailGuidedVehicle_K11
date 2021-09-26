@@ -439,6 +439,7 @@ enum CompleteStatus {
 	string Cmd_ID =10;
 	AGVLocation Location = 11;
 	string CurrentPortID = 12;
+    bool IsNeedAvoid = 13;
   }
 
   message ID_36_TRANS_EVENT_RESPONSE {
@@ -662,6 +663,7 @@ enum CompleteStatus {
 	string DestinationAdr = 1;
 	repeated string Guide_Sections = 2;
 	repeated string Guide_Addresses = 3;
+  	string Cmd_ID = 4;
   }
   message ID_151_AVOID_RESPONSE {
 	int32 ReplyCode = 1;
@@ -670,6 +672,7 @@ enum CompleteStatus {
   
   message ID_152_AVOID_COMPLETE_REPORT {
 	int32 CmpStatus = 1;
+  	string Cmd_ID = 2;
   }
   message ID_52_AVOID_COMPLETE_RESPONSE {
 	int32 ReplyCode = 1;
