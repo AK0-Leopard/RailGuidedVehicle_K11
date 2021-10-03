@@ -899,11 +899,52 @@ namespace com.mirle.ibg3k0.sc.Service
                     var send_result = service.Send.SimpleAvoid(vh.VEHICLE_ID, excute_cmd_id);
                     if (send_result.is_success)
                     {
-                        ACMD cmd = scApp.CMDBLL.GetCMD_OHTCByID(excute_cmd_id);
-                        if (cmd != null)
+                        //ACMD cmd = scApp.CMDBLL.GetCMD_OHTCByID(excute_cmd_id);
+                        //if (cmd != null)
+                        //{
+                        //    if (cmd.isTrnasferCmd)
+                        //        reportBLL.newReportVehicleCircling(cmd.TRANSFER_ID);
+                        //}
+
+                        List<ACMD> cmds = scApp.CMDBLL.loadUnfinishCmd(vh.VEHICLE_ID);
+                        ACMD cmd = cmds.Where(c => SCUtility.isMatche(c.ID, excute_cmd_id)).FirstOrDefault();
+                        if (cmd == null)
+                            return;
+                        if (!cmd.isTrnasferCmd)
+                            return;
+                        LogHelper.Log(logger: logger, LogLevel: LogLevel.Debug, Class: nameof(VehicleService), Device: DEVICE_NAME_AGV,
+                           Data: $"Ask vehicle avoid complete,transfer id:{SCUtility.Trim(cmd.TRANSFER_ID, true)}",
+                           VehicleID: vh.VEHICLE_ID,
+                           CST_ID_L: vh.CST_ID_L,
+                           CST_ID_R: vh.CST_ID_R);
+
+                        reportBLL.newReportVehicleCircling(cmd.TRANSFER_ID);
+
+                        //如果已經在搬送中
+                        //確認另一筆命令是否要送去的地方是同一個
+                        //是的話要補報CircleComplete
+                        if (!cmd.isTransferring(scApp.VehicleBLL))
+                            return;
+
+                        LogHelper.Log(logger: logger, LogLevel: LogLevel.Debug, Class: nameof(VehicleService), Device: DEVICE_NAME_AGV,
+                           Data: $"Transfer id:{SCUtility.Trim(cmd.TRANSFER_ID, true)} is transferring need check orther cmd of unload port is same...",
+                           VehicleID: vh.VEHICLE_ID,
+                           CST_ID_L: vh.CST_ID_L,
+                           CST_ID_R: vh.CST_ID_R);
+
+
+                        foreach (var c in cmds)
                         {
-                            if (cmd.isTrnasferCmd)
-                                reportBLL.newReportVehicleCircling(cmd.TRANSFER_ID);
+                            if (SCUtility.isMatche(c.ID, excute_cmd_id))
+                                continue;
+                            if (!c.isTrnasferCmd)
+                                continue;
+                            if (!c.isTransferring(scApp.VehicleBLL))
+                                continue;
+                            if (SCUtility.isMatche(cmd.DESTINATION_PORT, c.DESTINATION_PORT))
+                            {
+                                reportBLL.newReportVehicleCircling(c.TRANSFER_ID);
+                            }
                         }
                     }
                     LogHelper.Log(logger: logger, LogLevel: LogLevel.Debug, Class: nameof(VehicleService), Device: DEVICE_NAME_AGV,
@@ -2325,6 +2366,7 @@ namespace com.mirle.ibg3k0.sc.Service
                 return new AspectWeaver(parameter, this);
             }
         }
+
         public class CommandProcessor
         {
             private ALINE line = null;
@@ -2672,6 +2714,11 @@ namespace com.mirle.ibg3k0.sc.Service
                        Data: $"Start check is need advance drive out by vh:{vh.VEHICLE_ID}...",
                        VehicleID: vh.VEHICLE_ID);
                     if (vh.WillPassSectionID == null || vh.WillPassSectionID.Count == 0) return;
+
+                    LogHelper.Log(logger: logger, LogLevel: LogLevel.Debug, Class: nameof(VehicleService), Device: DEVICE_NAME_AGV,
+                       Data: $"vh:{vh.VEHICLE_ID} will pass section:{string.Join(",", vh.WillPassSectionID)}.",
+                       VehicleID: vh.VEHICLE_ID);
+
                     string current_section = "";
                     if (SCUtility.isEmpty(vh.CUR_SEC_ID))
                     {
@@ -2689,6 +2736,9 @@ namespace com.mirle.ibg3k0.sc.Service
                     {
                         current_section = vh.CUR_SEC_ID;
                     }
+                    LogHelper.Log(logger: logger, LogLevel: LogLevel.Debug, Class: nameof(VehicleService), Device: DEVICE_NAME_AGV,
+                       Data: $"vh:{vh.VEHICLE_ID} current section:{current_section}.",
+                       VehicleID: vh.VEHICLE_ID);
                     int sec_index = vh.WillPassSectionID.IndexOf(current_section);
                     if (sec_index < 0) return;
                     int will_pass_sec_count = vh.WillPassSectionID.Count;
@@ -2696,6 +2746,10 @@ namespace com.mirle.ibg3k0.sc.Service
                     for (int start_index = sec_index; start_index < will_pass_sec_count; start_index++)
                     {
                         string sec_id = vh.WillPassSectionID[start_index];
+                        LogHelper.Log(logger: logger, LogLevel: LogLevel.Debug, Class: nameof(VehicleService), Device: DEVICE_NAME_AGV,
+                           Data: $"start check has vh on section:{sec_id}...",
+                           VehicleID: vh.VEHICLE_ID);
+
                         ASECTION sec_obj = scApp.SectionBLL.cache.GetSection(sec_id);
                         var on_section_vhs = sec_obj.GetVhs(scApp.VehicleBLL);
                         foreach (var avoidVh in on_section_vhs)

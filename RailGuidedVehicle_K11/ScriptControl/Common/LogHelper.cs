@@ -19,8 +19,9 @@ namespace com.mirle.ibg3k0.sc.Common
     {
         public const string CALL_CONTEXT_KEY_WORD_SERVICE_ID = "SERVICE_ID";
         static ObjectPool<LogObj> LogObjPool = new ObjectPool<LogObj>(() => new LogObj());
-        static Logger logger = LogManager.GetLogger("RecordReportInfo");
+        //static Logger logger = LogManager.GetLogger("RecordReportInfo");
         static Logger SxFylogger = LogManager.GetLogger("SXFYLogger");
+        static Logger logger = LogManager.GetCurrentClassLogger();
 
 
         public static void setCallContextKey_ServiceID(string service_id)
@@ -148,7 +149,7 @@ namespace com.mirle.ibg3k0.sc.Common
                 logObj.Details = Details;
                 logObj.Index = "SystemProcessLog";
 
-                //LogHelper.logger.Log(LogLevel, logObj.ToString());
+                LogHelper.logger.Log(LogLevel, logObj.ToString());
                 //Task.Run(() => SCApplication.getInstance().LineService.PublishSystemLog(logObj));
                 SYSTEMPROCESS_INFO systemProc = new SYSTEMPROCESS_INFO();
                 systemProc.TIME = DateTime.Now.ToString(SCAppConstants.DateTimeFormat_23);
@@ -230,7 +231,7 @@ namespace com.mirle.ibg3k0.sc.Common
         public static void RecordReportInfoAsync(BLL.CMDBLL cmdBLL, AVEHICLE vh, IMessage message, int seqNum, [CallerMemberName] string Method = "")
         {
             //Task.Run(() => RecordReportInfo(cmdBLL, vh, message, seqNum, Method));
-            RecordReportInfo(cmdBLL, vh, message, seqNum, Method);
+            //RecordReportInfo(cmdBLL, vh, message, seqNum, Method);
         }
         public static void RecordReportInfo(BLL.CMDBLL cmdBLL, AVEHICLE vh, IMessage message, int seqNum, [CallerMemberName] string Method = "")
         {
