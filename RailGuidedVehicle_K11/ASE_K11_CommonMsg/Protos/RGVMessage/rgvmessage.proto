@@ -619,6 +619,8 @@ message Timestamp {
 	ShelfStatus ShelfStatus_L = 37;
 	ShelfStatus ShelfStatus_R = 38;
 	string CurrentExcuteCmdId = 39;
+	repeated string WillPassGuideSection = 40;
+
   }
 
   message ID_144_STATUS_CHANGE_REP {
@@ -640,7 +642,7 @@ message Timestamp {
 	string Stopped_HID_ID = 16;
 	VhStopSingle Earthquake_Pause_tatus = 17;
 	VhStopSingle Safety_Pause_Status = 18;
-	repeated ReserveInfo ReserveInfos = 19;
+	repeated ReserveInfo ReserveInfos = 19;;
 	DriveDirction DrivingDirection= 20;
 	int32 Speed = 21;
 	double Angle = 22;
@@ -661,6 +663,8 @@ message Timestamp {
 	ShelfStatus ShelfStatus_L = 37;
 	ShelfStatus ShelfStatus_R = 38;
 	string CurrentExcuteCmdId = 39;
+	repeated string WillPassGuideSection = 40;
+
   }
 
   message ID_44_STATUS_CHANGE_RESPONSE {

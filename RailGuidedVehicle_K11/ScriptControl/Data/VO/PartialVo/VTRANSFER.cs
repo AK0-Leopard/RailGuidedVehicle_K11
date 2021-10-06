@@ -67,12 +67,13 @@ namespace com.mirle.ibg3k0.sc
             if (port_station == null) return "";
             return SCUtility.Trim(port_station.EQPT_ID, true);
         }
-        public AEQPT getSourcePortEQ(BLL.EqptBLL eqptBLL)
+        public AEQPT getSourcePortEQ(BLL.PortStationBLL portStationBLL, BLL.EqptBLL eqptBLL)
         {
-            var eq = eqptBLL.OperateCatch.GetEqpt(this.HOSTSOURCE);
-            if (eq == null) return null;
-            return eq;
+            var port_station = portStationBLL.OperateCatch.getPortStation(this.HOSTSOURCE);
+            if (port_station == null) return null;
+            return port_station.GetEqpt(eqptBLL);
         }
+
         public string getSourcePortNodeID(BLL.PortStationBLL portStationBLL, BLL.EqptBLL eqptBLL)
         {
             var port_station = portStationBLL.OperateCatch.getPortStation(this.HOSTSOURCE);

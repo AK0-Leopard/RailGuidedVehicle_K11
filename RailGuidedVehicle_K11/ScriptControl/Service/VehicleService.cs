@@ -424,6 +424,7 @@ namespace com.mirle.ibg3k0.sc.Service
                         if (is_success)
                         {
                             //not thing...
+                            scApp.VehicleBLL.cache.setWillPassSectionInfo(vh.VEHICLE_ID, guide_section_ids.ToList(), guide_address_ids.ToList());
                         }
                         else
                         {
@@ -2134,7 +2135,6 @@ namespace com.mirle.ibg3k0.sc.Service
 
                 ShelfStatus shelf_status_l = recive_str.ShelfStatusL;
                 ShelfStatus shelf_status_r = recive_str.ShelfStatusR;
-
 
                 if (!SCUtility.isMatche(current_excute_cmd_id, vh.CurrentExcuteCmdID))
                 {

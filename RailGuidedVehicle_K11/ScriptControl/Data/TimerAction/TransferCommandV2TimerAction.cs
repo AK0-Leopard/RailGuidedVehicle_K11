@@ -42,6 +42,7 @@ namespace com.mirle.ibg3k0.sc.Data.TimerAction
                 //scApp.TransferService.Scan();
                 //scApp.TransferService.ScanByVTransfer_v2();
                 scApp.TransferService.ScanByVTransfer_v3();
+                //scApp.TransferService.ScanByVTransfer_v4();
             }
             catch (Exception ex)
             {

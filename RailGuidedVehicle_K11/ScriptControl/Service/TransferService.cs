@@ -1686,17 +1686,17 @@ namespace com.mirle.ibg3k0.sc.Service
                             }
                         }
 
-                        (bool isFind, AVEHICLE bestSuitableVh, VTRANSFER bestSuitabletransfer) after_on_the_way_cehck_result =
-                           checkAfterOnTheWay(in_queue_transfer, excuting_transfer);
-                        if (after_on_the_way_cehck_result.isFind)
-                        {
-                            if (AssignTransferCommmand(after_on_the_way_cehck_result.bestSuitabletransfer,
-                                                       after_on_the_way_cehck_result.bestSuitableVh))
-                            {
-                                scApp.VehicleService.Command.Scan();
-                                return;
-                            }
-                        }
+                        //(bool isFind, AVEHICLE bestSuitableVh, VTRANSFER bestSuitabletransfer) after_on_the_way_cehck_result =
+                        //   checkAfterOnTheWay(in_queue_transfer, excuting_transfer);
+                        //if (after_on_the_way_cehck_result.isFind)
+                        //{
+                        //    if (AssignTransferCommmand(after_on_the_way_cehck_result.bestSuitabletransfer,
+                        //                               after_on_the_way_cehck_result.bestSuitableVh))
+                        //    {
+                        //        scApp.VehicleService.Command.Scan();
+                        //        return;
+                        //    }
+                        //}
 
                         //用來搜尋第一筆從AGV St.出來的命令
                         try
@@ -1885,6 +1885,123 @@ namespace com.mirle.ibg3k0.sc.Service
                 }
             }
         }
+        public void ScanByVTransfer_v4()
+        {
+            if (System.Threading.Interlocked.Exchange(ref syncTranCmdPoint, 1) == 0)
+            {
+                try
+                {
+                    if (scApp.getEQObjCacheManager().getLine().ServiceMode
+                        != SCAppConstants.AppServiceMode.Active)
+                        return;
+                    List<VTRANSFER> un_finish_trnasfer = scApp.TransferBLL.db.vTransfer.loadUnfinishedVTransfer();
+                    line.CurrentExcuteTransferCommand = un_finish_trnasfer;
+
+                    Task.Run(() => queueTimeOutCheck(un_finish_trnasfer));
+                    if (un_finish_trnasfer == null || un_finish_trnasfer.Count == 0) return;
+                    if (DebugParameter.CanAutoRandomGeneratesCommand ||
+                        (scApp.getEQObjCacheManager().getLine().SCStats == ALINE.TSCState.AUTO && scApp.getEQObjCacheManager().getLine().MCSCommandAutoAssign))
+                    {
+                        List<VTRANSFER> excuting_transfer = un_finish_trnasfer.
+                                                    Where(tr => tr.TRANSFERSTATE > E_TRAN_STATUS.Queue &&
+                                                                tr.TRANSFERSTATE <= E_TRAN_STATUS.Transferring &&
+                                                                !SCUtility.isEmpty(tr.VH_ID)).
+                                                    ToList();
+                        List<VTRANSFER> in_queue_transfer = un_finish_trnasfer.
+                                                    Where(tr => tr.TRANSFERSTATE == E_TRAN_STATUS.Queue).
+                                                    ToList();
+
+                        (bool isFind, AVEHICLE bestSuitableVh, VTRANSFER bestSuitabletransfer) before_on_the_way_cehck_result =
+                           checkBeforeOnTheWay(in_queue_transfer, excuting_transfer);
+                        if (before_on_the_way_cehck_result.isFind)
+                        {
+                            if (AssignTransferCommmand(before_on_the_way_cehck_result.bestSuitabletransfer,
+                                                       before_on_the_way_cehck_result.bestSuitableVh))
+                            {
+                                scApp.VehicleService.Command.Scan();
+                                return;
+                            }
+                        }
+
+
+                        //用來搜尋第一筆從AGV St.出來的命令
+                        try
+                        {
+                            //如果是在找Source非EQ Port的命令時，要用Port Priority做排序來幫助雙車(6/9)在跑時，如果370過於忙碌，都沒有車子可以去服務450的問題
+
+                            foreach (VTRANSFER first_waitting_excute_mcs_cmd in in_queue_transfer)
+                            {
+                                string hostsource = first_waitting_excute_mcs_cmd.HOSTSOURCE;
+                                string hostdest = first_waitting_excute_mcs_cmd.HOSTDESTINATION;
+                                string from_adr = string.Empty;
+                                string to_adr = string.Empty;
+                                AVEHICLE bestSuitableVh = null;
+                                E_VH_TYPE vh_type = E_VH_TYPE.None;
+
+                                //確認 source 是否為Port
+                                bool source_is_a_port = scApp.PortStationBLL.OperateCatch.IsExist(hostsource);
+                                if (source_is_a_port)
+                                {
+                                    bestSuitableVh = scApp.VehicleBLL.cache.findBestSuitableVhStepByStepFromAdr(scApp.GuideBLL, scApp.CMDBLL, from_adr, vh_type);
+                                }
+                                else
+                                {
+                                    //bestSuitableVh = scApp.VehicleBLL.cache.getVehicleByRealID(hostsource);
+                                    bestSuitableVh = scApp.VehicleBLL.cache.getVehicleByLocationRealID(hostsource);
+                                    if (bestSuitableVh.IsError ||
+                                        bestSuitableVh.MODE_STATUS != VHModeStatus.AutoRemote)
+                                    {
+                                        LogHelper.Log(logger: logger, LogLevel: LogLevel.Info, Class: nameof(VehicleService), Device: DEVICE_NAME_AGV,
+                                           Data: $"Has transfer command:{SCUtility.Trim(first_waitting_excute_mcs_cmd.ID, true)} for vh:{bestSuitableVh.VEHICLE_ID}" +
+                                                 $"but it error happend or not auto remote.",
+                                           VehicleID: bestSuitableVh.VEHICLE_ID);
+                                        continue;
+                                    }
+                                }
+
+
+
+                                if (bestSuitableVh != null)
+                                {
+                                    if (AssignTransferCommmand(first_waitting_excute_mcs_cmd, bestSuitableVh))
+                                    {
+                                        scApp.VehicleService.Command.Scan();
+                                        return;
+                                    }
+                                }
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            logger.Error(ex, "Exception");
+                        }
+
+
+                        foreach (VTRANSFER queue_tran in in_queue_transfer)
+                        {
+                            //int AccumulateTime_minute = 5;
+                            int AccumulateTime_minute = SystemParameter.TransferCommandTimePriorityIncrement;
+                            int current_time_priority = ((int)((DateTime.Now - queue_tran.CMD_INSER_TIME).TotalMinutes) * AccumulateTime_minute);
+                            if (current_time_priority > queue_tran.TIME_PRIORITY)
+                            {
+                                //int change_priority = current_time_priority - queue_tran.TIME_PRIORITY;
+                                //int new_sum_priority = queue_tran.PRIORITY_SUM + change_priority;
+                                //scApp.CMDBLL.updateCMD_MCS_TimePriority(queue_tran.ID, current_time_priority, new_sum_priority);
+                                updateTranTimePriority(queue_tran, current_time_priority);
+                            }
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    logger.Error(ex, "Exception");
+                }
+                finally
+                {
+                    System.Threading.Interlocked.Exchange(ref syncTranCmdPoint, 0);
+                }
+            }
+        }
         public bool updateTranTimePriority(VTRANSFER tran, int timePriority)
         {
             try
@@ -1910,70 +2027,75 @@ namespace com.mirle.ibg3k0.sc.Service
         /// <returns></returns>
         private (bool isFind, AVEHICLE bestSuitableVh, VTRANSFER bestSuitabletransfer) checkBeforeOnTheWay(List<VTRANSFER> inQueueTransfers, List<VTRANSFER> excutingTransfers)
         {
-            AVEHICLE best_suitable_vh = null;
-            VTRANSFER best_suitable_transfer = null;
-            bool is_success = false;
 
-            //List<VTRANSFER> can_excute_after_on_the_way_tran = excutingTransfers.
-            //                                        Where(tr => tr.COMMANDSTATE < ATRANSFER.COMMAND_STATUS_BIT_INDEX_LOAD_COMPLETE).
-            //                                        ToList();
-            List<VTRANSFER> can_excute_after_on_the_way_tran = excutingTransfers.
-                                                    Where(tr => tr.COMMANDSTATE < ATRANSFER.COMMAND_STATUS_BIT_INDEX_LOAD_COMPLETE ||
-                                                                (tr.COMMANDSTATE == ATRANSFER.COMMAND_STATUS_BIT_INDEX_LOAD_COMPLETE &&
-                                                                 SCUtility.isMatche(tr.PAUSEFLAG, TransferBLL.TRANSFER_PAUSE_FLAG))
-                                                          ).
-                                                    ToList();
-
-            foreach (var excute_tran in can_excute_after_on_the_way_tran)
+            try
             {
-                string source = excute_tran.HOSTSOURCE;
-                string dest = excute_tran.HOSTDESTINATION;
-                string best_suitable_vh_id = SCUtility.Trim(excute_tran.VH_ID, true);
-                best_suitable_vh = scApp.VehicleBLL.cache.getVehicle(best_suitable_vh_id);
+                AVEHICLE best_suitable_vh = null;
+                VTRANSFER best_suitable_transfer = null;
+                bool is_success = false;
 
-                if (!scApp.VehicleBLL.cache.canAssignTransferCmd(scApp.CMDBLL, best_suitable_vh, excute_tran.GetTransferDir()))
-                {
-                    best_suitable_vh = null;
-                    continue;
-                }
+                //List<VTRANSFER> can_excute_after_on_the_way_tran = excutingTransfers.
+                //                                        Where(tr => tr.COMMANDSTATE < ATRANSFER.COMMAND_STATUS_BIT_INDEX_LOAD_COMPLETE).
+                //                                        ToList();
+                List<VTRANSFER> can_excute_after_on_the_way_tran = excutingTransfers.
+                                                        Where(tr => tr.COMMANDSTATE < ATRANSFER.COMMAND_STATUS_BIT_INDEX_LOAD_COMPLETE ||
+                                                                    (tr.COMMANDSTATE == ATRANSFER.COMMAND_STATUS_BIT_INDEX_LOAD_COMPLETE &&
+                                                                     SCUtility.isMatche(tr.PAUSEFLAG, TransferBLL.TRANSFER_PAUSE_FLAG))
+                                                              ).
+                                                        ToList();
 
-                var excute_tran_eq = excute_tran.getTragetPortEQ(scApp.EqptBLL);
-                if (excute_tran_eq is IAGVStationType)
+                foreach (var excute_tran in can_excute_after_on_the_way_tran)
                 {
-                    var agv_st = (excute_tran_eq as IAGVStationType);
-                    if (!agv_st.IsReservation)
+                    string source = excute_tran.HOSTSOURCE;
+                    string dest = excute_tran.HOSTDESTINATION;
+                    string best_suitable_vh_id = SCUtility.Trim(excute_tran.VH_ID, true);
+                    best_suitable_vh = scApp.VehicleBLL.cache.getVehicle(best_suitable_vh_id);
+
+                    if (!scApp.VehicleBLL.cache.canAssignTransferCmd(scApp.CMDBLL, best_suitable_vh, excute_tran.GetTransferDir()))
                     {
+                        best_suitable_vh = null;
                         continue;
                     }
-                    if (agv_st.TransferMode == E_AGVStationTranMode.MoreOut) //當AGV Station為MoreOut時，每次僅能帶回一顆CST，
-                                                                             //因此若已經有令命在搬送代表已經有一顆準備回去了
-                    {
-                        continue;
-                    }
-                }
-                string excute_tran_eq_id = SCUtility.Trim(excute_tran.getTragetPortNodeID(scApp.PortStationBLL, scApp.EqptBLL));
-                //var same_eq_ports = inQueueTransfers.
-                //                    Where(in_queue_tran => SCUtility.isMatche(in_queue_tran.getTragetPortEQID(scApp.PortStationBLL),
-                //                                                              excute_tran_eq_id)).
-                //                    ToList();
-                var same_eq_ports = inQueueTransfers.
-                                    Where(in_queue_tran => SCUtility.isMatche(in_queue_tran.getTragetPortNodeID(scApp.PortStationBLL, scApp.EqptBLL),
-                                                                              excute_tran_eq_id)).
-                                    ToList();
 
-                var check_result = FindNearestTransferBySourcePort(excute_tran, same_eq_ports);
-                if (check_result.isFind)
-                {
-                    best_suitable_transfer = check_result.nearestTransfer;
-                    break;
+                    var excute_source_eq = excute_tran.getSourcePortEQ(scApp.PortStationBLL, scApp.EqptBLL);
+
+                    //string excute_tran_eq_id = SCUtility.Trim(excute_tran.getTragetPortNodeID(scApp.PortStationBLL, scApp.EqptBLL));
+                    //var same_eq_ports = inQueueTransfers.
+                    //                    Where(in_queue_tran => SCUtility.isMatche(in_queue_tran.getTragetPortEQID(scApp.PortStationBLL),
+                    //                                                              excute_tran_eq_id)).
+                    //                    ToList();
+                    var same_source_port_cmds = inQueueTransfers.
+                                        Where(in_queue_tran => excute_source_eq == in_queue_tran.getSourcePortEQ(scApp.PortStationBLL, scApp.EqptBLL)).
+                                        ToList();
+
+                    if (same_source_port_cmds != null && same_source_port_cmds.Count > 0)
+                    {
+                        best_suitable_transfer = same_source_port_cmds.FirstOrDefault();
+                        break;
+                    }
+                    else
+                    {
+                        best_suitable_transfer = null;
+                    }
+                    //var check_result = FindNearestTransferBySourcePort(excute_tran, same_source_port_cmds);
+                    //if (check_result.isFind)
+                    //{
+                    //    best_suitable_transfer = check_result.nearestTransfer;
+                    //    break;
+                    //}
+                    //else
+                    //{
+                    //    best_suitable_transfer = null;
+                    //}
                 }
-                else
-                {
-                    best_suitable_transfer = null;
-                }
+                is_success = best_suitable_vh != null && best_suitable_transfer != null;
+                return (is_success, best_suitable_vh, best_suitable_transfer);
             }
-            is_success = best_suitable_vh != null && best_suitable_transfer != null;
-            return (is_success, best_suitable_vh, best_suitable_transfer);
+            catch (Exception ex)
+            {
+                logger.Error(ex, "Exception");
+                return (false, null, null);
+            }
         }
         /// <summary>
         /// 尋找可以命令結束後，可順便一起帶走的CST
