@@ -250,7 +250,8 @@ namespace com.mirle.ibg3k0.sc.BLL
             //DriveDirction drive_dirction = report_obj.DrivingDirection;
             double speed = report_obj.Speed;
             speed = speed == 0 ? 1 : speed;
-            DriveDirction drive_dirction = getDrivingDirection(current_sec_id, vh.sWillPassAddressIDs);
+            //DriveDirction drive_dirction = getDrivingDirection(current_sec_id, vh.sWillPassAddressIDs);
+            DriveDirction drive_dirction = DriveDirction.DriveDirNone;
             double dri_speed = drive_dirction == DriveDirction.DriveDirReverse ? -speed : speed;
             //如果這次上報的x、y 為0，則繼續拿上一次地來更新
             //x_axis = x_axis == 0 ? vh.X_Axis : x_axis;
@@ -297,7 +298,7 @@ namespace com.mirle.ibg3k0.sc.BLL
         }
         public DriveDirction getDrivingDirection(string currentSec, string currentGuideAddress)
         {
-            if (currentGuideAddress == null) return DriveDirction.DriveDirNone;
+            if (SCUtility.isEmpty(currentGuideAddress)) return DriveDirction.DriveDirNone;
             var sec = scApp.ReserveBLL.GetHltMapSections(currentSec);
             if (sec == null)
             {
@@ -607,7 +608,7 @@ namespace com.mirle.ibg3k0.sc.BLL
                                           ShelfStatus left_shelf_status, ShelfStatus right_shelf_status,
                                           bool left_has_cst, bool right_has_cst,
                                           string cmdID1, string cmdID2, string cmdID3, string cmdID4, string currenExcuteCmdID,
-                                          uint batteryCapacity, string[] willPassSection)
+                                          uint batteryCapacity)
             {
                 var vh = eqObjCacheManager.getVehicletByVHID(vhID);
                 vh.MODE_STATUS = mode_status;

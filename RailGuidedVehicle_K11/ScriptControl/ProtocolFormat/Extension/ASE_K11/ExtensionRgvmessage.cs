@@ -425,6 +425,7 @@ namespace com.mirle.ibg3k0.sc.ProtocolFormat.Converter.ASE_K11
                 XAxis = msg.XAxis,
                 YAxis = msg.YAxis,
             };
+            local_msg.WillPassGuideSection.AddRange(msg.WillPassGuideSection);
             return local_msg;
         }
         #endregion ID_143
@@ -480,7 +481,7 @@ namespace com.mirle.ibg3k0.sc.ProtocolFormat.Converter.ASE_K11
                 YAxis = msg.YAxis,
             };
             local_msg.ReserveInfos.AddRange(convertToVhMsgContent(msg.ReserveInfos));
-
+            local_msg.WillPassGuideSection.AddRange(msg.WillPassGuideSection);
             return local_msg;
         }
         private static OHTMessage.ShelfStatus convertToVhMsgContent(AKA.ProtocolFormat.RGVMessage.ShelfStatus content)

@@ -181,6 +181,18 @@ message Timestamp {
 		int32 ReplyCode = 1;
   }
 
+   message ID_106_INITIAL_EVENT_REP {
+	VhLoadCSTStatus HasBox_L = 1;
+	string BoxIdL = 2;
+	VhLoadCSTStatus HasBox_R = 3;
+	string BoxIdR = 4;
+  }
+   message ID_6_INITIAL_EVENT_RESPONSE {
+	int32 ReplyCode = 1;
+	string RenameBOXID_L = 2;
+	string RenameBOXID_R = 3;
+  }
+
    message ID_11_BASIC_INFO_REP {
 		int32 TravelBasicDataCount = 1;
 		int32 SectionDataCount = 2;
@@ -756,6 +768,9 @@ message Timestamp {
 
 		ID_102_BASIC_INFO_VERSION_REP Basic_Info_Version_Rep = 102;
 		ID_2_BASIC_INFO_VERSION_RESPONSE Basic_Info_Version_Resp = 2;
+
+		ID_106_INITIAL_EVENT_REP Initial_Event_Rep = 106;
+		ID_6_INITIAL_EVENT_RESPONSE Initial_Event_Resp = 6;
 
 		ID_11_BASIC_INFO_REP Basic_Info_Rep = 11;
 		ID_111_BASIC_INFO_RESPONSE Basic_Info_Resp = 111;

@@ -294,7 +294,7 @@ namespace com.mirle.ibg3k0.sc.Service
                 VhLoadCSTStatus load_cst_status_r = statusReqponse.HasCstR;
                 bool has_cst_l = load_cst_status_l == VhLoadCSTStatus.Exist;
                 bool has_cst_r = load_cst_status_r == VhLoadCSTStatus.Exist;
-                string[] will_pass_section_id = statusReqponse.WillPassGuideSection.ToArray();
+                List<string> will_pass_section_id = statusReqponse.WillPassGuideSection.ToList();
                 int obstacleDIST = statusReqponse.ObstDistance;
                 string obstacleVhID = statusReqponse.ObstVehicleID;
                 int steeringWheel = statusReqponse.SteeringWheel;
@@ -323,7 +323,6 @@ namespace com.mirle.ibg3k0.sc.Service
                                     vh.HAS_CST_R != has_cst_r ||
                                     vh.ShelfStatus_L != shelf_status_l ||
                                     vh.ShelfStatus_R != shelf_status_r ||
-                                    !SCUtility.isMatche(vh.PredictSections, will_pass_section_id) ||
                                     vh.OP_PAUSE != op_pause_status
                                     ;
 
@@ -339,6 +338,7 @@ namespace com.mirle.ibg3k0.sc.Service
                 {
                     vh.onModeStatusChange(modeStat);
                 }
+                //scApp.VehicleBLL.cache.setWillPassSectionInfo(vh.VEHICLE_ID, will_pass_section_id, new List<string>());
 
                 if (hasdifferent)
                 {
@@ -348,7 +348,7 @@ namespace com.mirle.ibg3k0.sc.Service
                                                          shelf_status_l, shelf_status_r,
                                                          has_cst_l, has_cst_r,
                                                          cmd_id_1, cmd_id_2, cmd_id_3, cmd_id_4, current_excute_cmd_id,
-                                                         batteryCapacity, will_pass_section_id);
+                                                         batteryCapacity);
                 }
                 //cmdBLL.setCurrentCanAssignCmdCount(shelf_status_l, shelf_status_r);
                 vh.setCurrentCanAssignCmdCount(shelf_status_l, shelf_status_r);
@@ -719,6 +719,8 @@ namespace com.mirle.ibg3k0.sc.Service
 
             private bool reply_ID_32_TRANS_COMPLETE_RESPONSE(AVEHICLE vh, int seq_num, string finish_cmd_id, string finish_fransfer_cmd_id)
             {
+                
+                
                 ID_32_TRANS_COMPLETE_RESPONSE send_str = new ID_32_TRANS_COMPLETE_RESPONSE
                 {
                     ReplyCode = 0,
@@ -2127,7 +2129,7 @@ namespace com.mirle.ibg3k0.sc.Service
                 VhLoadCSTStatus load_cst_status_r = recive_str.HasCstR;
                 bool has_cst_l = load_cst_status_l == VhLoadCSTStatus.Exist;
                 bool has_cst_r = load_cst_status_r == VhLoadCSTStatus.Exist;
-                string[] will_pass_section_id = recive_str.WillPassGuideSection.ToArray();
+                List<string> will_pass_section_id = recive_str.WillPassGuideSection.ToList();
 
                 int obstacleDIST = recive_str.ObstDistance;
                 string obstacleVhID = recive_str.ObstVehicleID;
@@ -2151,6 +2153,7 @@ namespace com.mirle.ibg3k0.sc.Service
                 VhStopSingle op_pause = recive_str.OpPauseStatus;
 
 
+                //scApp.VehicleBLL.cache.setWillPassSectionInfo(vh.VEHICLE_ID, will_pass_section_id, new List<string>());
 
 
                 bool hasdifferent = vh.BATTERYCAPACITY != batteryCapacity ||
@@ -2173,7 +2176,6 @@ namespace com.mirle.ibg3k0.sc.Service
                                     vh.HAS_CST_R != has_cst_r ||
                                     vh.ShelfStatus_L != shelf_status_l ||
                                     vh.ShelfStatus_R != shelf_status_r ||
-                                    !SCUtility.isMatche(vh.PredictSections, will_pass_section_id) ||
                                     vh.OP_PAUSE != op_pause;
                 if (hasdifferent)
                 {
@@ -2183,7 +2185,7 @@ namespace com.mirle.ibg3k0.sc.Service
                                                          shelf_status_l, shelf_status_r,
                                                          has_cst_l, has_cst_r,
                                                          cmd_id_1, cmd_id_2, cmd_id_3, cmd_id_4, current_excute_cmd_id,
-                                                         batteryCapacity, will_pass_section_id);
+                                                         batteryCapacity);
                 }
 
                 if (modeStat != vh.MODE_STATUS)
