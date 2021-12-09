@@ -223,6 +223,19 @@ enum CompleteStatus {
 		int32 ReplyCode = 1;
   }
 
+   message ID_106_INITIAL_EVENT_REP {
+	VhLoadCSTStatus HasBox_L = 1;
+	string BoxIdL = 2;
+	VhLoadCSTStatus HasBox_R = 3;
+	string BoxIdR = 4;
+  }
+   message ID_6_INITIAL_EVENT_RESPONSE {
+	int32 ReplyCode = 1;
+	string RenameBOXID_L = 2;
+	string RenameBOXID_R = 3;
+  }
+
+
    message ID_17_ADDRESS_DATA_REP{
 	 message Address {
 		string Addr = 1;
@@ -1058,6 +1071,9 @@ enum CompleteStatus {
 
 		ID_15_SECTION_DATA_REP Section_Data_Rep = 15;
 		ID_115_SECTION_DATA_RESPONSE Section_Data_Resp = 115;
+
+		ID_106_INITIAL_EVENT_REP Initial_Event_Rep = 106;
+		ID_6_INITIAL_EVENT_RESPONSE Initial_Event_Resp = 6;
 
 		ID_17_ADDRESS_DATA_REP Address_Data_Rep = 17;
 		ID_117_ADDRESS_DATA_RESPONSE Address_Data_Resp = 117;

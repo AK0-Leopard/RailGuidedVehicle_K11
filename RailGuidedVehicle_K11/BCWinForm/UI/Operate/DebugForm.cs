@@ -1623,5 +1623,20 @@ namespace com.mirle.ibg3k0.bc.winform.UI
             var report_event = sc.ProtocolFormat.OHTMessage.EventType.AvoidReq;
             McsReportEventTest(report_event);
         }
+
+        private void btn_initialTest_Click(object sender, EventArgs e)
+        {
+            AVEHICLE test_report_vh = bcApp.SCApplication.VehicleBLL.cache.getVehicle(cmb_mcsReportTestVHID.Text);
+            bool has_box_l = false;
+            bool has_box_r = false;
+            string box_id_l = "";
+            string box_id_r = "";
+
+            Task.Run(() =>
+            {
+                var action = test_report_vh.getMapActionByIdentityKey(typeof(EQTcpIpMapAction).Name) as EQTcpIpMapAction;
+                action.str106_test(has_box_l, box_id_l, has_box_r, box_id_r);
+            });
+        }
     }
 }

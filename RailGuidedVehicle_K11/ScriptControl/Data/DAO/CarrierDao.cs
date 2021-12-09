@@ -49,6 +49,16 @@ namespace com.mirle.ibg3k0.sc.Data.DAO
                         select db_obj;
             return query.FirstOrDefault();
         }
+        public List<ACARRIER> loadInLineCarrierByLocationIDs(DBConnection_EF con, List<string> locations)
+        {
+            var query = from db_obj in con.ACARRIER
+                        where (db_obj.STATE == ProtocolFormat.OHTMessage.E_CARRIER_STATE.WaitIn ||
+                              db_obj.STATE == ProtocolFormat.OHTMessage.E_CARRIER_STATE.Installed) &&
+                              locations.Contains(db_obj.LOCATION)
+                        select db_obj;
+            return query.ToList();
+        }
+
         #endregion Query
         #region update
         public void update(DBConnection_EF con, ACARRIER carrier)

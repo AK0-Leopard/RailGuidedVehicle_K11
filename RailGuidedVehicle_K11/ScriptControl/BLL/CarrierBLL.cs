@@ -126,7 +126,7 @@ namespace com.mirle.ibg3k0.sc.BLL
                 }
                 return isSuccess;
             }
-            public bool updateReadStatus(string carrierID, ProtocolFormat.OHTMessage.E_ID_READ_STSTUS readResult,string renameCstID)
+            public bool updateReadStatus(string carrierID, ProtocolFormat.OHTMessage.E_ID_READ_STSTUS readResult, string renameCstID)
             {
                 bool isSuccess = true;
                 try
@@ -284,6 +284,22 @@ namespace com.mirle.ibg3k0.sc.BLL
                     logger.Error(ex, "Exception");
                 }
                 return carrier;
+            }
+            public (bool has, List<ACARRIER> onVhCarriers) hasCarrierOnVhLocations(List<string> locationIDs)
+            {
+                List<ACARRIER> carriers = null;
+                try
+                {
+                    using (DBConnection_EF con = DBConnection_EF.GetUContext())
+                    {
+                        carriers = CarrierDao.loadInLineCarrierByLocationIDs(con, locationIDs);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    logger.Error(ex, "Exception");
+                }
+                return (carriers != null && carriers.Count > 0, carriers);
             }
             #endregion
         }

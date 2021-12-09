@@ -161,6 +161,24 @@ namespace com.mirle.ibg3k0.sc
         {
             return this;
         }
+
+        public bool isLoading
+        {
+            get
+            {
+                COMMANDSTATE = COMMANDSTATE & 252;
+                return COMMANDSTATE == ATRANSFER.COMMAND_STATUS_BIT_INDEX_LOADING;
+            }
+        }
+        public bool isUnloading
+        {
+
+            get
+            {
+                COMMANDSTATE = COMMANDSTATE & 224;
+                return COMMANDSTATE == ATRANSFER.COMMAND_STATUS_BIT_INDEX_UNLOADING;
+            }
+        }
     }
 
 }

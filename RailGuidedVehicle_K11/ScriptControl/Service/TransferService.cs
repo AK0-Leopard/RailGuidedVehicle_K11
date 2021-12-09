@@ -1575,7 +1575,7 @@ namespace com.mirle.ibg3k0.sc.Service
                 string current_location = check_has_carrier_in_line_result.inLineCarrier.LOCATION;
                 var location_of_vh = scApp.VehicleBLL.cache.getVehicleByLocationID(current_location);
                 if (location_of_vh != null)
-                    scApp.ReportBLL.newReportCarrierRemoved
+                    scApp.ReportBLL.newReportCarrierForceRemoved
                         (location_of_vh.Real_ID, SCUtility.Trim(carrierID, true), SCUtility.Trim(current_location, true), null);
             }
             catch (Exception ex)
@@ -1599,7 +1599,7 @@ namespace com.mirle.ibg3k0.sc.Service
                 }
                 var on_vh_of_carrier = check_has_carrier_on_agv_loction.onVhCarrier;
                 carrierBLL.db.updateLocationAndState(on_vh_of_carrier.ID, "", E_CARRIER_STATE.OpRemove);
-                scApp.ReportBLL.newReportCarrierRemoved
+                scApp.ReportBLL.newReportCarrierForceRemoved
                     (vh.Real_ID, SCUtility.Trim(on_vh_of_carrier.ID, true), SCUtility.Trim(location_real_id, true), null);
             }
             catch (Exception ex)
@@ -1630,7 +1630,7 @@ namespace com.mirle.ibg3k0.sc.Service
             ACARRIER remove_carrier = check_has_carrier_in_line_result.inLineCarrier;
             carrierBLL.db.updateLocationAndState(remove_carrier.ID, string.Empty, carrier_state);
             var location_of_vh = scApp.VehicleBLL.cache.getVehicleByLocationID(remove_carrier.LOCATION);
-            scApp.ReportBLL.newReportCarrierRemoved
+            scApp.ReportBLL.newReportCarrierForceRemoved
                 (location_of_vh.Real_ID, SCUtility.Trim(remove_carrier.ID, true), SCUtility.Trim(remove_carrier.LOCATION, true), null);
 
             //建入Rename後的帳

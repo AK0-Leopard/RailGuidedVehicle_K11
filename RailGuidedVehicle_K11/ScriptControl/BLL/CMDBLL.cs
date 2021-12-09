@@ -206,6 +206,7 @@ namespace com.mirle.ibg3k0.sc.BLL
                 //case CompleteStatus.ForceFinishByOp:
                 case CompleteStatus.ForceAbnormalFinishByOp:
                 case CompleteStatus.CommandInitailFail:
+                case CompleteStatus.CommandInitialFinish:
                     return E_TRAN_STATUS.Aborted;
                 default:
                     return E_TRAN_STATUS.Complete;
@@ -1163,6 +1164,7 @@ namespace com.mirle.ibg3k0.sc.BLL
                 case CompleteStatus.IdreadFailed:
                 case CompleteStatus.InterlockError:
                 case CompleteStatus.LongTimeInaction:
+                case CompleteStatus.CommandInitialFinish:
                     return E_CMD_STATUS.AbnormalEndByOHT;
                 //case CompleteStatus.ForceFinishByOp:
                 case CompleteStatus.ForceAbnormalFinishByOp:

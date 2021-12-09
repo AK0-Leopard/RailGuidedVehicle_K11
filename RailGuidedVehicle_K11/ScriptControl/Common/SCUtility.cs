@@ -877,6 +877,7 @@ namespace com.mirle.ibg3k0.sc.Common
 
         static Google.Protobuf.JsonFormatter jsonFormatter = new JsonFormatter(new JsonFormatter.Settings(true).WithFormatDefaultValues(true));
         #region TCPIP Msg Log
+
         public static void RecodeReportInfo(string vh_id, int seq_num, ID_134_TRANS_EVENT_REP recive_str)
         {
             AVEHICLE vh_DO = SCApplication.getInstance().getEQObjCacheManager().getVehicletByVHID(vh_id);
@@ -1388,7 +1389,7 @@ namespace com.mirle.ibg3k0.sc.Common
             return fun_name;
         }
 
-      
+
 
 
         #endregion TCPIP Msg Log

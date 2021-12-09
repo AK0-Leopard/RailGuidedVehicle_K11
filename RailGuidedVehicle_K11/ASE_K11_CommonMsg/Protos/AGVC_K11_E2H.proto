@@ -26,6 +26,7 @@ service AGVC_K11_E2H {
 	rpc SendS6F11_111_Transferring(Report_ID_1) returns (S6F12_EventReportAck) {}
 	rpc SendS6F11_151_CarrierInstalled(Report_ID_8) returns (S6F12_EventReportAck) {}
 	rpc SendS6F11_152_CarrierRemoved(Report_ID_9) returns (S6F12_EventReportAck) {}
+	rpc SendS6F11_153_CarrierForceRemove(Report_ID_9) returns (S6F12_EventReportAck) {}
 	rpc SendS6F11_201_VehicleArrived(Report_ID_6) returns (S6F12_EventReportAck) {}
 	rpc SendS6F11_202_VehicleAcquireStarted(Report_ID_7) returns (S6F12_EventReportAck) {}
 	rpc SendS6F11_203_VehicleAcquireCompleted(Report_ID_7) returns (S6F12_EventReportAck) {}

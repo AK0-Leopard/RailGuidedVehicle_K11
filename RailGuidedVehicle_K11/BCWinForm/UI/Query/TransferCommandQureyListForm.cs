@@ -159,7 +159,7 @@ namespace com.mirle.ibg3k0.bc.winform.UI
                             {
                                 AVEHICLE remove_vh = mainform.BCApp.SCApplication.VehicleBLL.cache.getVehicleByLocationRealID(carrier.LOCATION);
                                 if (remove_vh != null)
-                                    mainform.BCApp.SCApplication.ReportBLL.newReportCarrierRemoved
+                                    mainform.BCApp.SCApplication.ReportBLL.newReportCarrierForceRemoved
                                     (remove_vh.Real_ID, mcs_cmd.CARRIER_ID, finial_carrier_location, null);
                             }
                             mainform.BCApp.SCApplication.CarrierBLL.db.updateLocationAndState
@@ -168,7 +168,7 @@ namespace com.mirle.ibg3k0.bc.winform.UI
 
                         if (cmd != null)
                         {
-                            mainform.BCApp.SCApplication.VehicleService.Command.Finish(cmd.ID, finish_complete_status);
+                            mainform.BCApp.SCApplication.VehicleService.Command.Finish(cmd.ID, finish_complete_status, isDirect: true);
                         }
                         else
                         {

@@ -48,7 +48,7 @@ namespace com.mirle.ibg3k0.sc.Data.SECSDriver
         public abstract bool S6F11_VehicleDepositCompleted(string cmdID, List<AMCSREPORTQUEUE> reportQueues = null);
         public abstract bool S6F11_CarrierInstalled(string vhID, string carrierID, string location, List<AMCSREPORTQUEUE> reportQueues = null);
         public abstract bool S6F11_CarrierInstalled(string cmdID, List<AMCSREPORTQUEUE> reportQueues = null);
-        public abstract bool S6F11_CarrierRemoved(string vhID, string carrierID, string location, List<AMCSREPORTQUEUE> reportQueues = null);
+        public abstract bool S6F11_CarrierForceRemoved(string vhID, string carrierID, string location, List<AMCSREPORTQUEUE> reportQueues = null);
         public abstract bool S6F11_CarrierRemoved(string cmdID, List<AMCSREPORTQUEUE> reportQueues = null);
         public abstract bool S6F11_VehicleUnassinged(string cmdID, List<AMCSREPORTQUEUE> reportQueues = null);
         public abstract bool S6F11_TransferCompleted(string cmdID, List<AMCSREPORTQUEUE> reportQueues = null);

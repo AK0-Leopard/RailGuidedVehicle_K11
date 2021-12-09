@@ -16,7 +16,6 @@ using com.mirle.ibg3k0.sc.Common;
 using com.mirle.ibg3k0.sc.Data;
 using com.mirle.ibg3k0.sc.Data.DAO;
 using com.mirle.ibg3k0.sc.Data.SECSDriver;
-using com.mirle.ibg3k0.sc.Data.ValueDefMapAction;
 using com.mirle.ibg3k0.sc.Data.VO;
 using com.mirle.ibg3k0.sc.ProtocolFormat.OHTMessage;
 using NLog;
@@ -404,12 +403,6 @@ namespace com.mirle.ibg3k0.sc.BLL
             isSuccsess = isSuccsess && iBSEMDriver.S6F11_VehicleDepositCompleted(cmdID, reportqueues);
             return isSuccsess;
         }
-        public bool newReportUnloadComplete(string vhRealID, string carrierID, string location, List<AMCSREPORTQUEUE> reportqueues)
-        {
-            bool isSuccsess = true;
-            isSuccsess = isSuccsess && iBSEMDriver.S6F11_CarrierRemoved(vhRealID, carrierID, location, reportqueues);
-            return isSuccsess;
-        }
         public bool newReportLoading(string cmdID, List<AMCSREPORTQUEUE> reportqueues)
         {
             bool isSuccsess = true;
@@ -465,6 +458,7 @@ namespace com.mirle.ibg3k0.sc.BLL
                     case CompleteStatus.ForceNormalFinishByOp:
                     case CompleteStatus.IdmisMatch:
                     case CompleteStatus.IdreadFailed:
+                    case CompleteStatus.CommandInitialFinish:
                         isSuccess = newReportTransferCommandFinish(cmdID, reportqueues);
                         break;
                     case CompleteStatus.Move:
@@ -553,10 +547,10 @@ namespace com.mirle.ibg3k0.sc.BLL
             isSuccsess = isSuccsess && iBSEMDriver.S6F11_CarrierInstalled(vhID, carrierID, location, reportqueues);
             return isSuccsess;
         }
-        public bool newReportCarrierRemoved(string vhID, string carrierID, string location, List<AMCSREPORTQUEUE> reportqueues)
+        public bool newReportCarrierForceRemoved(string vhID, string carrierID, string location, List<AMCSREPORTQUEUE> reportqueues)
         {
             bool isSuccsess = true;
-            isSuccsess = isSuccsess && iBSEMDriver.S6F11_CarrierRemoved(vhID, carrierID, location, reportqueues);
+            isSuccsess = isSuccsess && iBSEMDriver.S6F11_CarrierForceRemoved(vhID, carrierID, location, reportqueues);
             return isSuccsess;
         }
 

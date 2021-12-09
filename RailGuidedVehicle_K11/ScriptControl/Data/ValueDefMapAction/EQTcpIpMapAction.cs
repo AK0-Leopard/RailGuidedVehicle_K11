@@ -146,6 +146,33 @@ namespace com.mirle.ibg3k0.sc.Data.ValueDefMapAction
             //    doDataSysc();
             //}
         }
+        public void str106_test(bool hasBoxL, string boxIDL, bool hasBoxR, string boxIDR)
+        {
+            AKA.ProtocolFormat.RGVMessage.ID_106_INITIAL_EVENT_REP id_106 = new AKA.ProtocolFormat.RGVMessage.ID_106_INITIAL_EVENT_REP()
+            {
+                HasBoxL = hasBoxL ? AKA.ProtocolFormat.RGVMessage.VhLoadCSTStatus.Exist : AKA.ProtocolFormat.RGVMessage.VhLoadCSTStatus.NotExist,
+                HasBoxR = hasBoxR ? AKA.ProtocolFormat.RGVMessage.VhLoadCSTStatus.Exist : AKA.ProtocolFormat.RGVMessage.VhLoadCSTStatus.NotExist,
+                BoxIdL = boxIDL,
+                BoxIdR = boxIDR
+            };
+            str106_Receive(null, new TcpIpEventArgs("106", 0, id_106));
+        }
+        protected void str106_Receive(object sender, TcpIpEventArgs e)
+        {
+            if (scApp.getEQObjCacheManager().getLine().ServerPreStop)
+                return;
+            try
+            {
+                ProtocolFormat.OHTMessage.ID_106_INITIAL_EVENT_REP recive_str = ((AKA.ProtocolFormat.RGVMessage.ID_106_INITIAL_EVENT_REP)e.objPacket).ConvertToVhMsg();
+
+                dynamic receive_process = scApp.VehicleService.Receive;
+                receive_process.InitialEventReport(bcfApp, eqpt, recive_str, e.iSeqNum);
+            }
+            catch (Exception ex)
+            {
+                logger.Error(ex, "(str134_Receive) Exception");
+            }
+        }
         object str132_lockObj = new object();
         protected void str132_Receive(object sender, TcpIpEventArgs e)
         {
@@ -684,6 +711,10 @@ namespace com.mirle.ibg3k0.sc.Data.ValueDefMapAction
                     rgv_msg_wrappr.AvoidReq = id_51.ConvertToRGVMsg();
                     break;
                 //Reply
+                case ProtocolFormat.OHTMessage.WrapperMessage.InitialEventRespFieldNumber:
+                    var id_6 = message as ProtocolFormat.OHTMessage.ID_6_INITIAL_EVENT_RESPONSE;
+                    rgv_msg_wrappr.InitialEventResp = id_6.ConvertToRGVMsg();
+                    break;
                 case ProtocolFormat.OHTMessage.WrapperMessage.ImpTransEventRespFieldNumber:
                     var id_36 = message as ProtocolFormat.OHTMessage.ID_36_TRANS_EVENT_RESPONSE;
                     rgv_msg_wrappr.ImpTransEventResp = id_36.ConvertToRGVMsg();
@@ -859,6 +890,7 @@ namespace com.mirle.ibg3k0.sc.Data.ValueDefMapAction
         public override void RegisteredTcpIpProcEvent()
         {
             ITcpIpControl.addTcpIpReceivedHandler(bcfApp, tcpipAgentName, ProtocolFormat.OHTMessage.WrapperMessage.BasicInfoVersionRepFieldNumber.ToString(), str102_Receive);
+            ITcpIpControl.addTcpIpReceivedHandler(bcfApp, tcpipAgentName, ProtocolFormat.OHTMessage.WrapperMessage.InitialEventRepFieldNumber.ToString(), str106_Receive);
             ITcpIpControl.addTcpIpReceivedHandler(bcfApp, tcpipAgentName, ProtocolFormat.OHTMessage.WrapperMessage.AvoidCompleteRepFieldNumber.ToString(), str152_Receive);
             ITcpIpControl.addTcpIpReceivedHandler(bcfApp, tcpipAgentName, ProtocolFormat.OHTMessage.WrapperMessage.IndividualDownloadReqFieldNumber.ToString(), str162_Receive);
             ITcpIpControl.addTcpIpReceivedHandler(bcfApp, tcpipAgentName, ProtocolFormat.OHTMessage.WrapperMessage.AddressTeachRepFieldNumber.ToString(), str174_Receive);

@@ -126,14 +126,15 @@ namespace com.mirle.ibg3k0.sc.Data.ValueDefMapAction.ASE.K11
             return is_success;
         }
 
-        public override bool S6F11_CarrierRemoved(string vhID, string carrierID, string location, List<AMCSREPORTQUEUE> reportQueues = null)
+        public override bool S6F11_CarrierForceRemoved(string vhID, string carrierID, string location, List<AMCSREPORTQUEUE> reportQueues = null)
         {
             bool is_success = true;
             try
             {
                 var report_obj = BulidReport9(vhID, carrierID, location);
                 LogHelper.RecordHostReportInfo(report_obj);
-                var ask = client.SendS6F11_152_CarrierRemoved(report_obj);
+                //var ask = client.SendS6F11_152_CarrierRemoved(report_obj);
+                var ask = client.SendS6F11_153_CarrierForceRemove(report_obj);
                 LogHelper.RecordHostReportInfoAsk(ask);
             }
             catch (Exception ex)
@@ -273,6 +274,7 @@ namespace com.mirle.ibg3k0.sc.Data.ValueDefMapAction.ASE.K11
                 case ProtocolFormat.OHTMessage.CompleteStatus.VehicleAbort:
                 case ProtocolFormat.OHTMessage.CompleteStatus.LongTimeInaction:
                 //case ProtocolFormat.OHTMessage.CompleteStatus.ForceFinishByOp:
+                case ProtocolFormat.OHTMessage.CompleteStatus.CommandInitialFinish:
                 case ProtocolFormat.OHTMessage.CompleteStatus.CommandInitailFail:
                 case ProtocolFormat.OHTMessage.CompleteStatus.ForceAbnormalFinishByOp:
                 case ProtocolFormat.OHTMessage.CompleteStatus.InterlockError:

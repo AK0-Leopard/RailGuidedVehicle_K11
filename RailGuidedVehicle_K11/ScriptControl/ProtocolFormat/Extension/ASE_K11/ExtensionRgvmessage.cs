@@ -10,6 +10,21 @@ namespace com.mirle.ibg3k0.sc.ProtocolFormat.Converter.ASE_K11
     public static class ExtensionRgvmessage
     {
         #region Receive
+        #region ID_106
+        public static OHTMessage.ID_106_INITIAL_EVENT_REP ConvertToVhMsg(this AKA.ProtocolFormat.RGVMessage.ID_106_INITIAL_EVENT_REP msg)
+        {
+            var local_msg = new OHTMessage.ID_106_INITIAL_EVENT_REP()
+            {
+                BoxIdL = msg.BoxIdL,
+                BoxIdR = msg.BoxIdR,
+                HasBoxL = convertToVhMsgContent(msg.HasBoxL),
+                HasBoxR = convertToVhMsgContent(msg.HasBoxR)
+            };
+
+            return local_msg;
+        }
+        #endregion ID_006
+
         #region ID_131
         public static OHTMessage.ID_131_TRANS_RESPONSE ConvertToVhMsg(this AKA.ProtocolFormat.RGVMessage.ID_131_TRANS_RESPONSE msg)
         {
@@ -647,6 +662,18 @@ namespace com.mirle.ibg3k0.sc.ProtocolFormat.Converter.ASE_K11
         #endregion Receive
 
         #region Send
+        #region ID_06
+        public static AKA.ProtocolFormat.RGVMessage.ID_6_INITIAL_EVENT_RESPONSE ConvertToRGVMsg(this OHTMessage.ID_6_INITIAL_EVENT_RESPONSE msg)
+        {
+            var remote_msg = new AKA.ProtocolFormat.RGVMessage.ID_6_INITIAL_EVENT_RESPONSE()
+            {
+                RenameBOXIDL = msg.RenameBOXIDL,
+                RenameBOXIDR = msg.RenameBOXIDR,
+                ReplyCode = msg.ReplyCode
+            };
+            return remote_msg;
+        }
+        #endregion ID_06
         #region ID_31
         public static AKA.ProtocolFormat.RGVMessage.ID_31_TRANS_REQUEST ConvertToRGVMsg(this OHTMessage.ID_31_TRANS_REQUEST msg)
         {

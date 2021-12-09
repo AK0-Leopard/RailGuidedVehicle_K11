@@ -353,6 +353,7 @@ namespace com.mirle.ibg3k0.sc
         public string CurrentExcuteCmdID { get; set; }
         public string PreExcute_Transfer_ID { get; set; }
         public List<Location> CarrierLocation { get; private set; }
+        public List<string> CarrierLocationIDs { get; private set; }
 
         public string LocationRealID_R
         {
@@ -417,8 +418,8 @@ namespace com.mirle.ibg3k0.sc
                 default:
                     return "";
             }
-
         }
+
 
         public com.mirle.ibg3k0.sc.ProtocolFormat.OHTMessage.VhStopSingle BLOCK_PAUSE { get; set; }
         public com.mirle.ibg3k0.sc.ProtocolFormat.OHTMessage.VhStopSingle CMD_PAUSE { get; set; }
@@ -922,6 +923,12 @@ namespace com.mirle.ibg3k0.sc
                 new Location(location_id_r),
                 new Location(location_id_l),
             };
+
+            CarrierLocationIDs = new List<string>();
+            foreach (var location in CarrierLocation)
+            {
+                CarrierLocationIDs.Add(location.ID);
+            }
         }
 
 
@@ -1683,10 +1690,15 @@ namespace com.mirle.ibg3k0.sc
             public bool HAS_CST { get; private set; }
             public string CST_ID { get; private set; }
             public ShelfStatus ShelfStatus { get; private set; }
-
+            public AGVLocation LocationMark { get; private set; }
             public Location(string id)
             {
                 ID = id;
+            }
+            public Location(string id, AGVLocation location)
+            {
+                ID = id;
+                LocationMark = location;
             }
 
             public void setCstID(string cst_id)

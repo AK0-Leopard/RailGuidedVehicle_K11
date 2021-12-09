@@ -637,6 +637,256 @@ namespace com.mirle.ibg3k0.sc.Service
                 guideBLL = scApp.GuideBLL;
                 service = _service;
             }
+            #region ID_106 
+            public void InitialEventReport(BCFApplication bcfApp, AVEHICLE vh, ID_106_INITIAL_EVENT_REP recive_str, int seq_num)
+            {
+                if (scApp.getEQObjCacheManager().getLine().ServerPreStop)
+                    return;
+                LogHelper.RecordReportInfoAsync(scApp.CMDBLL, vh, recive_str, seq_num);
+                bool has_box_l = recive_str.HasBoxL == VhLoadCSTStatus.Exist;
+                string box_id_l = recive_str.BoxIdL;
+
+                bool has_box_r = recive_str.HasBoxR == VhLoadCSTStatus.Exist;
+                string box_id_r = recive_str.BoxIdR;
+
+                List<AVEHICLE.Location> current_loction_status = new List<AVEHICLE.Location>();
+                var current_loction_status_l = new AVEHICLE.Location(vh.getLoctionRealID(AGVLocation.Left), AGVLocation.Left);
+                current_loction_status_l.setCstID(box_id_l);
+                current_loction_status_l.setHasCst(has_box_l);
+                var current_loction_status_r = new AVEHICLE.Location(vh.getLoctionRealID(AGVLocation.Right), AGVLocation.Right);
+                current_loction_status_r.setCstID(box_id_r);
+                current_loction_status_r.setHasCst(has_box_r);
+                current_loction_status.Add(current_loction_status_l);
+                current_loction_status.Add(current_loction_status_r);
+
+                var process_result = InitialEventProcess(vh, current_loction_status);
+                if (process_result.isSuccess)
+                {
+                    reply_ID_06_InitialEventReport(vh, seq_num, process_result.renameBoxIDL, process_result.renameBoxIDR);
+                }
+                else
+                {
+                    reply_ID_06_InitialEventReport(vh, seq_num, box_id_l, box_id_r);
+                }
+            }
+
+            private bool reply_ID_06_InitialEventReport(AVEHICLE vh, int seq_num, string renameBoxIDL, string renameBoxIDR)
+            {
+
+
+                ID_6_INITIAL_EVENT_RESPONSE send_str = new ID_6_INITIAL_EVENT_RESPONSE
+                {
+                    RenameBOXIDL = renameBoxIDL,
+                    RenameBOXIDR = renameBoxIDR,
+                    ReplyCode = 0
+                };
+                WrapperMessage wrapper = new WrapperMessage
+                {
+                    SeqNum = seq_num,
+                    InitialEventResp = send_str
+                };
+                Boolean resp_cmp = vh.sendMessage(wrapper, true);
+                LogHelper.RecordReportInfoAsync(scApp.CMDBLL, vh, send_str, seq_num);
+                return resp_cmp;
+            }
+
+            private (bool isSuccess, string renameBoxIDL, string renameBoxIDR) InitialEventProcess(AVEHICLE vh, List<AVEHICLE.Location> currentLoctionStatus)
+            {
+                try
+                {
+                    LoggerProcess(vh, $"Start process vh:{vh.VEHICLE_ID} initial event report...");
+
+                    List<ACMD> cmds = scApp.CMDBLL.loadUnfinishCmd(vh.VEHICLE_ID);
+                    //先用命令整理一次
+                    foreach (var cmd in cmds)
+                    {
+                        LoggerProcess(vh, $"Non finish cmd id:{cmd.ID}, start process...");
+
+                        //string finally_cst_location = "";
+                        var cst_loc_info = tryGetCstOnVhLoction(cmd.CARRIER_ID, currentLoctionStatus);
+                        CompleteStatus completeStatus = CompleteStatus.CommandInitialFinish;
+                        //E_CARRIER_STATE carrier_state = E_CARRIER_STATE.WaitIn;
+                        if (cmd.isTrnasferCmd)
+                        {
+                            VTRANSFER v_tran = scApp.TransferBLL.db.vTransfer.GetVTransferByTransferID(cmd.TRANSFER_ID);
+                            if (cst_loc_info.isOnVh)
+                            {
+                                if (v_tran.isLoading)
+                                {
+                                    string finally_cst_location = cst_loc_info.cst_loc_info.ID;
+                                    E_CARRIER_STATE carrier_state = E_CARRIER_STATE.Installed;
+
+                                    scApp.CarrierBLL.db.updateLocationAndState
+                                        (cmd.CARRIER_ID, finally_cst_location, carrier_state);
+                                    scApp.ReportBLL.newReportLoadComplete(cmd.TRANSFER_ID, null);
+                                    LoggerProcess(vh, $"Non finish cmd id:{cmd.ID} transfer id:{cmd.TRANSFER_ID} ,tran cmd status 為loading, carrier 在車上,判斷最後位置為:{finally_cst_location}");
+                                }
+                                else if (v_tran.isUnloading)
+                                {
+                                    //not thing...
+                                    string finally_cst_location = cst_loc_info.cst_loc_info.ID;
+                                    E_CARRIER_STATE carrier_state = E_CARRIER_STATE.Installed;
+
+                                    LoggerProcess(vh, $"Non finish cmd id:{cmd.ID} transfer id:{cmd.TRANSFER_ID} ,tran cmd status 為unloading, carrier 在車上,判斷最後位置為:{finally_cst_location}");
+                                }
+                            }
+                            else
+                            {
+
+                                if (v_tran.isLoading)
+                                {
+                                    //not thing...
+                                    string finally_cst_location = v_tran.HOSTSOURCE;
+                                    E_CARRIER_STATE carrier_state = E_CARRIER_STATE.WaitIn;
+
+                                    LoggerProcess(vh, $"Non finish cmd id:{cmd.ID} transfer id:{cmd.TRANSFER_ID} ,carrier 不在車上而命令最後是Loading狀態，判斷最後位置為:{finally_cst_location}");
+                                }
+                                else if (v_tran.isUnloading)
+                                {
+                                    string finally_cst_location = v_tran.HOSTDESTINATION;
+                                    completeStatus = CompleteStatus.Loadunload;
+                                    E_CARRIER_STATE carrier_state = E_CARRIER_STATE.Complete;
+
+                                    scApp.CarrierBLL.db.updateLocationAndState
+                                        (cmd.CARRIER_ID, finally_cst_location, carrier_state);
+                                    scApp.ReportBLL.newReportUnloadComplete(cmd.TRANSFER_ID, null);
+
+                                    LoggerProcess(vh, $"Non finish cmd id:{cmd.ID} transfer id:{cmd.TRANSFER_ID} ,carrier 不在車上而命令最後是Unloading狀態，判斷最後位置為:{finally_cst_location}");
+                                }
+                                else
+                                {
+                                    LoggerProcess(vh, $"Non finish cmd id:{cmd.ID} transfer id:{cmd.TRANSFER_ID} ,carrier 不在車上而命令最後是不是Loading/Unloading狀態，判斷最後位置為:空白");
+                                }
+                            }
+                        }
+                        else
+                        {
+                            string finally_cst_location = "";
+                            E_CARRIER_STATE carrier_state = E_CARRIER_STATE.Installed;
+
+                            if (cst_loc_info.isOnVh)
+                            {
+                                finally_cst_location = cst_loc_info.cst_loc_info.ID;
+                                carrier_state = E_CARRIER_STATE.Installed;
+                                LoggerProcess(vh, $"Non finish cmd id:{cmd.ID} ,carrier 在車上,判斷最後位置為:{finally_cst_location}");
+                            }
+                            else
+                            {
+                                finally_cst_location = "";
+                                carrier_state = E_CARRIER_STATE.Agvremove;
+                                LoggerProcess(vh, $"Non finish cmd id:{cmd.ID} ,carrier 不在車上,判斷最後位置為:{finally_cst_location}");
+                            }
+                            scApp.CarrierBLL.db.updateLocationAndState
+                                (cmd.CARRIER_ID, finally_cst_location, carrier_state);
+                        }
+                        var finish_result = service.Command.Finish(cmd.ID, completeStatus, isDirect: true);
+                        LoggerProcess(vh, $"Non finish cmd id:{cmd.ID}, end process");
+                    }
+
+                    string rename_carrier_id_l = "";
+                    string rename_carrier_id_r = "";
+                    //整理完後，在用Carreir資料比對一次，看是不是有突然不見、突然建立的
+                    foreach (var location in currentLoctionStatus)
+                    {
+                        LoggerProcess(vh, $"Start current loction:{location.ID} status and db data...");
+                        string location_id = location.ID;
+                        string carrier_id = location.CST_ID;
+                        bool reel_exiet = location.HAS_CST;
+                        var check_db_exist = scApp.CarrierBLL.db.hasCarrierOnVhLocation(location_id);
+                        string finally_rename_cst_id = carrier_id;
+                        if (reel_exiet && check_db_exist.has)
+                        {
+                            if (SCUtility.isMatche(carrier_id, check_db_exist.onVhCarrier.ID))
+                            {
+                                //not thing...
+                                LoggerProcess(vh, $"loction:{location.ID} 車子資料與DB相同,不做動作.");
+                            }
+                            else
+                            {
+                                if (SCUtility.isEmpty(carrier_id))
+                                {
+                                    //read fail...
+                                    finally_rename_cst_id = check_db_exist.onVhCarrier.ID;
+                                    LoggerProcess(vh, $"loction:{location.ID} 車子資料:空的 但DB為:{finally_rename_cst_id},回復車子改名");
+                                }
+                                else
+                                {
+                                    //mismatch...
+                                    LoggerProcess(vh, $"loction:{location.ID} 車子資料:{carrier_id} 但DB為:{finally_rename_cst_id},發生了Mismatch...");
+                                }
+                            }
+                        }
+                        else if (reel_exiet && !check_db_exist.has)
+                        {
+                            if (SCUtility.isEmpty(carrier_id))
+                            {
+                                finally_rename_cst_id = $"ERR-{location_id}-{DateTime.Now.ToString(SCAppConstants.TimestampFormat_16)}";
+                                carrier_id = finally_rename_cst_id;
+                            }
+                            LoggerProcess(vh, $"loction:{location.ID} 車子資料:{carrier_id} 但DB資料並不在車上，對其進行過帳/建帳");
+                            //需要進行過帳/建立帳到車上
+                            var force_install_result = scApp.TransferService.ForceInstallCarrierInVehicle(vh.VEHICLE_ID, location_id, carrier_id);
+                            LoggerProcess(vh, $"loction:{location.ID} 車子資料:{carrier_id} 但DB資料並不在車上，對其進行過帳/建帳,過帳結果:{force_install_result.isSuccess},原因:{force_install_result.result}");
+                        }
+                        else if (!reel_exiet && check_db_exist.has)
+                        {
+                            //需要進行刪除帳
+                            LoggerProcess(vh, $"loction:{location.ID} 車子資料沒有帳 但DB卻有帳料在cstID:{check_db_exist.onVhCarrier.ID}，對其進行刪帳");
+                            var force_remove_result = scApp.TransferService.ForceRemoveCarrierInVehicleByAGV(vh.VEHICLE_ID, location.LocationMark, carrier_id);
+                            LoggerProcess(vh, $"loction:{location.ID} 車子資料沒有帳 但DB卻有帳料在cstID:{check_db_exist.onVhCarrier.ID}，對其進行刪帳，過帳結果:{force_remove_result.isSuccess},原因:{force_remove_result.result}");
+                            //scApp.CarrierBLL.db.updateLocationAndState(carrier_id, "", E_CARRIER_STATE.OpRemove);
+                            //scApp.ReportBLL.newReportUnloadComplete(vh.Real_ID, carrier_id, location_id, null);
+                        }
+                        else if (!reel_exiet && !check_db_exist.has)
+                        {
+                            //not thing...
+                            LoggerProcess(vh, $"車子無貨、DB也無帳,不做動作.");
+                        }
+
+                        if (location.LocationMark == AGVLocation.Left)
+                        {
+                            rename_carrier_id_l = finally_rename_cst_id;
+                        }
+                        else if (location.LocationMark == AGVLocation.Right)
+                        {
+                            rename_carrier_id_r = finally_rename_cst_id;
+                        }
+                    }
+                    LoggerProcess(vh, $"End process vh:{vh.VEHICLE_ID} initial event report,rename_carrier_id_l:{rename_carrier_id_l} rename_carrier_id_r:{rename_carrier_id_r}");
+                    return (true, rename_carrier_id_l, rename_carrier_id_r);
+
+                    //最後如果都沒對應到的話carrier 最後要將命令直接結束
+                    //replyTranEventReport(bcfApp, eventType, eqpt, seq_num,
+                    //    renameCarrierID: final_cst_id);
+                }
+                catch (Exception ex)
+                {
+                    logger.Error(ex, "Exception");
+
+                    return (false, "", "");
+                    //replyTranEventReport(bcfApp, eventType, eqpt, seq_num,
+                    //    renameCarrierID: final_cst_id);
+                }
+            }
+
+            private (bool isOnVh, AVEHICLE.Location cst_loc_info) tryGetCstOnVhLoction(string cARRIER_ID, List<AVEHICLE.Location> currentLoctionStatus)
+            {
+                var info = currentLoctionStatus.Where(vh_loc_info => SCUtility.isMatche(vh_loc_info.CST_ID, cARRIER_ID)).FirstOrDefault();
+
+                return (info != null, info);
+            }
+
+            private void LoggerProcess(AVEHICLE vh, string message)
+            {
+                LogHelper.Log(logger: logger, LogLevel: LogLevel.Debug, Class: nameof(VehicleService), Device: DEVICE_NAME_AGV,
+                   Data: message,
+                   VehicleID: vh.VEHICLE_ID,
+                   CST_ID_L: vh.CST_ID_L,
+                   CST_ID_R: vh.CST_ID_R);
+            }
+
+            #endregion ID_106 
+
             #region ID_132 TransferCompleteReport
             [ClassAOPAspect]
             public void CommandCompleteReport(string tcpipAgentName, BCFApplication bcfApp, AVEHICLE vh, ID_132_TRANS_COMPLETE_REPORT recive_str, int seq_num)
@@ -719,8 +969,8 @@ namespace com.mirle.ibg3k0.sc.Service
 
             private bool reply_ID_32_TRANS_COMPLETE_RESPONSE(AVEHICLE vh, int seq_num, string finish_cmd_id, string finish_fransfer_cmd_id)
             {
-                
-                
+
+
                 ID_32_TRANS_COMPLETE_RESPONSE send_str = new ID_32_TRANS_COMPLETE_RESPONSE
                 {
                     ReplyCode = 0,
@@ -2452,7 +2702,7 @@ namespace com.mirle.ibg3k0.sc.Service
                 }
                 return (is_success, finish_fransfer_cmd_id);
             }
-            public (bool isSuccess, string transferID) Finish(string finish_cmd_id, CompleteStatus completeStatus, int totalTravelDis = 0)
+            public (bool isSuccess, string transferID) Finish(string finish_cmd_id, CompleteStatus completeStatus, int totalTravelDis = 0, bool isDirect = false)
             {
                 ACMD cmd = scApp.CMDBLL.getExcuteCMD_OHTCByCmdID(finish_cmd_id);
                 string finish_fransfer_cmd_id = "";
@@ -2468,16 +2718,20 @@ namespace com.mirle.ibg3k0.sc.Service
                         vh.isCommandEnding = true;
                         carrierStateCheck(cmd, completeStatus);
                         finish_fransfer_cmd_id = cmd.TRANSFER_ID;
-                        is_success = is_success && scApp.CMDBLL.updateCommand_OHTC_StatusToFinish(finish_cmd_id, completeStatus);
+                        //is_success = is_success && scApp.CMDBLL.updateCommand_OHTC_StatusToFinish(finish_cmd_id, completeStatus);
                         //再確認是否為Transfer command
                         //是的話
                         //1.要上報MCS
                         //2.要將該Transfer改為結束
-                        bool isTransfer = !SCUtility.isEmpty(finish_fransfer_cmd_id);
-                        if (isTransfer)
+                        //bool isTransfer = !SCUtility.isEmpty(finish_fransfer_cmd_id);
+                        if (cmd.isTrnasferCmd)
                         {
+                            if (!isDirect && IsKeepTransferDontFinish(cmd.TRANSFER_ID, completeStatus))
+                            {
+                                return (false, cmd.TRANSFER_ID);
+                            }
                             Task.Run(() => scApp.VehicleBLL.redis.setFinishTransferCommandID(vh.VEHICLE_ID, finish_fransfer_cmd_id));
-
+                            is_success = is_success && scApp.CMDBLL.updateCommand_OHTC_StatusToFinish(finish_cmd_id, completeStatus);
                             //if (scApp.PortStationBLL.OperateCatch.IsEqPort(scApp.EqptBLL, cmd.DESTINATION_PORT))
                             //scApp.ReportBLL.newReportUnloadComplete(cmd.TRANSFER_ID, null);
 
@@ -2499,6 +2753,10 @@ namespace com.mirle.ibg3k0.sc.Service
                             tryRemoveFinishTransferInCurrentCache(finish_fransfer_cmd_id);
                             //Task.Run(() => scApp.VehicleBLL.redis.setFinishTransferCommandID(vh.VEHICLE_ID, finish_fransfer_cmd_id));
                         }
+                        else
+                        {
+                            is_success = is_success && scApp.CMDBLL.updateCommand_OHTC_StatusToFinish(finish_cmd_id, completeStatus);
+                        }
                     }
                     catch (Exception ex)
                     {
@@ -2510,9 +2768,18 @@ namespace com.mirle.ibg3k0.sc.Service
                         vh.isCommandEnding = false;
                     }
                 }
-
                 return (is_success, finish_fransfer_cmd_id);
             }
+
+            private bool IsKeepTransferDontFinish(string tranID, CompleteStatus completeStatus)
+            {
+                if (completeStatus == CompleteStatus.InterlockError) return false;
+                VTRANSFER v_tran = scApp.TransferBLL.db.vTransfer.GetVTransferByTransferID(tranID);
+                if (v_tran == null) return false;
+                if (v_tran.isLoading || v_tran.isUnloading) return true;
+                return false;
+            }
+
 
             private void tryRemoveFinishTransferInCurrentCache(string finish_fransfer_cmd_id)
             {
@@ -4606,11 +4873,11 @@ namespace com.mirle.ibg3k0.sc.Service
         }
         public bool doDataSysc(string vh_id)
         {
-            bool isSyscCmp = false;
-            if (CoplerInfosReport(vh_id))
-            {
-                isSyscCmp = true;
-            }
+            bool isSyscCmp = true;
+            //if (CoplerInfosReport(vh_id))
+            //{
+            //    isSyscCmp = true;
+            //}
             return isSyscCmp;
         }
         public bool IndividualUploadRequest(string vh_id)
