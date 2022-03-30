@@ -128,7 +128,22 @@ namespace com.mirle.ibg3k0.sc
             return sections.Count <= 2;
         }
 
+        public bool hasVh(VehicleBLL vehicleBLL)
+        {
+            return vehicleBLL.cache.hasVhOnAddress(ADR_ID);
+        }
 
+        public bool HasVhWillComeHere(List<ACMD> currentExcuteCommand)
+        {
+            if (currentExcuteCommand == null || currentExcuteCommand.Count == 0)
+                return false;
+            int cmd_count = currentExcuteCommand.Where(cmd => SCUtility.isMatche(cmd.DESTINATION, ADR_ID)).Count();
+            if (cmd_count > 0)
+                return true;
+            else
+                return false;
+
+        }
     }
 
     public class CouplerAddress : AADDRESS, ICpuplerType, IComparable<CouplerAddress>
@@ -139,10 +154,7 @@ namespace com.mirle.ibg3k0.sc
         public int Priority { get; set; }
         public string[] TrafficControlSegment { get; set; }
 
-        public bool hasVh(VehicleBLL vehicleBLL)
-        {
-            return vehicleBLL.cache.hasVhOnAddress(ADR_ID);
-        }
+
         public bool hasChargingVh(VehicleBLL vehicleBLL)
         {
             return vehicleBLL.cache.hasChargingVhOnAddress(ADR_ID);
@@ -237,11 +249,6 @@ namespace com.mirle.ibg3k0.sc
         public bool IsEnable { get; set; }
         public int Priority { get; set; }
         public string[] TrafficControlSegment { get; set; }
-
-        public bool hasVh(VehicleBLL vehicleBLL)
-        {
-            return vehicleBLL.cache.hasVhOnAddress(ADR_ID);
-        }
         public bool hasVhGoing(VehicleBLL vehicleBLL)
         {
             return vehicleBLL.cache.hasVhGoingAdr(ADR_ID);

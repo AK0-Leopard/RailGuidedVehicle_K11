@@ -732,7 +732,6 @@ namespace com.mirle.ibg3k0.sc.Service
                             }
                             else
                             {
-
                                 if (v_tran.isLoading)
                                 {
                                     //not thing...
@@ -756,6 +755,25 @@ namespace com.mirle.ibg3k0.sc.Service
                                 else
                                 {
                                     LoggerProcess(vh, $"Non finish cmd id:{cmd.ID} transfer id:{cmd.TRANSFER_ID} ,carrier 不在車上而命令最後是不是Loading/Unloading狀態，判斷最後位置為:空白");
+                                    var try_get_carrier = scApp.CarrierBLL.db.hasCarrierInLine(cmd.CARRIER_ID);
+                                    if (try_get_carrier.has)
+                                    {
+                                        AGVLocation location_mark = AGVLocation.None;
+                                        if (SCUtility.isMatche(try_get_carrier.inLineCarrier.LOCATION, vh.LocationRealID_L))
+                                        {
+                                            location_mark = AGVLocation.Left;
+                                        }
+                                        if (SCUtility.isMatche(try_get_carrier.inLineCarrier.LOCATION, vh.LocationRealID_R))
+                                        {
+                                            location_mark = AGVLocation.Right;
+                                        }
+                                        if (location_mark != AGVLocation.None)
+                                        {
+                                            LoggerProcess(vh, $"vh:{vh.VEHICLE_ID} 車上並無CST ID:{cmd.CARRIER_ID}，但DB卻記錄在:{try_get_carrier.inLineCarrier.LOCATION}，因此強制將其刪除...");
+                                            var force_remove_result = scApp.TransferService.ForceRemoveCarrierInVehicleByAGV(vh.VEHICLE_ID, location_mark, cmd.CARRIER_ID);
+                                            LoggerProcess(vh, $"vh:{vh.VEHICLE_ID} 車上並無CST ID:{cmd.CARRIER_ID}，但DB卻記錄在:{try_get_carrier.inLineCarrier.LOCATION}，因此強制將其刪除，刪除結果:{force_remove_result.isSuccess},原因:{force_remove_result.result}");
+                                        }
+                                    }
                                 }
                             }
                         }
@@ -3030,14 +3048,15 @@ namespace com.mirle.ibg3k0.sc.Service
                             var check_can_creat_avoid_command = canCreatAvoidCommand(avoidVh);
                             if (check_can_creat_avoid_command.is_can)
                             {
-                                var find_avoid_result = findClosestAvoidAdr(avoidVh.CUR_ADR_ID);
+                                //var find_avoid_result = findClosestAvoidAdr(avoidVh.CUR_ADR_ID);
+                                var find_avoid_result = findAvoidAddressForAvoidTypeAdr(avoidVh);
                                 if (find_avoid_result.isFind)
                                 {
                                     var avoid_request_result =
-                                        service.Command.Move(avoidVh.VEHICLE_ID, find_avoid_result.canAvoidAdrID);
+                                        service.Command.Move(avoidVh.VEHICLE_ID, find_avoid_result.avoidAdr);
 
                                     LogHelper.Log(logger: logger, LogLevel: LogLevel.Debug, Class: nameof(CMDBLL), Device: string.Empty,
-                                       Data: $"vh:{avoidVh.VEHICLE_ID} creat avoid command result:{avoid_request_result.isSuccess} avoid adr:{find_avoid_result.canAvoidAdrID}.",
+                                       Data: $"vh:{avoidVh.VEHICLE_ID} creat avoid command result:{avoid_request_result.isSuccess} avoid adr:{find_avoid_result.avoidAdr}.",
                                        VehicleID: vh.VEHICLE_ID);
                                 }
                                 else
@@ -3306,6 +3325,77 @@ namespace com.mirle.ibg3k0.sc.Service
                 }
                 return (!SCUtility.isEmpty(closest_avoid_adr), closest_avoid_adr);
             }
+
+            private (bool isFind, string avoidAdr) findAvoidAddressForAvoidTypeAdr(AVEHICLE willDrivenAwayVh)
+            {
+                //1.找看看是否有設定的固定避車點。
+                var avoid_addresses = scApp.AddressesBLL.cache.LoadCanAvoidAddresses();
+
+                //2.找出離自己最近的一個CV點且沒有車在上面沒有命令要前往的Address
+                var find_result = findTheNearestAvoidAddress(willDrivenAwayVh, avoid_addresses);
+
+
+                AADDRESS avoid_adr = null;
+                if (find_result.isFind)
+                {
+                    avoid_adr = find_result.adr;
+                }
+                else
+                {
+                    avoid_adr = avoid_addresses.FirstOrDefault();
+                }
+
+
+
+                if (avoid_adr != null)
+                {
+                    //找出點位以後，將自己的位置到停等點為止是否也有停車點，有的話就改到那個位置
+                    var guide_info = scApp.GuideBLL.getGuideInfo(willDrivenAwayVh.CUR_ADR_ID, avoid_adr.ADR_ID);
+
+                    var guide_adrs = guide_info.guideAddressIds;
+                    foreach (var adr in guide_adrs)
+                    {
+                        if (SCUtility.isMatche(adr, willDrivenAwayVh.CUR_ADR_ID))
+                            continue;
+                        var adr_obj = scApp.AddressesBLL.cache.GetAddress(adr);
+                        if (adr_obj.CanAvoid)
+                        {
+                            avoid_adr = adr_obj;
+                            break;
+                        }
+                    }
+
+                    return (true, avoid_adr.ADR_ID);
+                }
+                else
+                {
+                    return (false, "");
+                }
+            }
+            private (bool isFind, AADDRESS adr) findTheNearestAvoidAddress(AVEHICLE willDrivenAwayVh, List<AADDRESS> all_can_avoid_adrs)
+            {
+                int min_distance = int.MaxValue;
+                AADDRESS nearest_address = null;
+                ALINE line = scApp.getEQObjCacheManager().getLine();
+                foreach (var adr in all_can_avoid_adrs)
+                {
+                    bool has_vh_on_or_to_adr = adr.hasVh(scApp.VehicleBLL) || adr.HasVhWillComeHere(line.CurrentExcuteCommand);
+                    if (has_vh_on_or_to_adr)
+                        continue;
+
+                    if (SCUtility.isMatche(adr.ADR_ID, willDrivenAwayVh.CUR_ADR_ID))
+                        continue;
+
+                    bool is_walkable = scApp.GuideBLL.IsRoadWalkable(willDrivenAwayVh.CUR_ADR_ID, adr.ADR_ID, out int distance);
+                    if (is_walkable && distance < min_distance)
+                    {
+                        min_distance = distance;
+                        nearest_address = adr;
+                    }
+                }
+                return (nearest_address != null, nearest_address);
+            }
+
 
             private string findTheOppositeOfAddress(string req_vh_cur_adr, ASECTION reserved_vh_current_section)
             {

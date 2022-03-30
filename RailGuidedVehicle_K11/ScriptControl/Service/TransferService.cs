@@ -1896,7 +1896,6 @@ namespace com.mirle.ibg3k0.sc.Service
                         return;
                     List<VTRANSFER> un_finish_trnasfer = scApp.TransferBLL.db.vTransfer.loadUnfinishedVTransfer();
                     line.CurrentExcuteTransferCommand = un_finish_trnasfer;
-
                     Task.Run(() => queueTimeOutCheck(un_finish_trnasfer));
                     if (un_finish_trnasfer == null || un_finish_trnasfer.Count == 0) return;
                     if (DebugParameter.CanAutoRandomGeneratesCommand ||

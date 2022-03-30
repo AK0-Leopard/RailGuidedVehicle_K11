@@ -449,17 +449,17 @@ namespace com.mirle.ibg3k0.sc.Data.ValueDefMapAction.ASE.K11
             }
 
             //確認是否有在相同Load Port的Transfer Command且該命令狀態還沒有變成Transferring(代表還在Port上還沒搬走)
-            if (isSuccess)
-            {
-                //M0.02 var cmd_obj = scApp.CMDBLL.getWatingCMDByFromTo(source_port_or_vh_id, dest_port);
-                var cmd_obj = scApp.CMDBLL.getWatingCMDByFrom(source_port_or_vh_location_id);//M0.02 
-                if (cmd_obj != null)
-                {
-                    check_result = $"MCS command id:{command_id} is same as orther mcs command id {cmd_obj.ID.Trim()} of load port.";//M0.02 
-                                                                                                                                     //M0.02 check_result = $"MCS command id:{command_id} of transfer load port is same command id:{cmd_obj.CMD_ID.Trim()}";
-                    return (false, HCACK.Rejected);
-                }
-            }
+            //if (isSuccess)
+            //{
+            //    //M0.02 var cmd_obj = scApp.CMDBLL.getWatingCMDByFromTo(source_port_or_vh_id, dest_port);
+            //    var cmd_obj = scApp.CMDBLL.getWatingCMDByFrom(source_port_or_vh_location_id);//M0.02 
+            //    if (cmd_obj != null)
+            //    {
+            //        check_result = $"MCS command id:{command_id} is same as orther mcs command id {cmd_obj.ID.Trim()} of load port.";//M0.02 
+            //                                                                                                                         //M0.02 check_result = $"MCS command id:{command_id} of transfer load port is same command id:{cmd_obj.CMD_ID.Trim()}";
+            //        return (false, HCACK.Rejected);
+            //    }
+            //}
 
             //確認 Port是否存在
             bool source_is_a_port = scApp.PortStationBLL.OperateCatch.IsExist(source_port_or_vh_location_id);
