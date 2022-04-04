@@ -2746,7 +2746,8 @@ namespace com.mirle.ibg3k0.sc.Service
                         {
                             if (!isDirect && IsKeepTransferDontFinish(cmd.TRANSFER_ID, completeStatus))
                             {
-                                return (false, cmd.TRANSFER_ID);
+                                //return (false, cmd.TRANSFER_ID);
+                                return (true, cmd.TRANSFER_ID);
                             }
                             Task.Run(() => scApp.VehicleBLL.redis.setFinishTransferCommandID(vh.VEHICLE_ID, finish_fransfer_cmd_id));
                             is_success = is_success && scApp.CMDBLL.updateCommand_OHTC_StatusToFinish(finish_cmd_id, completeStatus);
