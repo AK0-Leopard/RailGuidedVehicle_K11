@@ -62,7 +62,7 @@ namespace com.mirle.ibg3k0.sc
 
         public const int VEHICLE_CARRIER_LOCATION_R_INDEX = 0;
         public const int VEHICLE_CARRIER_LOCATION_L_INDEX = 1;
-
+        public static UInt16 MAX_ALLOW_IMPORTANT_EVENT_RETRY_COUNT { get; private set; } = 3;
         public static UInt16 BATTERYLEVELVALUE_FULL { get; private set; } = 100;
         public static UInt16 BATTERYLEVELVALUE_HIGH { get; private set; } = 80;
         public static UInt16 BATTERYLEVELVALUE_LOW { get; private set; } = 40;
@@ -143,6 +143,7 @@ namespace com.mirle.ibg3k0.sc
         public event EventHandler<int> StatusRequestFailOverTimes;
         public event EventHandler CanNotFindTheCharger;
         public event EventHandler AfterLoadingUnloadingNSecond;
+        public event EventHandler<EventType> HasImportantEventReportRetryOverTimes;
 
         public void onExcuteCommandStatusChange()
         {
@@ -455,6 +456,21 @@ namespace com.mirle.ibg3k0.sc
         public virtual DriveDirction CurrentDriveDirction { get; set; }
         [JsonIgnore]
         public virtual double Speed { get; set; }
+        [JsonIgnore]
+        [BaseElement(NonChangeFromOtherVO = true)]
+        private int repeatReceiveImportantEventCount = 0;
+        public int RepeatReceiveImportantEventCount
+        {
+            get { return repeatReceiveImportantEventCount; }
+            set
+            {
+                repeatReceiveImportantEventCount = value;
+                if (repeatReceiveImportantEventCount > MAX_ALLOW_IMPORTANT_EVENT_RETRY_COUNT)
+                {
+                    HasImportantEventReportRetryOverTimes?.Invoke(this, LastTranEventType);
+                }
+            }
+        }
         [JsonIgnore]
         public virtual EventType LastTranEventType { get; set; }
         [JsonIgnore]
@@ -1093,6 +1109,10 @@ namespace com.mirle.ibg3k0.sc
         internal double getDisconnectionIntervalTime(BCFApplication bcfApp)
         {
             return ITcpIpControl.StopWatch_DisconnectionTime(bcfApp, TcpIpAgentName).Elapsed.TotalSeconds;
+        }
+        internal void StopTcpIpConnection(BCFApplication bcfApp)
+        {
+            bcfApp.getTcpIpAgent(TcpIpAgentName).stop();
         }
 
         #endregion TcpIpAgentInfo

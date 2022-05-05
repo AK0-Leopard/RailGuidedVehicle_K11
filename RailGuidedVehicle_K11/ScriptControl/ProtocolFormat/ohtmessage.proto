@@ -69,6 +69,7 @@ message Timestamp {
 	BlockRelease = 21;
 	Initial = 31;
 	PIOError = 91;
+	CommandComplete = 99;
   }
 enum CompleteStatus {
 	CompleteStatus_Move = 0;
@@ -85,6 +86,7 @@ enum CompleteStatus {
 	CompleteStatus_IDDoubleStorage = 26;
 	CompleteStatus_IDEmptyRetrival = 27;
 	CompleteStatus_InterlockError = 64;
+	CompleteStatus_CommandInitialFinish = 95;
 	CompleteStatus_CommandInitailFail = 96;
 	CompleteStatus_LongTimeInaction = 97;
 	CompleteStatus_ForceAbnormalFinishByOp = 98;

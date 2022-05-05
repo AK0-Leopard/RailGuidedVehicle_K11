@@ -1291,10 +1291,17 @@ namespace com.mirle.ibg3k0.sc.BLL
             TimeSpan POSITION_TIMEOUT = new TimeSpan(0, 5, 0);
             public void setPositionReportInfo2Redis(string vh_id, ID_134_TRANS_EVENT_REP report_obj)
             {
-                string key_word_position = $"{SCAppConstants.REDIS_KEY_WORD_POSITION_REPORT}_{vh_id}";
-                byte[] arrayByte = new byte[report_obj.CalculateSize()];
-                report_obj.WriteTo(new Google.Protobuf.CodedOutputStream(arrayByte));
-                redisCache.Obj2ByteArraySetAsync(key_word_position, arrayByte, POSITION_TIMEOUT);
+                try
+                {
+                    string key_word_position = $"{SCAppConstants.REDIS_KEY_WORD_POSITION_REPORT}_{vh_id}";
+                    byte[] arrayByte = new byte[report_obj.CalculateSize()];
+                    report_obj.WriteTo(new Google.Protobuf.CodedOutputStream(arrayByte));
+                    redisCache.Obj2ByteArraySetAsync(key_word_position, arrayByte, POSITION_TIMEOUT);
+                }
+                catch(Exception ex)
+                {
+                    logger.Error(ex, "Exception");
+                }
             }
 
             TimeSpan timeOut_5Sec = new TimeSpan(0, 0, 5);
@@ -1324,6 +1331,42 @@ namespace com.mirle.ibg3k0.sc.BLL
                     logger.Error(ex, "Exception");
                 }
                 return cmd_ids;
+            }
+        }
+
+        internal void updateVehicleActionStatus(AVEHICLE vh, EventType eventType)
+        {
+            try
+            {
+                switch (eventType)
+                {
+                    case EventType.LoadArrivals:
+                    case EventType.Vhloading:
+                    case EventType.LoadComplete:
+                    case EventType.UnloadArrivals:
+                    case EventType.Vhunloading:
+                    case EventType.UnloadComplete:
+                    case EventType.Bcrread:
+                    case EventType.CommandComplete:
+                        if (vh.LastTranEventType == eventType)
+                        {
+                            LogHelper.Log(logger: logger, LogLevel: LogLevel.Debug, Class: nameof(VehicleBLL), Device: Service.VehicleService.DEVICE_NAME_AGV,
+                               Data: $"vh:{vh.VEHICLE_ID} repeat report event:{eventType},current count:{vh.RepeatReceiveImportantEventCount}",
+                               VehicleID: vh.VEHICLE_ID);
+
+                            vh.RepeatReceiveImportantEventCount++;
+                        }
+                        else
+                        {
+                            vh.RepeatReceiveImportantEventCount = 0;
+                        }
+                        break;
+                }
+                vh.LastTranEventType = eventType;
+            }
+            catch(Exception ex)
+            {
+                logger.Error(ex, "Exception");
             }
         }
 

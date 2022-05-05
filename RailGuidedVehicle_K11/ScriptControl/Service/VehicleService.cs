@@ -926,6 +926,7 @@ namespace com.mirle.ibg3k0.sc.Service
                 //{
                 //    using (DBConnection_EF con = DBConnection_EF.GetUContext())
                 //    {
+                scApp.VehicleBLL.updateVehicleActionStatus(vh, EventType.CommandComplete);
                 bool is_success = true;
                 var finish_result = service.Command.Finish(cmd_id, completeStatus, travel_dis);
                 is_success = is_success && finish_result.isSuccess;
@@ -1107,7 +1108,9 @@ namespace com.mirle.ibg3k0.sc.Service
                 BCRReadResult bCRReadResult = recive_str.BCRReadResult;
                 AGVLocation cst_location = recive_str.Location;
                 bool is_need_avoid = recive_str.IsNeedAvoid;
-                vh.LastTranEventType = eventType;
+                //vh.LastTranEventType = eventType;
+                scApp.VehicleBLL.updateVehicleActionStatus(vh, eventType);
+
                 switch (eventType)
                 {
                     case EventType.ReserveReq:
@@ -1154,6 +1157,7 @@ namespace com.mirle.ibg3k0.sc.Service
                         break;
                 }
             }
+
             private void TranEventReport_AvoidReq(BCFApplication bcfApp, AVEHICLE vh, int seq_num, EventType eventType, string excute_cmd_id, bool isNeedAvoid)
             {
                 LogHelper.Log(logger: logger, LogLevel: LogLevel.Debug, Class: nameof(VehicleService), Device: DEVICE_NAME_AGV,
@@ -3652,8 +3656,29 @@ namespace com.mirle.ibg3k0.sc.Service
                 vh.Idling += Vh_Idling;
                 vh.CurrentExcuteCmdChange += Vh_CurrentExcuteCmdChange;
                 vh.StatusRequestFailOverTimes += Vh_StatusRequestFailOverTimes;
-                vh.AfterLoadingUnloadingNSecond += Vh_AfterLoadingUnloadingNSecond; ;
+                vh.AfterLoadingUnloadingNSecond += Vh_AfterLoadingUnloadingNSecond;
+                vh.HasImportantEventReportRetryOverTimes += Vh_HasImportantEventReportRetryOverTimes;
                 vh.SetupTimerAction();
+            }
+        }
+
+        private void Vh_HasImportantEventReportRetryOverTimes(object sender, EventType overRetryImportantEvent)
+        {
+            try
+            {
+                AVEHICLE vh = sender as AVEHICLE;
+                vh.RepeatReceiveImportantEventCount = 0;
+                //1.當偵測到車子重複上報某的事件達到N次，OHBC將會強制將對應的section關閉，讓車子在重新連線上來
+                int port_num = vh.getPortNum(scApp.getBCFApplication());
+                LogHelper.Log(logger: logger, LogLevel: LogLevel.Info, Class: nameof(VehicleService), Device: DEVICE_NAME_AGV,
+                   Data: $"Over {AVEHICLE.MAX_ALLOW_IMPORTANT_EVENT_RETRY_COUNT} times report important:{overRetryImportantEvent}, begin force close tcpip section ...",
+                   VehicleID: vh.VEHICLE_ID);
+
+                vh.StopTcpIpConnection(scApp.getBCFApplication());
+            }
+            catch (Exception ex)
+            {
+                logger.Error(ex, "Exception:");
             }
         }
 
@@ -3895,9 +3920,10 @@ namespace com.mirle.ibg3k0.sc.Service
                    VehicleID: vh.VEHICLE_ID,
                    CST_ID_L: vh.CST_ID_L,
                    CST_ID_R: vh.CST_ID_R);
-                stopVehicleTcpIpServer(vh);
-                SpinWait.SpinUntil(() => false, 2000);
-                startVehicleTcpIpServer(vh);
+                //stopVehicleTcpIpServer(vh);
+                //SpinWait.SpinUntil(() => false, 2000);
+                //startVehicleTcpIpServer(vh);
+                vh.StopTcpIpConnection(scApp.getBCFApplication());
             }
             catch (Exception ex)
             {
@@ -5146,34 +5172,34 @@ namespace com.mirle.ibg3k0.sc.Service
             try
             {
                 AVEHICLE vh_vo = scApp.VehicleBLL.cache.getVehicle(vhID);
-                if (!vh_vo.isTcpIpConnect)
-                {
-                    string message = $"vh:{vhID} current not connection, can't excute action:Install";
-                    LogHelper.Log(logger: logger, LogLevel: LogLevel.Info, Class: nameof(VehicleService), Device: DEVICE_NAME_AGV,
-                       Data: message,
-                       VehicleID: vhID);
-                    return (false, message);
-                }
-                ASECTION current_section = scApp.SectionBLL.cache.GetSection(vh_vo.CUR_SEC_ID);
-                if (current_section == null)
-                {
-                    string message = $"vh:{vhID} current section:{SCUtility.Trim(vh_vo.CUR_SEC_ID, true)} is not exist, can't excute action:Install";
-                    LogHelper.Log(logger: logger, LogLevel: LogLevel.Info, Class: nameof(VehicleService), Device: DEVICE_NAME_AGV,
-                       Data: message,
-                       VehicleID: vhID);
-                    return (false, message);
-                }
+                //if (!vh_vo.isTcpIpConnect)
+                //{
+                //    string message = $"vh:{vhID} current not connection, can't excute action:Install";
+                //    LogHelper.Log(logger: logger, LogLevel: LogLevel.Info, Class: nameof(VehicleService), Device: DEVICE_NAME_AGV,
+                //       Data: message,
+                //       VehicleID: vhID);
+                //    return (false, message);
+                //}
+                //ASECTION current_section = scApp.SectionBLL.cache.GetSection(vh_vo.CUR_SEC_ID);
+                //if (current_section == null)
+                //{
+                //    string message = $"vh:{vhID} current section:{SCUtility.Trim(vh_vo.CUR_SEC_ID, true)} is not exist, can't excute action:Install";
+                //    LogHelper.Log(logger: logger, LogLevel: LogLevel.Info, Class: nameof(VehicleService), Device: DEVICE_NAME_AGV,
+                //       Data: message,
+                //       VehicleID: vhID);
+                //    return (false, message);
+                //}
 
-                var ReserveResult = scApp.ReserveBLL.askReserveSuccess(scApp.SectionBLL, vhID, vh_vo.CUR_SEC_ID, vh_vo.CUR_ADR_ID);
-                if (!ReserveResult.isSuccess)
-                {
-                    string message = $"vh:{vhID} current section:{SCUtility.Trim(vh_vo.CUR_SEC_ID, true)} can't reserved," +
-                                     $" can't excute action:Install";
-                    LogHelper.Log(logger: logger, LogLevel: LogLevel.Info, Class: nameof(VehicleService), Device: DEVICE_NAME_AGV,
-                       Data: message,
-                       VehicleID: vhID);
-                    return (false, message);
-                }
+                //var ReserveResult = scApp.ReserveBLL.askReserveSuccess(scApp.SectionBLL, vhID, vh_vo.CUR_SEC_ID, vh_vo.CUR_ADR_ID);
+                //if (!ReserveResult.isSuccess)
+                //{
+                //    string message = $"vh:{vhID} current section:{SCUtility.Trim(vh_vo.CUR_SEC_ID, true)} can't reserved," +
+                //                     $" can't excute action:Install";
+                //    LogHelper.Log(logger: logger, LogLevel: LogLevel.Info, Class: nameof(VehicleService), Device: DEVICE_NAME_AGV,
+                //       Data: message,
+                //       VehicleID: vhID);
+                //    return (false, message);
+                //}
 
                 scApp.VehicleBLL.updataVehicleInstall(vhID);
                 if (vh_vo.MODE_STATUS == VHModeStatus.Manual)
@@ -5207,20 +5233,11 @@ namespace com.mirle.ibg3k0.sc.Service
                 //測試期間，暫時不看是否已經連線中
                 //因為會讓車子在連線狀態下跑CycleRun
                 //此時車子會是連線狀態但要把它Remove
-                if (vh_vo.isTcpIpConnect)
-                {
-                    string message = $"vh:{vhID} current is connection, can't excute action:remove";
-                    LogHelper.Log(logger: logger, LogLevel: LogLevel.Info, Class: nameof(VehicleService), Device: DEVICE_NAME_AGV,
-                       Data: message,
-                       VehicleID: vhID);
-                    return (false, message);
-                }
-                scApp.VehicleBLL.updataVehicleRemove(vhID);
+
                 LogHelper.Log(logger: logger, LogLevel: LogLevel.Info, Class: nameof(VehicleService), Device: DEVICE_NAME_AGV,
                    Data: $"vh id:{vhID} remove success. start release reserved control...",
                    VehicleID: vhID);
-                scApp.ReserveBLL.RemoveAllReservedSectionsByVehicleID(vh_vo.VEHICLE_ID);
-                scApp.ReserveBLL.RemoveVehicle(vh_vo.VEHICLE_ID);
+                scApp.VehicleBLL.updataVehicleRemove(vhID);
                 scApp.LineService.ProcessAlarmReport(vh_vo, AlarmBLL.VEHICLE_CAN_NOT_SERVICE, ErrorStatus.ErrReset, $"vehicle cannot service");
                 LogHelper.Log(logger: logger, LogLevel: LogLevel.Info, Class: nameof(VehicleService), Device: DEVICE_NAME_AGV,
                    Data: $"vh id:{vhID} remove success. end release reserved control.",
@@ -5228,6 +5245,17 @@ namespace com.mirle.ibg3k0.sc.Service
                 List<AMCSREPORTQUEUE> reportqueues = new List<AMCSREPORTQUEUE>();
                 scApp.ReportBLL.newReportVehicleRemoved(vh_vo.Real_ID, reportqueues);
                 scApp.ReportBLL.newSendMCSMessage(reportqueues);
+
+                if (vh_vo.isTcpIpConnect)
+                {
+                    LogHelper.Log(logger: logger, LogLevel: LogLevel.Info, Class: nameof(VehicleService), Device: DEVICE_NAME_AGV,
+                       Data: $"vh id:{vhID} 連線中 remove vh，不進行位置的初始化",
+                       VehicleID: vhID);
+                    return (true, "");
+                }
+                initialVhPosition(vh_vo);
+                scApp.ReserveBLL.RemoveAllReservedSectionsByVehicleID(vh_vo.VEHICLE_ID);
+                scApp.ReserveBLL.RemoveVehicle(vh_vo.VEHICLE_ID);
                 return (true, "");
             }
             catch (Exception ex)
@@ -5236,6 +5264,24 @@ namespace com.mirle.ibg3k0.sc.Service
                    Data: ex,
                    VehicleID: vhID);
                 return (false, "");
+            }
+        }
+        private void initialVhPosition(AVEHICLE vh)
+        {
+            try
+            {
+                ID_134_TRANS_EVENT_REP recive_str = new ID_134_TRANS_EVENT_REP()
+                {
+                    CurrentAdrID = "",
+                    CurrentSecID = "",
+                    XAxis = 0,
+                    YAxis = 0
+                };
+                Receive.doPositionUpdate(vh, recive_str);
+            }
+            catch (Exception ex)
+            {
+                logger.Error(ex, "Exception");
             }
         }
         #endregion Vehicle Install/Remove
