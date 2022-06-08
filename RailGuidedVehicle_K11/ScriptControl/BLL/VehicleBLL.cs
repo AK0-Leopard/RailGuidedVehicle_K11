@@ -1003,6 +1003,19 @@ namespace com.mirle.ibg3k0.sc.BLL
                 }
                 foreach (AVEHICLE vh in vhs.ToList())
                 {
+                    if (vh.isInitialProcessing)
+                    {
+                        vhs.Remove(vh);
+                        LogHelper.Log(logger: logger, LogLevel: LogLevel.Debug, Class: nameof(VehicleBLL), Device: "AGVC",
+                           Data: $"vh id:{vh.VEHICLE_ID} isInitialProcessing," +
+                                 $"so filter it out",
+                           VehicleID: vh.VEHICLE_ID,
+                           CST_ID_L: vh.CST_ID_L,
+                           CST_ID_R: vh.CST_ID_R);
+                    }
+                }
+                foreach (AVEHICLE vh in vhs.ToList())
+                {
                     if (vh.MODE_STATUS != VHModeStatus.AutoRemote)
                     {
                         vhs.Remove(vh);
@@ -1047,19 +1060,20 @@ namespace com.mirle.ibg3k0.sc.BLL
                            CST_ID_R: vh.CST_ID_R);
                     }
                 }
-                //foreach (AVEHICLE vh in vhs.ToList())
-                //{
-                //    if (vh.HAS_CST_L && vh.HAS_CST_R)
-                //    {
-                //        vhs.Remove(vh);
-                //        LogHelper.Log(logger: logger, LogLevel: LogLevel.Debug, Class: nameof(VehicleBLL), Device: "AGVC",
-                //           Data: $"vh id:{vh.VEHICLE_ID} has carry cst,carrier id(L):{SCUtility.Trim(vh.CST_ID_L, true)} and carrier id(R):{SCUtility.Trim(vh.CST_ID_R, true)}," +
-                //                 $"so filter it out",
-                //           VehicleID: vh.VEHICLE_ID,
-                //           CST_ID_L: vh.CST_ID_L,
-                //           CST_ID_R: vh.CST_ID_R);
-                //    }
-                //}
+
+                foreach (AVEHICLE vh in vhs.ToList())
+                {
+                    if (vh.HAS_CST_L || vh.HAS_CST_R)
+                    {
+                        vhs.Remove(vh);
+                        LogHelper.Log(logger: logger, LogLevel: LogLevel.Debug, Class: nameof(VehicleBLL), Device: "AGVC",
+                           Data: $"vh id:{vh.VEHICLE_ID} has carry cst,carrier id(L):{SCUtility.Trim(vh.CST_ID_L, true)} or carrier id(R):{SCUtility.Trim(vh.CST_ID_R, true)}," +
+                                 $"so filter it out",
+                           VehicleID: vh.VEHICLE_ID,
+                           CST_ID_L: vh.CST_ID_L,
+                           CST_ID_R: vh.CST_ID_R);
+                    }
+                }
 
             }
 
@@ -1298,7 +1312,7 @@ namespace com.mirle.ibg3k0.sc.BLL
                     report_obj.WriteTo(new Google.Protobuf.CodedOutputStream(arrayByte));
                     redisCache.Obj2ByteArraySetAsync(key_word_position, arrayByte, POSITION_TIMEOUT);
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
                     logger.Error(ex, "Exception");
                 }
@@ -1364,7 +1378,7 @@ namespace com.mirle.ibg3k0.sc.BLL
                 }
                 vh.LastTranEventType = eventType;
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 logger.Error(ex, "Exception");
             }

@@ -91,6 +91,10 @@ namespace com.mirle.ibg3k0.sc
         /// </summary>
         public const int MAX_STATUS_REQUEST_FAIL_TIMES = 3;
         public const int AFTER_LOADING_UNLOADING_N_MILLISECOND = 30000;
+        /// <summary>
+        /// 最大發送命令失敗的次數，當大於該次數時，會將該VH切換成AutoLocal模式。
+        /// </summary>
+        public const int MAX_ASSIGN_COMMAND_FAIL_TIMES = 3;
 
         VehicleTimerAction vehicleTimer = null;
         public VehicleStateMachine vhStateMachine;
@@ -144,6 +148,7 @@ namespace com.mirle.ibg3k0.sc
         public event EventHandler CanNotFindTheCharger;
         public event EventHandler AfterLoadingUnloadingNSecond;
         public event EventHandler<EventType> HasImportantEventReportRetryOverTimes;
+        public event EventHandler<int> AssignCommandFailOverTimes;
 
         public void onExcuteCommandStatusChange()
         {
@@ -490,6 +495,20 @@ namespace com.mirle.ibg3k0.sc
                 }
             }
         }
+        private int assigncommandfailtimes = 0;
+        public virtual int AssignCommandFailTimes
+        {
+            get { return assigncommandfailtimes; }
+            set
+            {
+                assigncommandfailtimes = value;
+                if (assigncommandfailtimes >= MAX_ASSIGN_COMMAND_FAIL_TIMES)
+                {
+                    AssignCommandFailOverTimes?.Invoke(this, AssignCommandFailTimes);
+                }
+            }
+        }
+
         [JsonIgnore]
         public virtual double X_Axis { get; set; }
         [JsonIgnore]
@@ -597,12 +616,17 @@ namespace com.mirle.ibg3k0.sc
         public bool isCommandEnding = false;
 
         [JsonIgnore]
+        public bool isInitialProcessing = false;
+
+        [JsonIgnore]
         public virtual ReserveUnsuccessInfo CanNotReserveInfo { get; set; }
         [JsonIgnore]
         public virtual AvoidInfo VhAvoidInfo { get; set; }
         [JsonIgnore]
         public virtual List<string> WillPassSectionID { get; set; }
         public virtual string sWillPassAddressIDs { get; set; }
+
+
 
         #region Lock Object
         public object creatCmdAsyncObj = new object();

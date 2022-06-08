@@ -106,8 +106,7 @@ namespace com.mirle.ibg3k0.sc.Service
                         if (isTransferCmd)
                         {
                             isSuccess &= transferBLL.db.transfer.updateTranStatus2InitialAndExcuteCmdID(cmd.TRANSFER_ID, cmd.ID);
-                            isSuccess &= reportBLL.newReportBeginTransfer(cmd.TRANSFER_ID, reportqueues);
-                            reportBLL.insertMCSReport(reportqueues);
+                            //isSuccess &= reportBLL.newReportBeginTransfer(cmd.TRANSFER_ID, reportqueues);
                         }
 
                         //if (isSuccess)
@@ -132,6 +131,8 @@ namespace com.mirle.ibg3k0.sc.Service
                     //}
                     if (isSuccess)
                     {
+                        if (isTransferCmd)
+                            reportBLL.newReportBeginTransfer(cmd.TRANSFER_ID, reportqueues);
                         reportBLL.newSendMCSMessage(reportqueues);
                     }
                 }
@@ -640,34 +641,47 @@ namespace com.mirle.ibg3k0.sc.Service
             #region ID_106 
             public void InitialEventReport(BCFApplication bcfApp, AVEHICLE vh, ID_106_INITIAL_EVENT_REP recive_str, int seq_num)
             {
-                if (scApp.getEQObjCacheManager().getLine().ServerPreStop)
-                    return;
-                LogHelper.RecordReportInfoAsync(scApp.CMDBLL, vh, recive_str, seq_num);
-                bool has_box_l = recive_str.HasBoxL == VhLoadCSTStatus.Exist;
-                string box_id_l = recive_str.BoxIdL;
-
-                bool has_box_r = recive_str.HasBoxR == VhLoadCSTStatus.Exist;
-                string box_id_r = recive_str.BoxIdR;
-
-                List<AVEHICLE.Location> current_loction_status = new List<AVEHICLE.Location>();
-                var current_loction_status_l = new AVEHICLE.Location(vh.getLoctionRealID(AGVLocation.Left), AGVLocation.Left);
-                current_loction_status_l.setCstID(box_id_l);
-                current_loction_status_l.setHasCst(has_box_l);
-                var current_loction_status_r = new AVEHICLE.Location(vh.getLoctionRealID(AGVLocation.Right), AGVLocation.Right);
-                current_loction_status_r.setCstID(box_id_r);
-                current_loction_status_r.setHasCst(has_box_r);
-                current_loction_status.Add(current_loction_status_l);
-                current_loction_status.Add(current_loction_status_r);
-
-                var process_result = InitialEventProcess(vh, current_loction_status);
-                if (process_result.isSuccess)
+                try
                 {
-                    reply_ID_06_InitialEventReport(vh, seq_num, process_result.renameBoxIDL, process_result.renameBoxIDR);
+                    vh.isInitialProcessing = true;
+                    if (scApp.getEQObjCacheManager().getLine().ServerPreStop)
+                        return;
+                    LogHelper.RecordReportInfoAsync(scApp.CMDBLL, vh, recive_str, seq_num);
+                    bool has_box_l = recive_str.HasBoxL == VhLoadCSTStatus.Exist;
+                    string box_id_l = recive_str.BoxIdL;
+
+                    bool has_box_r = recive_str.HasBoxR == VhLoadCSTStatus.Exist;
+                    string box_id_r = recive_str.BoxIdR;
+
+                    List<AVEHICLE.Location> current_loction_status = new List<AVEHICLE.Location>();
+                    var current_loction_status_l = new AVEHICLE.Location(vh.getLoctionRealID(AGVLocation.Left), AGVLocation.Left);
+                    current_loction_status_l.setCstID(box_id_l);
+                    current_loction_status_l.setHasCst(has_box_l);
+                    var current_loction_status_r = new AVEHICLE.Location(vh.getLoctionRealID(AGVLocation.Right), AGVLocation.Right);
+                    current_loction_status_r.setCstID(box_id_r);
+                    current_loction_status_r.setHasCst(has_box_r);
+                    current_loction_status.Add(current_loction_status_l);
+                    current_loction_status.Add(current_loction_status_r);
+
+                    var process_result = InitialEventProcess(vh, current_loction_status);
+                    if (process_result.isSuccess)
+                    {
+                        reply_ID_06_InitialEventReport(vh, seq_num, process_result.renameBoxIDL, process_result.renameBoxIDR);
+                    }
+                    else
+                    {
+                        reply_ID_06_InitialEventReport(vh, seq_num, box_id_l, box_id_r);
+                    }
                 }
-                else
+                catch (Exception ex)
                 {
-                    reply_ID_06_InitialEventReport(vh, seq_num, box_id_l, box_id_r);
+                    logger.Error(ex, "Exception");
                 }
+                finally
+                {
+                    vh.isInitialProcessing = false;
+                }
+
             }
 
             private bool reply_ID_06_InitialEventReport(AVEHICLE vh, int seq_num, string renameBoxIDL, string renameBoxIDR)
@@ -677,6 +691,7 @@ namespace com.mirle.ibg3k0.sc.Service
                 ID_6_INITIAL_EVENT_RESPONSE send_str = new ID_6_INITIAL_EVENT_RESPONSE
                 {
                     RenameBOXIDL = renameBoxIDL,
+
                     RenameBOXIDR = renameBoxIDR,
                     ReplyCode = 0
                 };
@@ -2933,19 +2948,29 @@ namespace com.mirle.ibg3k0.sc.Service
                             string vehicle_id = cmd.VH_ID.Trim();
                             AVEHICLE assignVH = scApp.VehicleBLL.cache.getVehicle(vehicle_id);
                             if (!assignVH.isTcpIpConnect ||
+                                assignVH.MODE_STATUS == VHModeStatus.Manual ||
+                                assignVH.isInitialProcessing ||
                                 //!scApp.CMDBLL.canSendCmd(assignVH)) //todo kevin 需要確認是否要再判斷是否有命令的執行?
                                 !scApp.CMDBLL.canSendCmdNew(assignVH)) //todo kevin 需要確認是否要再判斷是否有命令的執行?
                                                                        //!scApp.CMDBLL.canSendCmd(vehicle_id)) //todo kevin 需要確認是否要再判斷是否有命令的執行?
                             {
+                                LogHelper.Log(logger: logger, LogLevel: LogLevel.Debug, Class: nameof(CMDBLL), Device: string.Empty,
+                                   Data: $"vh status is not ready to send command continue this one cmd process:{SCUtility.Trim(cmd.ID, true)}," +
+                                         $"isTcpIpConnect:{assignVH.isTcpIpConnect},mode:{assignVH.MODE_STATUS},isInitialProcessing:{assignVH.isInitialProcessing}");
                                 continue;
                             }
 
                             bool is_success = service.Send.Command(assignVH, cmd);
                             if (!is_success)
                             {
+                                assignVH.AssignCommandFailTimes++;
                                 //Finish(cmd.ID, CompleteStatus.Cancel);
                                 //Finish(cmd.ID, CompleteStatus.VehicleAbort);
                                 CommandInitialFail(cmd);
+                            }
+                            else
+                            {
+                                assignVH.AssignCommandFailTimes = 0;
                             }
                         }
                     }
@@ -3658,7 +3683,28 @@ namespace com.mirle.ibg3k0.sc.Service
                 vh.StatusRequestFailOverTimes += Vh_StatusRequestFailOverTimes;
                 vh.AfterLoadingUnloadingNSecond += Vh_AfterLoadingUnloadingNSecond;
                 vh.HasImportantEventReportRetryOverTimes += Vh_HasImportantEventReportRetryOverTimes;
+                //vh.AssignCommandFailOverTimes += Vh_AssignCommandFailOverTimes;
                 vh.SetupTimerAction();
+            }
+        }
+
+        private void Vh_AssignCommandFailOverTimes(object sender, int failTimes)
+        {
+            AVEHICLE vh = (sender as AVEHICLE);
+            if (vh.MODE_STATUS == VHModeStatus.AutoRemote)
+            {
+                scApp.LineService.ProcessAlarmReport(vh, AlarmBLL.VEHICLE_SEND_COMMAND_FAIL_OVER_TIMES,
+                                                         ErrorStatus.ErrSet,
+                                                         $"send vehicle command fail, over times:{failTimes}");
+
+                changeVhStatusToAutoLocal(vh.VEHICLE_ID);
+                string message = $"vh:{vh.VEHICLE_ID}, assign command fail times:{failTimes}, change to auto local mode";
+                LogHelper.Log(logger: logger, LogLevel: LogLevel.Warn, Class: nameof(VehicleService), Device: DEVICE_NAME_AGV,
+                   Data: message,
+                   VehicleID: vh.VEHICLE_ID,
+                   CST_ID_L: vh.CST_ID_L,
+                   CST_ID_R: vh.CST_ID_R);
+                BCFApplication.onWarningMsg(message);
             }
         }
 
