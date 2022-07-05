@@ -1,98 +1,111 @@
 OBJECT_ID,ALARM_ID,ALARM_LVL,ALARM_DESC
 AGV_NODE,110011,1,Send detour request when swapping command
 AGV_NODE,110021,1,Bundle ID mismatched
-AGV_NODE,110031,1,Move: RGV is stucking
 AGV_NODE,110012,2,EMS in Cmd_Sub_Move
 AGV_NODE,110022,2,The moving path is out of path
 AGV_NODE,110032,2,The moving path analysis exception
 AGV_NODE,110042,2,The moving path analysis failed!
 AGV_NODE,110052,2,The moving path is null
 AGV_NODE,110062,2,The moving reverse searching failed
-AGV_NODE,110072,2,The moving section list is empty 
+AGV_NODE,110072,2,The moving section list is empty
 AGV_NODE,110082,2,The moving path ends at rail switch!
-AGV_NODE,110092,2,The moving path starts at railswitch!  
-AGV_NODE,120012,2,Load port is null
+AGV_NODE,110092,2,The moving path starts at railswitch!
+AGV_NODE,120011,1,Load InterLockNG-LoadPort is null
 AGV_NODE,120022,2,Load ES when Loader is busy
-AGV_NODE,120031,1,Load InterLockNG after interface
-AGV_NODE,120041,1,Load Step1  CS has setting error
+AGV_NODE,120041,1,Load Step1 CS has setting error
+AGV_NODE,120051,1,Load Step1 InterlockNG-Vehicle LoadingSts is Double_Loaded
 AGV_NODE,120061,1,Load Step1 CS_0_ON is timeout
 AGV_NODE,120071,1,Load Step1 CS_1_ON is timeout
 AGV_NODE,120081,1,Load Step2 TD1 is Time Out
-AGV_NODE,120091,1,Load  Step2  Timeout for VALID_ON 
-AGV_NODE,120101,1,Load  Step3  TD2 Time Out
-AGV_NODE,120111,1,Load  Step3  Timeout for L_REQ_ON
-AGV_NODE,120121,1,Load  Step4  TP1 Time Out
-AGV_NODE,120131,1,Load  Step5  TA1 Time Out
-AGV_NODE,120141,1,Load  Step5  Timeout for READY_ON
-AGV_NODE,120151,1,Load  Step6  TP2 Time Out
-AGV_NODE,120162,2,Load  Step7  Timeout for L_REQ_OFF
-AGV_NODE,120172,2,Load  Step7  TA2 Time Out
-AGV_NODE,120182,2,Load  Step8  TP4 Time Out
-AGV_NODE,120191,1,Load  Step9  Timeout for READY_OFF 
-AGV_NODE,120201,1,Load  Step9  TA3 Time Out
-AGV_NODE,120211,1,Load  Step10  TP5 Time Out
-AGV_NODE,120221,1,Load  Step10  Timeout for VALID_OFF  CS_OFF
-AGV_NODE,120231,1,Load  Step11  TP4 Time Out
-AGV_NODE,120241,1,Loader BCR is mismatch
-AGV_NODE,120251,1,Load InterLockNG before interface
-AGV_NODE,120311,1,Load Exception
-AGV_NODE,120322,2,Load sensor is not ON
-AGV_NODE,130011,1,Unload ES when loadre is busy
-AGV_NODE,130021,1,Unload  InterLockNG after interfac
-AGV_NODE,130031,1,Unload  InterLockNG before interface
-AGV_NODE,130041,1,Unload  Step1  CS setting error
-AGV_NODE,130051,1,Unload  Step1  EQ port error
-AGV_NODE,130061,1,Unload  Step1  Timeout for CS_0_ON
-AGV_NODE,130071,1,Unload  Step1  Timeout for CS_1_ON
-AGV_NODE,130081,1,Unload  Step2  TD1 Time Out
-AGV_NODE,130091,1,Unload  Step2  Timeout for VALID_ON
-AGV_NODE,130101,1,Unload  Step3  TD2 Time Out
-AGV_NODE,130111,1,Unload  Step3  Timeout for L_REQ_ON
-AGV_NODE,130121,1,Unload  Step4  TP1 Time Out
-AGV_NODE,130131,1,Unload  Step5  TA1 Time Out
-AGV_NODE,130141,1,Unload  Step5  Timeout for READY_ON
-AGV_NODE,130151,1,Unload  Step6  TP2 Time Out
-AGV_NODE,130162,2,Unload  Step7  Timeout for L_REQ_OFF
-AGV_NODE,130172,2,Unload  Step7  TA2 Time Out
-AGV_NODE,130182,2,Unload  Step8  TP4 Time Out
-AGV_NODE,130191,1,Unload  Step9 TA3 Time Out
-AGV_NODE,130201,1,Unload  Step9  Timeout for READY OFF
-AGV_NODE,130211,1,Unload  Step10  TP5 Time Out
-AGV_NODE,130221,1,Unload  Step10  Timeout for VALID_OFF
-AGV_NODE,130231,1,Unload  Step11  TP4 Time Out 
+AGV_NODE,120091,1,Load Step2 Timeout for VALID_ON
+AGV_NODE,120101,1,Load Step3 TD2 Time Out
+AGV_NODE,120111,1,Load Step3 Timeout for L_REQ_ON
+AGV_NODE,120121,1,Load Step4 TP1 Time Out
+AGV_NODE,120131,1,Load Step5 TA1 Time Out
+AGV_NODE,120141,1,Load Step5 Timeout for READY_ON
+AGV_NODE,120151,1,Load Step6 TP2 Time Out
+AGV_NODE,120162,2,Load Step7 Timeout for L_REQ_OFF
+AGV_NODE,120172,2,Load Step7 TA2 Time Out
+AGV_NODE,120182,2,Load Step8 TP3 Time Out
+AGV_NODE,120192,2,Load Step8 Timeout for COMPT_ON
+AGV_NODE,120202,2,Load Step9 TA3 Time Out
+AGV_NODE,120212,2,Load Step9 Timeout for READY_OFF
+AGV_NODE,120222,2,Load Step10 Timeout for VALID_OFF CS_OFF
+AGV_NODE,120232,2,Load Step11 TP4 Time Out
+AGV_NODE,120251,1,Load InterLockNG-before interface
+AGV_NODE,120261,1,Load InterlockNG-ID Mismatch when RGVC cancel
+AGV_NODE,120312,2,Load Exception
+AGV_NODE,130022,2,Unload ES when loader is busy
+AGV_NODE,130021,1,Unload InterLockNG after interface
+AGV_NODE,130031,1,Unload InterLockNG before interface
+AGV_NODE,130041,1,Unload Step1 CS setting error
+AGV_NODE,130051,1,Unload Step1 EQ port error
+AGV_NODE,130061,1,Unload Step1 Timeout for CS_0_ON
+AGV_NODE,130071,1,Unload Step1 Timeout for CS_1_ON
+AGV_NODE,130081,1,Unload Step2 TD1 Time Out
+AGV_NODE,130091,1,Unload Step2 Timeout for VALID_ON
+AGV_NODE,130101,1,Unload Step3 TD2 Time Out
+AGV_NODE,130111,1,Unload Step3 Timeout for U_REQ_ON
+AGV_NODE,130121,1,Unload Step4 TP1 Time Out
+AGV_NODE,130131,1,Unload Step5 TA1 Time Out
+AGV_NODE,130141,1,Unload Step5 Timeout for READY_ON
+AGV_NODE,130151,1,Unload Step6 TP2 Time Out
+AGV_NODE,130162,2,Unload Step7 Timeout for U_REQ_OFF
+AGV_NODE,130172,2,Unload Step7 TA2 Time Out
+AGV_NODE,130182,2,Unload Step8 TP3 Time Out
+AGV_NODE,130192,2,Unload Step8 Timeout fot COMPT_ON
+AGV_NODE,130202,2,Unload Step9 TA3 Time Out
+AGV_NODE,130212,2,Unload Step9 Timeout for READY OFF
+AGV_NODE,130222,2,Unload Step10 Timeout for VALID_OFF
+AGV_NODE,130232,2,Unload Step11 TP4 Time Out
+AGV_NODE,130241,1,Unload Step1 InterlockNG-Vehicle LoadingSts is None
 AGV_NODE,130251,1,Unload Exception
-AGV_NODE,130262,2,Bundle ID mismatched when the unload command canceled
-AGV_NODE,130272,2,Unloader sensor is not ON
+AGV_NODE,130261,1,Bundle ID mismatched when the unload command canceled
 AGV_NODE,140011,1,Path Analysis of Detouring is exception!
-AGV_NODE,140021,1,Path Analysis of Detouring is failed
 AGV_NODE,140031,1,The detouring path is null
 AGV_NODE,140041,1,The detouring reverse searching failed
-AGV_NODE,140051,1,The detouring dection List is empty!
-AGV_NODE,140061,1,Cmd_Sub_Detour EMS turn on
+AGV_NODE,140051,1,The detouring Section List is empty!
+AGV_NODE,140061,1,The detouring EMS turn on
 AGV_NODE,140071,1,The detouring motion control exception
-AGV_NODE,140081,1,The detouring Out of Path
+AGV_NODE,140082,2,The detouring Out of Path
 AGV_NODE,140091,1,The detouring path ends at rail switch!
 AGV_NODE,140101,1,The detouring path starts at railswitch!
-AGV_NODE,140111,2,Detour: RGV is stucking
-AGV_NODE,150011,1,Cmd_Flow_Load exception
-AGV_NODE,150012,2,The EMG Stop was clicked
-AGV_NODE,150021,1,Cmd_Flow_LoadUnload exception
-AGV_NODE,150031,1,Cmd_Flow_Move exception
-AGV_NODE,150041,1,Cmd_Flow_Unload exception
-AGV_NODE,210011,1,Motion alarm
+AGV_NODE,140111,1,Warning for RGV stuck
+AGV_NODE,140112,2,Alarm for RGV stuck
+AGV_NODE,140131,1,Detour: Path Analysis of Detouring is failed!
+AGV_NODE,140141,1,Detour: SectionName conver to PathName failed!
+AGV_NODE,140151,1,Detour: Did not receive 038 at detouring end!
+AGV_NODE,150012,2,Someone click the EMG Stop
+AGV_NODE,150022,2,Cmd_Flow_Load exception
+AGV_NODE,150032,2,Cmd_Flow_LoadUnload exception
+AGV_NODE,150042,2,Cmd_Flow_Move exception
+AGV_NODE,150052,2,Cmd_Flow_Unload exception
+AGV_NODE,150062,2,Cmd_Sub_Move Exception
+AGV_NODE,150072,2,Cmd_Sub_Detour Exception
+AGV_NODE,150082,2,Cmd_Sub_Move CheckRGV State
+AGV_NODE,210002,2,Motion alarm
 AGV_NODE,210012,2,The motor open port failed
-AGV_NODE,210021,1,Motion moving alarm
-AGV_NODE,210022,2,The motor config failed
+AGV_NODE,210021,1,The motor config failed
+AGV_NODE,210032,2,Moving Driver Error
+AGV_NODE,210031,1,X000_Motor_Power is OFF
+AGV_NODE,210041,1,X001 Rail Power is OFF
 AGV_NODE,220012,2,Open DO port failed
 AGV_NODE,220022,2,Open DO port exception
 AGV_NODE,230012,2,Open DI port failed
 AGV_NODE,230022,2,Open DI port exception
 AGV_NODE,240022,2,Initial BCR exception
 AGV_NODE,240032,2,BCR is not working
-AGV_NODE,250011,1,PLC is disconnected
 AGV_NODE,250012,2,Connect PLC failed
 AGV_NODE,250022,2,Connect PLC exception
-AGV_NODE,260011,1,[031] Transfer Exception
+AGV_NODE,250032,2,Left Shelf: Tray detection mismatch[SensorOffDataOn]
+AGV_NODE,250042,2,Right Shelf: Tray detection mismatch[SensorOffDataOn]
+AGV_NODE,250052,2,Left Shelf: Tray detection mismatch[SensorOnDataOff]
+AGV_NODE,250062,2,Right Shelf: Tray detection mismatch[SensorOnDataOff]
+AGV_NODE,250072,2,Left Shelf: Tray_DTCT_L Sensor OFF
+AGV_NODE,250082,2,Right Shelf: Tray_DTCT_R Sensor OFF
+AGV_NODE,250092,2,Release Rail Switch Failed
+AGV_NODE,250051,1,Rail switch control failed
+AGV_NODE,260001,1,[006] Initial_Event Exception
 AGV_NODE,260021,1,[032] Transfer_Complete Exception
 AGV_NODE,260031,1,[035] Carrier_Rename Exception
 AGV_NODE,260041,1,[036] Transfer_Event Exception
@@ -101,55 +114,32 @@ AGV_NODE,260061,1,[038] Guide_Info Exception
 AGV_NODE,260071,1,[039] Pause Exception
 AGV_NODE,260081,1,[041] Mode_Change Exception
 AGV_NODE,260091,1,[043] Status Exception
-AGV_NODE,260101,1,[051] Avoid Exception
-AGV_NODE,260111,1,[091] Alarm_Reset Exception
-AGV_NODE,260121,1,[094] Alarm_Response Exception
-AGV_NODE,260131,1,[132] Transfer_Complete Exception
-AGV_NODE,260141,1,[134] Address_Event Exception
-AGV_NODE,260151,1,[136] Transfer_Event Exception
-AGV_NODE,260161,1,[138] Transfer_Guide_Info_Request Exception
-AGV_NODE,260171,1,[144] Status_Change Exception
-AGV_NODE,260181,1,[152] Avoid_Complete Exception
-AGV_NODE,260191,1,[194] Alarm Exception
-AGV_NODE,260201,1,Create Command Data Function Error
-AGV_NODE,260211,1,Ctl_Vehicl->Fun_CMD_Step_Move2Load exception
-AGV_NODE,260221,1,Ctl_Vehicl->Fun_CMD_Step_Move2Unload exception
-AGV_NODE,260231,1,Ctl_Vehicl->Vechicle CheckSubCommandComplete exception
-AGV_NODE,260241,1,Ctl_Vehicl->Vehicle RunSubCommand Exception
-AGV_NODE,260251,1,Ctl_Vehicl->Vehicle Subcommand type error
-AGV_NODE,260261,1,Ctl_Vehicle->Fun_CMD_Step_Load_Unload_Complete Exception
-AGV_NODE,260271,1,Ctl_Vehicle->Fun_CMD_Step_Loading Exception
-AGV_NODE,260281,1,Ctl_Command->Fun_CommandAbort Exception
-AGV_NODE,260291,1,Ctl_Command->Fun_CreateCommand Exception
-AGV_NODE,260301,1,Ctl_Command->Fun_CreateTempCommand Exception
-AGV_NODE,260311,1,Ctl_Command->Fun_GetCommandID Exception
-AGV_NODE,260321,1,Fun_isCommandExecute Exception
-AGV_NODE,260331,1,Fun_isCommandRun Exception
-AGV_NODE,260341,1,Ctl_MiddleAgent->Fun_MessageQueue_Add exception
-AGV_NODE,260351,1,Ctl_MiddleAgent->Fun_MessageQueue_Get Exception
-AGV_NODE,260361,1,Ctl_Command->Fun_RemoveCommand exception
-AGV_NODE,260371,1,Ctl_Command->Fun_RemoveOptimizationTempCommand exception
-AGV_NODE,260381,1,Fun_ResetCommand Exception
-AGV_NODE,260391,1,Fun_RGVEventQueue_Add exception
-AGV_NODE,260401,1,Fun_RGVEventQueue_Send_Get exception
-AGV_NODE,260411,1,Fun_RunCommand Exception
-AGV_NODE,260421,1,Ctl_Command->Fun_UpdateCommand_CarrierData exception
-AGV_NODE,260431,1,Ctl_Command->Fun_UpdateCommand_CommandStep exception
-AGV_NODE,260441,1,Ctl_Command->Fun_UpdateCommand_CommandTime exception
-AGV_NODE,260451,1,Ctl_Command->Fun_UpdateCommand_TransferState exception
-AGV_NODE,260461,1,Guide_Address_StartToLoad Data Error
-AGV_NODE,260471,1,Guide_Sections_StartToLoad Data Error
-AGV_NODE,260481,1,ID_31 has errors. Did not create temp cmd
-AGV_NODE,260491,1,LoadAdr is at rail switch
-AGV_NODE,260501,1,LoadAdr is Undefined
-AGV_NODE,260511,1,Send command wrapper exception
-AGV_NODE,260521,1,ToAdr is at rail switch
-AGV_NODE,260531,1,ToAdr is Undefined
+AGV_NODE,260101,1,[045] Power_Operation Exception
+AGV_NODE,260111,1,[051] Avoid Exception
+AGV_NODE,260121,1,[091] Alarm_Reset Exception
+AGV_NODE,260131,1,[094] Alarm_Response Exception
+AGV_NODE,260201,1,[031] Create Command Data Function Error
+AGV_NODE,260251,1,Vehicle Subcommand type error
+AGV_NODE,260461,1,[031] Guide_Address_StartToLoad Data Error
+AGV_NODE,260471,1,[031] Guide_Sections_StartToLoad Data Error
+AGV_NODE,260491,1,[031] LoadAdr is at rail switch
+AGV_NODE,260501,1,[031] LoadAdr is Undefined
+AGV_NODE,260521,1,[031] ToAdr is at rail switch
+AGV_NODE,260531,1,[031] ToAdr is Undefined
 AGV_NODE,260541,1,Transfer_Event_Report_136 Disconnect
-AGV_NODE,260551,1,Transfer_Event_Report_136 exception
-AGV_NODE,260561,1,Unable to load as RGV is double-loaded.
-AGV_NODE,260571,1,Unable to unload as no bundle is loaded
-AGV_NODE,260581,1,Unload BoxId Not Matches
-AGV_NODE,260591,1,Vehicle is Busy
-AGV_NODE,260601,1,Vehicles Are Double Loaded
-AGV_NODE,260611,1,ActiveType Undefine
+AGV_NODE,260561,1,[031] Unable to load as RGV is double-loaded
+AGV_NODE,260571,1,[031] Unable to unload as no bundle is loaded
+AGV_NODE,260581,1,[031] Unload BoxId Not Matches
+AGV_NODE,260591,1,[031] Vehicle is Busy
+AGV_NODE,260611,1,[031] ActiveType Undefine
+AGV_NODE,260621,1,[031] L/UL Fork SERVO is NOT in the safe location
+AGV_NODE,260631,1,[031] Vehicle is NOT in the safe section (SectionType is NOT Straight)
+AGV_NODE,260641,1,[031] ToAdr is at No_Parking_Addr
+AGV_NODE,260651,1,[031] RGV SenorOnDataOff or SenorOffDataOn
+AGV_NODE,260661,1,[031] Check Load Port
+AGV_NODE,260671,1,[031] Check UnLoad Port
+AGV_NODE,260681,1,[031] Check RGV Mode
+AGV_NODE,270002,2,High CPU useage for RGV IPC
+AGV_NODE,270012,2,High memory useage for RGV IPC
+AGV_NODE,270022,2,Low HDD capacity for RGV IPC
+AGV_NODE,310002,2,RGVC No Response in [032]Transfer_Complete_Response

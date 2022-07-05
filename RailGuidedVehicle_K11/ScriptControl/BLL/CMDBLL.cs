@@ -986,6 +986,7 @@ namespace com.mirle.ibg3k0.sc.BLL
                 case E_CMD_TYPE.Unload:
                 case E_CMD_TYPE.Move_Park:
                 case E_CMD_TYPE.Move_Charger:
+                case E_CMD_TYPE.SystemOut:
                     if (!scApp.GuideBLL.IsRoadWalkable(vh_current_adr, destination))
                     {
                         result = $" vh:{vh_id} current address:[{vh_current_adr}] to destination address:[{destination}] no traffic allowed";
@@ -1522,6 +1523,7 @@ namespace com.mirle.ibg3k0.sc.BLL
                 {
                     case E_CMD_TYPE.Move:
                     case E_CMD_TYPE.Move_Charger:
+                    case E_CMD_TYPE.SystemOut:
                         if (assign_cmds.Count == 0)
                         {
                             return (true, "");
@@ -1923,6 +1925,9 @@ namespace com.mirle.ibg3k0.sc.BLL
                     break;
                 case E_CMD_TYPE.Override:
                     activeType = CommandActionType.Override;
+                    break;
+                case E_CMD_TYPE.SystemOut:
+                    activeType = CommandActionType.Systemout;
                     break;
                 default:
                     throw new Exception(string.Format("OHT Command type:{0} , not in the definition"
@@ -2497,6 +2502,7 @@ namespace com.mirle.ibg3k0.sc.BLL
                 {
                     case E_CMD_TYPE.Move:
                     case E_CMD_TYPE.Move_Charger:
+                    case E_CMD_TYPE.SystemOut:
                         if (assign_cmds.Count == 0)
                         {
                             return (true, "");
@@ -2658,6 +2664,7 @@ namespace com.mirle.ibg3k0.sc.BLL
                 {
                     case E_CMD_TYPE.Move:
                     case E_CMD_TYPE.Move_Charger:
+                    case E_CMD_TYPE.SystemOut:
                         if (assign_cmds.Count == 0)
                         {
                             return (true, "");

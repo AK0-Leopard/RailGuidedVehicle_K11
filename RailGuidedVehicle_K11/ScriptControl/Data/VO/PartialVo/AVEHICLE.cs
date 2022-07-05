@@ -149,6 +149,7 @@ namespace com.mirle.ibg3k0.sc
         public event EventHandler AfterLoadingUnloadingNSecond;
         public event EventHandler<EventType> HasImportantEventReportRetryOverTimes;
         public event EventHandler<int> AssignCommandFailOverTimes;
+        public event EventHandler RailPowerOffIsHappend;
 
         public void onExcuteCommandStatusChange()
         {
@@ -223,6 +224,10 @@ namespace com.mirle.ibg3k0.sc
         public void onVehicleLoadingUnloadingAfterNSecsond()
         {
             AfterLoadingUnloadingNSecond?.Invoke(this, EventArgs.Empty);
+        }
+        public void onVehicleRailPowerOffIsHappend()
+        {
+            RailPowerOffIsHappend?.Invoke(this, EventArgs.Empty);
         }
 
         #endregion Event

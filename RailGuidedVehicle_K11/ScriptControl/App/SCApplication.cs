@@ -569,6 +569,7 @@ namespace com.mirle.ibg3k0.sc.App
             //bdTableWatcher = new DBTableWatcher(this);
             SystemParameter.setCstMaxWaitTime(getInt("CSTMaxWaitTime", 0));
             SystemParameter.setLongestFullyChargedIntervalTime(getInt("LongestFullyChargedIntervalTime", 15));
+            SystemParameter.setVehicleMaintainAdr(getString("VehicleMaintainAdr", ""));
         }
 
         private void initialReserveSectionAPI()
@@ -1660,6 +1661,7 @@ namespace com.mirle.ibg3k0.sc.App
         public static int AllowVhIdleTime_ms = 300000;
         public static int TransferCommandTimePriorityIncrement = 5;
         public static int AFTER_LOADING_UNLOADING_N_MILLISECOND = 30000;
+        public static string VEHICLE_MAINTAIN_ADDRESS = "";
 
 
         public static void setSECSConversactionTimeout(int timeout)
@@ -1726,6 +1728,10 @@ namespace com.mirle.ibg3k0.sc.App
         public static void setAFTER_LOADING_UNLOADING_N_MILLISECOND(int _AFTER_LOADING_UNLOADING_N_MILLISECOND)
         {
             AFTER_LOADING_UNLOADING_N_MILLISECOND = _AFTER_LOADING_UNLOADING_N_MILLISECOND;
+        }
+        public static void setVehicleMaintainAdr(string _VEHICLE_MAINTAIN_ADDRESS)
+        {
+            VEHICLE_MAINTAIN_ADDRESS = _VEHICLE_MAINTAIN_ADDRESS;
         }
 
     }

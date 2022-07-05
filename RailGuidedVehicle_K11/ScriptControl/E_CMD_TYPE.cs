@@ -25,6 +25,7 @@ namespace com.mirle.ibg3k0.sc
         Home = 9,
         Override = 10,
         MTLHome = 11,
-        Move_Teaching = 12
+        SystemOut = 12,
+        SystemIn = 13
     }
 }

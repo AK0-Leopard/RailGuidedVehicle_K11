@@ -2684,6 +2684,13 @@ namespace com.mirle.ibg3k0.sc.Service
                     setPreExcuteTranCmdID(vhID, "");
                 return is_success;
             }
+            public bool MoveToSystemOut(string vhID, string destination)
+            {
+                bool is_success = scApp.CMDBLL.doCreatCommand(vhID, cmd_type: E_CMD_TYPE.SystemOut, destination: destination);
+                if (is_success)
+                    setPreExcuteTranCmdID(vhID, "");
+                return is_success;
+            }
             public bool Load(string vhID, string cstID, string source, string sourcePortID)
             {
                 bool is_success = scApp.CMDBLL.doCreatCommand(vhID, carrier_id: cstID, cmd_type: E_CMD_TYPE.Load, source: source,
@@ -2934,6 +2941,7 @@ namespace com.mirle.ibg3k0.sc.Service
                             return;
                         //List<ACMD> CMD_OHTC_Queues = scApp.CMDBLL.loadCMD_OHTCMDStatusIsQueue();
                         List<ACMD> unfinish_cmd = scApp.CMDBLL.loadUnfinishCmd();
+                        refreshcmdInfoList(unfinish_cmd);
                         line.CurrentExcuteCommand = unfinish_cmd;
                         if (unfinish_cmd == null || unfinish_cmd.Count == 0)
                             return;
@@ -2984,7 +2992,57 @@ namespace com.mirle.ibg3k0.sc.Service
                     }
                 }
             }
+            private void refreshcmdInfoList(List<ACMD> currentExcuteCmd)
+            {
+                try
+                {
+                    bool has_change = false;
+                    List<string> new_current_excute_cmd = currentExcuteCmd.Select(cmd => SCUtility.Trim(cmd.ID, true)).ToList();
+                    List<string> old_current_excute_cmd = ACMD.Cmd_InfoList.Keys.ToList();
 
+                    List<string> new_add_cmds = new_current_excute_cmd.Except(old_current_excute_cmd).ToList();
+                    //1.新增多出來的命令
+                    foreach (string new_cmd in new_add_cmds)
+                    {
+                        ACMD new_cmd_obj = new ACMD();
+                        var current_cmd = currentExcuteCmd.Where(cmd => SCUtility.isMatche(cmd.ID, new_cmd)).FirstOrDefault();
+                        if (current_cmd == null) continue;
+                        new_cmd_obj.put(current_cmd);
+                        ACMD.Cmd_InfoList.TryAdd(new_cmd, new_cmd_obj);
+                        has_change = true;
+                    }
+                    //2.刪除以結束的命令
+                    List<string> will_del_cmds = old_current_excute_cmd.Except(new_current_excute_cmd).ToList();
+                    foreach (string old_cmd in will_del_cmds)
+                    {
+                        ACMD.Cmd_InfoList.TryRemove(old_cmd, out ACMD cmd);
+                        has_change = true;
+                    }
+                    //3.更新現有命令
+                    foreach (var cmd_item in ACMD.Cmd_InfoList)
+                    {
+                        string cmd_id = cmd_item.Key;
+                        ACMD cmd_mcs = currentExcuteCmd.Where(cmd => SCUtility.isMatche(cmd.ID, cmd_id)).FirstOrDefault();
+                        if (cmd_mcs == null)
+                        {
+                            continue;
+                        }
+                        if (cmd_item.Value.put(cmd_mcs))
+                        {
+                            has_change = true;
+                        }
+                    }
+
+                    if (has_change)
+                    {
+                        // not thing...
+                    }
+                }
+                catch (Exception ex)
+                {
+                    NLog.LogManager.GetCurrentClassLogger().Error(ex, "Exception");
+                }
+            }
 
             /// <summary>
             /// 確認vh是否已經在準備要他去的Address上，如果還沒且
@@ -3683,8 +3741,32 @@ namespace com.mirle.ibg3k0.sc.Service
                 vh.StatusRequestFailOverTimes += Vh_StatusRequestFailOverTimes;
                 vh.AfterLoadingUnloadingNSecond += Vh_AfterLoadingUnloadingNSecond;
                 vh.HasImportantEventReportRetryOverTimes += Vh_HasImportantEventReportRetryOverTimes;
+                vh.RailPowerOffIsHappend += Vh_RailPowerOffIsHappend;
                 //vh.AssignCommandFailOverTimes += Vh_AssignCommandFailOverTimes;
                 vh.SetupTimerAction();
+            }
+        }
+        /// <summary>
+        /// 當發生車子電刷取電異常後，要將他移置設定的下車點
+        /// 此到達後車子會自行將RGV切成Manual，讓人員來進行保養
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void Vh_RailPowerOffIsHappend(object sender, EventArgs e)
+        {
+            try
+            {
+                AVEHICLE vh = (sender as AVEHICLE);
+                LogHelper.Log(logger: logger, LogLevel: LogLevel.Info, Class: nameof(VehicleService), Device: DEVICE_NAME_AGV,
+                   Data: $"Vh:{vh.VEHICLE_ID}發生電刷異常，準備移至 maintain adr:{SystemParameter.VEHICLE_MAINTAIN_ADDRESS}",
+                   VehicleID: vh.VEHICLE_ID,
+                   CST_ID_L: vh.CST_ID_L,
+                   CST_ID_R: vh.CST_ID_R);
+                Command.MoveToSystemOut(vh.VEHICLE_ID, SystemParameter.VEHICLE_MAINTAIN_ADDRESS);
+            }
+            catch (Exception ex)
+            {
+                logger.Error(ex, "Exception:");
             }
         }
 

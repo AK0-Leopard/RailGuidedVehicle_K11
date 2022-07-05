@@ -1789,7 +1789,8 @@ namespace com.mirle.ibg3k0.sc.Service
                 }
             }
         }
-        public void ScanByVTransfer_v4()
+
+        public void ScanByVTransfer_v5()
         {
             if (System.Threading.Interlocked.Exchange(ref syncTranCmdPoint, 1) == 0)
             {
@@ -1800,6 +1801,9 @@ namespace com.mirle.ibg3k0.sc.Service
                         return;
                     List<VTRANSFER> un_finish_trnasfer = scApp.TransferBLL.db.vTransfer.loadUnfinishedVTransfer();
                     line.CurrentExcuteTransferCommand = un_finish_trnasfer;
+
+                    refreshvTranInfoList(un_finish_trnasfer);
+
                     Task.Run(() => queueTimeOutCheck(un_finish_trnasfer));
                     if (un_finish_trnasfer == null || un_finish_trnasfer.Count == 0) return;
                     if (DebugParameter.CanAutoRandomGeneratesCommand ||
@@ -1831,8 +1835,11 @@ namespace com.mirle.ibg3k0.sc.Service
                         try
                         {
                             //如果是在找Source非EQ Port的命令時，要用Port Priority做排序來幫助雙車(6/9)在跑時，如果370過於忙碌，都沒有車子可以去服務450的問題
+                            var traget_not_agv_st_in_queue_transfer = in_queue_transfer.Where(tran => !(tran.getTragetPortEQ(scApp.EqptBLL) is IAGVStationType))
+                                                                 .OrderByDescending(tran => tran.PORT_PRIORITY)
+                                                                 .ToList();
 
-                            foreach (VTRANSFER first_waitting_excute_mcs_cmd in in_queue_transfer)
+                            foreach (VTRANSFER first_waitting_excute_mcs_cmd in traget_not_agv_st_in_queue_transfer)
                             {
                                 string hostsource = first_waitting_excute_mcs_cmd.HOSTSOURCE;
                                 string hostdest = first_waitting_excute_mcs_cmd.HOSTDESTINATION;
@@ -1841,11 +1848,27 @@ namespace com.mirle.ibg3k0.sc.Service
                                 AVEHICLE bestSuitableVh = null;
                                 E_VH_TYPE vh_type = E_VH_TYPE.None;
 
-                                //確認 source 是否為Port
+
                                 bool source_is_a_port = scApp.PortStationBLL.OperateCatch.IsExist(hostsource);
                                 if (source_is_a_port)
                                 {
+                                    scApp.MapBLL.getAddressID(hostsource, out from_adr, out vh_type);
                                     bestSuitableVh = scApp.VehicleBLL.cache.findBestSuitableVhStepByStepFromAdr(scApp.GuideBLL, scApp.CMDBLL, from_adr, vh_type);
+                                    //如果找到適合搬送的車子不在點上的話就要去尋找是否有車子即將前來
+                                    if (!SCUtility.isMatche(first_waitting_excute_mcs_cmd.getSourcePortAdrID(scApp.PortStationBLL), bestSuitableVh.CUR_ADR_ID))
+                                    {
+                                        //確認Source Port是否有其他車要去進行放貨(已經在路上) 或 是準備要去停車
+                                        //有得話，該筆命令就先暫時不派送該筆命令
+                                        var check_result = checkHasVhWillComeThisSourcePort(from_adr);
+                                        if (check_result.hasVhWillCome)
+                                        {
+                                            LogHelper.Log(logger: logger, LogLevel: LogLevel.Info, Class: nameof(VehicleService), Device: DEVICE_NAME_AGV,
+                                               Data: $"由於VH:{check_result.vhID}即將前往該Port，因此Pass 找車的流程。",
+                                               VehicleID: bestSuitableVh.VEHICLE_ID);
+
+                                            continue;
+                                        }
+                                    }
                                 }
                                 else
                                 {
@@ -1905,6 +1928,94 @@ namespace com.mirle.ibg3k0.sc.Service
                 }
             }
         }
+
+        private (bool hasVhWillCome, string vhID) checkHasVhWillComeThisSourcePort(string hostSourceAdr)
+        {
+
+            ////確認是否有命令及將來該Port停車
+            var excute_cmds = ACMD.loadExcuteCMDs();
+            var will_come_cmd = excute_cmds.Where(cmd => SCUtility.isMatche(cmd.DESTINATION, hostSourceAdr) &&
+                                                 (cmd.CMD_TYPE == E_CMD_TYPE.Move_Charger || cmd.CMD_TYPE == E_CMD_TYPE.Move)).
+                                    FirstOrDefault();
+            if (will_come_cmd != null)
+            {
+                return (true, will_come_cmd.VH_ID);
+            }
+
+            var excute_trans = VTRANSFER.loadCurrentvTran();
+            //找出準備到這邊放貨的車子
+            var will_come_tran_cmds = excute_trans.Where(tran => SCUtility.isMatche(tran.getTragetPortAdrID(scApp.PortStationBLL), hostSourceAdr)
+                                                               && tran.COMMANDSTATE >= ATRANSFER.COMMAND_STATUS_BIT_INDEX_LOAD_COMPLETE)
+                                                 .ToArray();
+            if (will_come_tran_cmds == null || will_come_tran_cmds.Count() == 0)
+                return (false, "");
+            //由於要找出放完貨後，車子要是清空(車上是沒貨物的的)狀態，因此只能算只有執行一筆該命令的車子
+            foreach (var tran_cmd in will_come_tran_cmds)
+            {
+                string excute_vh_id = tran_cmd.VH_ID;
+                int vh_excute_cmd_count = excute_trans.Where(tran => SCUtility.isMatche(tran.VH_ID, excute_vh_id)).Count();
+                if (vh_excute_cmd_count == 1)
+                {
+                    return (true, excute_vh_id);
+                }
+            }
+            return (false, "");
+
+        }
+
+        private void refreshvTranInfoList(List<VTRANSFER> currentExcuteMCSCmd)
+        {
+            try
+            {
+                bool has_change = false;
+                List<string> new_current_excute_mcs_cmd = currentExcuteMCSCmd.Select(cmd => SCUtility.Trim(cmd.ID, true)).ToList();
+                List<string> old_current_excute_mcs_cmd = VTRANSFER.vTran_InfoList.Keys.ToList();
+
+                List<string> new_add_mcs_cmds = new_current_excute_mcs_cmd.Except(old_current_excute_mcs_cmd).ToList();
+                //1.新增多出來的命令
+                foreach (string new_cmd in new_add_mcs_cmds)
+                {
+                    VTRANSFER new_cmd_obj = new VTRANSFER();
+                    var current_cmd = currentExcuteMCSCmd.Where(cmd => SCUtility.isMatche(cmd.ID, new_cmd)).FirstOrDefault();
+                    if (current_cmd == null) continue;
+                    new_cmd_obj.put(current_cmd);
+                    VTRANSFER.vTran_InfoList.TryAdd(new_cmd, new_cmd_obj);
+                    has_change = true;
+                }
+                //2.刪除以結束的命令
+                List<string> will_del_mcs_cmds = old_current_excute_mcs_cmd.Except(new_current_excute_mcs_cmd).ToList();
+                foreach (string old_cmd in will_del_mcs_cmds)
+                {
+                    VTRANSFER.vTran_InfoList.TryRemove(old_cmd, out VTRANSFER cmd_mcs);
+                    has_change = true;
+                }
+                //3.更新現有命令
+                foreach (var mcs_cmd_item in VTRANSFER.vTran_InfoList)
+                {
+                    string cmd_mcs_id = mcs_cmd_item.Key;
+                    VTRANSFER cmd_mcs = currentExcuteMCSCmd.Where(cmd => SCUtility.isMatche(cmd.ID, cmd_mcs_id)).FirstOrDefault();
+                    if (cmd_mcs == null)
+                    {
+                        continue;
+                    }
+                    if (mcs_cmd_item.Value.put(cmd_mcs))
+                    {
+                        has_change = true;
+                    }
+                }
+
+                if (has_change)
+                {
+                    // not thing...
+                }
+            }
+            catch (Exception ex)
+            {
+                NLog.LogManager.GetCurrentClassLogger().Error(ex, "Exception");
+            }
+        }
+
+
         public bool updateTranTimePriority(VTRANSFER tran, int timePriority)
         {
             try

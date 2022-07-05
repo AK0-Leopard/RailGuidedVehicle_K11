@@ -480,6 +480,7 @@ namespace com.mirle.ibg3k0.sc.Service
                    Data: ex);
             }
         }
+        const string RGV_RAIL_PORWE_OFF_ALARM_ID = "210041";
         public void ProcessAlarmReport(AVEHICLE vh, string err_code, ErrorStatus status, string errorDesc)
         {
             try
@@ -573,6 +574,12 @@ namespace com.mirle.ibg3k0.sc.Service
                            CST_ID_L: vh.CST_ID_L,
                            CST_ID_R: vh.CST_ID_R);
                     }
+                }
+
+                if (SCUtility.isMatche(RGV_RAIL_PORWE_OFF_ALARM_ID, err_code) && 
+                    status == ErrorStatus.ErrSet)
+                {
+                    vh.onVehicleRailPowerOffIsHappend();
                 }
             }
             catch (Exception ex)

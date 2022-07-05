@@ -17,14 +17,14 @@ using System;
 
 namespace com.mirle.ibg3k0.sc.Data.TimerAction
 {
-    public class TransferCommandV2TimerAction : ITimerAction
+    public class TransferCommandV5TimerAction : ITimerAction
     {
         private static Logger logger = LogManager.GetCurrentClassLogger();
         protected SCApplication scApp = null;
         protected MPLCSMControl smControl;
 
 
-        public TransferCommandV2TimerAction(string name, long intervalMilliSec)
+        public TransferCommandV5TimerAction(string name, long intervalMilliSec)
             : base(name, intervalMilliSec)
         {
 
@@ -39,7 +39,7 @@ namespace com.mirle.ibg3k0.sc.Data.TimerAction
         {
             try
             {
-                scApp.TransferService.ScanByVTransfer_v3();
+                scApp.TransferService.ScanByVTransfer_v5();
             }
             catch (Exception ex)
             {

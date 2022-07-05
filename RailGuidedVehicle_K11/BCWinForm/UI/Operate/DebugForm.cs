@@ -1234,7 +1234,7 @@ namespace com.mirle.ibg3k0.bc.winform.UI
 
         private void btn_alarmtSet_Click(object sender, EventArgs e)
         {
-            string error_code = "-999";
+            string error_code = "210041";
             var error_status = sc.ProtocolFormat.OHTMessage.ErrorStatus.ErrSet;
             AVEHICLE test_report_vh = bcApp.SCApplication.VehicleBLL.cache.getVehicle(cmb_mcsReportTestVHID.Text);
             Task.Run(() => bcApp.SCApplication.LineService.ProcessAlarmReport(test_report_vh, error_code, error_status, ""));

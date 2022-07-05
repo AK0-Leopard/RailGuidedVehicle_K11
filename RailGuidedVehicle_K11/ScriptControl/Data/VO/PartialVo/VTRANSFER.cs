@@ -8,6 +8,7 @@ using com.mirle.ibg3k0.sc.Data.VO;
 using com.mirle.ibg3k0.sc.Data.VO.Interface;
 using com.mirle.ibg3k0.sc.ObjectRelay;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -17,7 +18,11 @@ namespace com.mirle.ibg3k0.sc
 {
     public partial class VTRANSFER : IFormatProvider
     {
-
+        public static ConcurrentDictionary<string, VTRANSFER> vTran_InfoList { get; private set; } = new ConcurrentDictionary<string, VTRANSFER>();
+        public static List<VTRANSFER> loadCurrentvTran()
+        {
+            return vTran_InfoList.Values.ToList();
+        }
         public string getRealVhID(BLL.VehicleBLL vehicleBLL)
         {
             var vh = vehicleBLL.cache.getVehicle(VH_ID);
@@ -178,6 +183,36 @@ namespace com.mirle.ibg3k0.sc
                 COMMANDSTATE = COMMANDSTATE & 224;
                 return COMMANDSTATE == ATRANSFER.COMMAND_STATUS_BIT_INDEX_UNLOADING;
             }
+        }
+
+        public bool put(VTRANSFER current_cmd)
+        {
+            ID = current_cmd.ID;
+            LOT_ID = current_cmd.LOT_ID;
+            CARRIER_ID = current_cmd.CARRIER_ID;
+            TRANSFERSTATE = current_cmd.TRANSFERSTATE;
+            COMMANDSTATE = current_cmd.COMMANDSTATE;
+            HOSTSOURCE = current_cmd.HOSTSOURCE;
+            HOSTDESTINATION = current_cmd.HOSTDESTINATION;
+            PRIORITY = current_cmd.PRIORITY;
+            CHECKCODE = current_cmd.CHECKCODE;
+            PAUSEFLAG = current_cmd.PAUSEFLAG;
+            CMD_INSER_TIME = current_cmd.CMD_INSER_TIME;
+            CMD_START_TIME = current_cmd.CMD_START_TIME;
+            CMD_FINISH_TIME = current_cmd.CMD_FINISH_TIME;
+            TIME_PRIORITY = current_cmd.TIME_PRIORITY;
+            PORT_PRIORITY = current_cmd.PORT_PRIORITY;
+            PRIORITY_SUM = current_cmd.PRIORITY_SUM;
+            REPLACE = current_cmd.REPLACE;
+            RESULT_CODE = current_cmd.RESULT_CODE;
+            EXCUTE_CMD_ID = current_cmd.EXCUTE_CMD_ID;
+            CARRIER_INSER_TIME = current_cmd.CARRIER_INSER_TIME;
+            CARRIER_LOCATION = current_cmd.CARRIER_LOCATION;
+            CARRIER_INSTALLED_TIME = current_cmd.CARRIER_INSTALLED_TIME;
+            CARRIER_READ_STATUS = current_cmd.CARRIER_READ_STATUS;
+            VH_ID = current_cmd.VH_ID;
+            COMPLETE_STATUS = current_cmd.COMPLETE_STATUS;
+            return true;
         }
     }
 

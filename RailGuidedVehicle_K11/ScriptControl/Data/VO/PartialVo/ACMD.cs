@@ -7,6 +7,7 @@ using com.mirle.ibg3k0.sc.Data.VO;
 using com.mirle.ibg3k0.sc.Data.VO.Interface;
 using com.mirle.ibg3k0.sc.ObjectRelay;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -16,6 +17,12 @@ namespace com.mirle.ibg3k0.sc
 {
     public partial class ACMD
     {
+        public static ConcurrentDictionary<string, ACMD> Cmd_InfoList { get; private set; } = new ConcurrentDictionary<string, ACMD>();
+        public static List<ACMD> loadExcuteCMDs()
+        {
+            return Cmd_InfoList.Values.ToList();
+        }
+
         public bool isTrnasferCmd
         {
             get
@@ -143,6 +150,29 @@ namespace com.mirle.ibg3k0.sc
             return $"Command:{this.ID},vh id:{VH_ID},source:{this.SOURCE}({SOURCE_PORT}),desc:{this.DESTINATION}({DESTINATION_PORT}),inser time:{CMD_INSER_TIME.ToString()}";
         }
 
+        public bool put(ACMD current_cmd)
+        {
+            ID = current_cmd.ID;
+            VH_ID = current_cmd.VH_ID;
+            CARRIER_ID = current_cmd.CARRIER_ID;
+            CMD_TYPE = current_cmd.CMD_TYPE;
+            SOURCE = current_cmd.SOURCE;
+            DESTINATION = current_cmd.DESTINATION;
+            PRIORITY = current_cmd.PRIORITY;
+            CMD_START_TIME = current_cmd.CMD_START_TIME;
+            CMD_END_TIME = current_cmd.CMD_END_TIME;
+            CMD_PROGRESS = current_cmd.CMD_PROGRESS;
+            INTERRUPTED_REASON = current_cmd.INTERRUPTED_REASON;
+            ESTIMATED_TIME = current_cmd.ESTIMATED_TIME;
+            ESTIMATED_EXCESS_TIME = current_cmd.ESTIMATED_EXCESS_TIME;
+            TRANSFER_ID = current_cmd.TRANSFER_ID;
+            CMD_INSER_TIME = current_cmd.CMD_INSER_TIME;
+            SOURCE_PORT = current_cmd.SOURCE_PORT;
+            DESTINATION_PORT = current_cmd.DESTINATION_PORT;
+            CMD_STATUS = current_cmd.CMD_STATUS;
+            COMPLETE_STATUS = current_cmd.COMPLETE_STATUS;
+            return true;
+        }
     }
 
 }

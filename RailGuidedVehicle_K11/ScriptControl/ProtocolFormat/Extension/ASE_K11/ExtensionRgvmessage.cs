@@ -52,8 +52,9 @@ namespace com.mirle.ibg3k0.sc.ProtocolFormat.Converter.ASE_K11
                     return OHTMessage.CommandActionType.Move;
                 case AKA.ProtocolFormat.RGVMessage.ActiveType.Unload:
                     return OHTMessage.CommandActionType.Unload;
-                case AKA.ProtocolFormat.RGVMessage.ActiveType.Techingmove:
                 case AKA.ProtocolFormat.RGVMessage.ActiveType.Systemout:
+                    return OHTMessage.CommandActionType.Systemout;
+                case AKA.ProtocolFormat.RGVMessage.ActiveType.Techingmove:
                 case AKA.ProtocolFormat.RGVMessage.ActiveType.Systemin:
                 case AKA.ProtocolFormat.RGVMessage.ActiveType.Scan:
                 case AKA.ProtocolFormat.RGVMessage.ActiveType.Round:
@@ -704,6 +705,8 @@ namespace com.mirle.ibg3k0.sc.ProtocolFormat.Converter.ASE_K11
                     return AKA.ProtocolFormat.RGVMessage.ActiveType.Move;
                 case OHTMessage.CommandActionType.Unload:
                     return AKA.ProtocolFormat.RGVMessage.ActiveType.Unload;
+                case OHTMessage.CommandActionType.Systemout:
+                    return AKA.ProtocolFormat.RGVMessage.ActiveType.Systemout;
                 case OHTMessage.CommandActionType.Override:
                 case OHTMessage.CommandActionType.Movetocharger:
                 default:

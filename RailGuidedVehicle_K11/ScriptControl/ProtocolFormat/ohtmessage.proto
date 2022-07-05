@@ -48,6 +48,8 @@ message Timestamp {
     HOME = 4;
     OVERRIDE = 5;
 	MOVETOCHARGER = 10;
+	SYSTEMOUT = 11;
+	SYSTEMIN = 12;
   }
    enum EventType {
     LoadArrivals = 0;

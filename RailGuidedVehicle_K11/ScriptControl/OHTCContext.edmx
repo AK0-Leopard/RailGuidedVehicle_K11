@@ -1568,7 +1568,8 @@
           <Member Name="Home" />
           <Member Name="Override" />
           <Member Name="MTLHome" />
-          <Member Name="Move_Teaching" />
+          <Member Name="SystemOut" />
+          <Member Name="SystemIn" />
         </EnumType>
         <EntityType Name="ACYCLEZONEDETAIL">
           <Key>
