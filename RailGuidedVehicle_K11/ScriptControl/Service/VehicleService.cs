@@ -2212,6 +2212,7 @@ namespace com.mirle.ibg3k0.sc.Service
                 var vehicle_section_ids = scApp.VehicleBLL.cache.LoadVehicleCurrentSection(vh.VEHICLE_ID);
                 if (vehicle_section_ids.Count > 0)
                     by_pass_sections.AddRange(vehicle_section_ids);
+
                 (is_success, guide_segment_isd, guide_section_isd, guide_address_isd, total_cost) =
                     CalculationPathAfterAvoid(vh, fromAdr, toAdr, by_pass_sections);
                 //if (is_after_avoid_complete)
@@ -2348,7 +2349,6 @@ namespace com.mirle.ibg3k0.sc.Service
                        Data: $"find the override path result:{is_success} vh:{vh.VEHICLE_ID} vh current address:{vh.CUR_ADR_ID} ," +
                        $". by pass section:{string.Join(",", need_by_pass_sec_ids)}",
                        VehicleID: vh.VEHICLE_ID);
-
                 }
                 while (!is_success && current_find_count++ <= max_find_count);
                 return (is_success, guide_segment_isd, guide_section_isd, guide_address_isd, total_cost);

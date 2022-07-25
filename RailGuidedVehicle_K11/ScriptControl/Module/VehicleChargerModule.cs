@@ -82,10 +82,10 @@ namespace com.mirle.ibg3k0.sc.Module
                 switch (e)
                 {
                     case SCAppConstants.CouplerHPSafety.NonSafety:
-                        lineService.ProcessAlarmReport(charger.UNIT_ID, AlarmBLL.AGVC_CHARGER_HP_NOT_SAFETY, ErrorStatus.ErrSet, $"Coupler position not safety.");
+                        //lineService.ProcessAlarmReport(charger.UNIT_ID, AlarmBLL.AGVC_CHARGER_HP_NOT_SAFETY, ErrorStatus.ErrSet, $"Coupler position not safety.");
                         break;
                     case SCAppConstants.CouplerHPSafety.Safyte:
-                        lineService.ProcessAlarmReport(charger.UNIT_ID, AlarmBLL.AGVC_CHARGER_HP_NOT_SAFETY, ErrorStatus.ErrReset, $"Coupler position not safety.");
+                        //lineService.ProcessAlarmReport(charger.UNIT_ID, AlarmBLL.AGVC_CHARGER_HP_NOT_SAFETY, ErrorStatus.ErrReset, $"Coupler position not safety.");
                         break;
                 }
                 foreach (var coupler in couplers)
@@ -206,15 +206,15 @@ namespace com.mirle.ibg3k0.sc.Module
                         }
                         break;
                 }
-                if (e == BatteryLevel.Low)
-                {
-                    lineService.ProcessAlarmReport(vh, AlarmBLL.VEHICLE_BATTERY_LEVEL_IS_LOW, ErrorStatus.ErrSet, $"vehicle:{vh.VEHICLE_ID} is in low battery status");
-                }
-                else
-                {
-                    lineService.ProcessAlarmReport(vh, AlarmBLL.VEHICLE_BATTERY_LEVEL_IS_LOW, ErrorStatus.ErrReset, $"vehicle:{vh.VEHICLE_ID} is in low battery status");
-                    lineService.ProcessAlarmReport(vh, AlarmBLL.VEHICLE_CAN_NOT_FIND_THE_COUPLER_TO_CHARGING, ErrorStatus.ErrReset, $"vehicle:{vh.VEHICLE_ID} can't find coupler to charging");
-                }
+                //if (e == BatteryLevel.Low)
+                //{
+                //    lineService.ProcessAlarmReport(vh, AlarmBLL.VEHICLE_BATTERY_LEVEL_IS_LOW, ErrorStatus.ErrSet, $"vehicle:{vh.VEHICLE_ID} is in low battery status");
+                //}
+                //else
+                //{
+                //    lineService.ProcessAlarmReport(vh, AlarmBLL.VEHICLE_BATTERY_LEVEL_IS_LOW, ErrorStatus.ErrReset, $"vehicle:{vh.VEHICLE_ID} is in low battery status");
+                //    lineService.ProcessAlarmReport(vh, AlarmBLL.VEHICLE_CAN_NOT_FIND_THE_COUPLER_TO_CHARGING, ErrorStatus.ErrReset, $"vehicle:{vh.VEHICLE_ID} can't find coupler to charging");
+                //}
             }
             catch (Exception ex)
             {
@@ -258,7 +258,7 @@ namespace com.mirle.ibg3k0.sc.Module
                         }
                     }
                 }
-                lineService.ProcessAlarmReport(vh, AlarmBLL.VEHICLE_CAN_NOT_FIND_THE_COUPLER_TO_CHARGING, ErrorStatus.ErrReset, $"vehicle:{vh.VEHICLE_ID} can't find coupler to charging");
+                //lineService.ProcessAlarmReport(vh, AlarmBLL.VEHICLE_CAN_NOT_FIND_THE_COUPLER_TO_CHARGING, ErrorStatus.ErrReset, $"vehicle:{vh.VEHICLE_ID} can't find coupler to charging");
             }
             catch (Exception ex)
             {
@@ -327,7 +327,7 @@ namespace com.mirle.ibg3k0.sc.Module
             }
             else
             {
-                lineService.ProcessAlarmReport(vh, AlarmBLL.VEHICLE_CAN_NOT_FIND_THE_COUPLER_TO_CHARGING, ErrorStatus.ErrSet, $"vehicle:{vh.VEHICLE_ID} can't find coupler to charging");
+                //lineService.ProcessAlarmReport(vh, AlarmBLL.VEHICLE_CAN_NOT_FIND_THE_COUPLER_TO_CHARGING, ErrorStatus.ErrSet, $"vehicle:{vh.VEHICLE_ID} can't find coupler to charging");
                 return (false, $"vehicle:{vh.VEHICLE_ID} can't find coupler to charging");
             }
         }

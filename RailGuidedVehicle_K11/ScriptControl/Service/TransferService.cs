@@ -1953,7 +1953,11 @@ namespace com.mirle.ibg3k0.sc.Service
             foreach (var tran_cmd in will_come_tran_cmds)
             {
                 string excute_vh_id = tran_cmd.VH_ID;
-                int vh_excute_cmd_count = excute_trans.Where(tran => SCUtility.isMatche(tran.VH_ID, excute_vh_id)).Count();
+                int vh_excute_cmd_count = excute_trans
+                                          .Where(tran => SCUtility.isMatche(tran.VH_ID, excute_vh_id))
+                                          .Select(cmd => cmd.HOSTDESTINATION)
+                                          .Distinct()
+                                          .Count();
                 if (vh_excute_cmd_count == 1)
                 {
                     return (true, excute_vh_id);
