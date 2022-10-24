@@ -845,7 +845,7 @@ namespace com.mirle.ibg3k0.sc.Service
                                 else
                                 {
                                     //mismatch...
-                                    LoggerProcess(vh, $"loction:{location.ID} 車子資料:{carrier_id} 但DB為:{finally_rename_cst_id},發生了Mismatch...");
+                                    LoggerProcess(vh, $"loction:{location.ID} 車子資料:{carrier_id} 但DB為:{check_db_exist.onVhCarrier.ID},發生了Mismatch...");
                                 }
                             }
                         }
