@@ -151,6 +151,10 @@ namespace com.mirle.ibg3k0.sc.BLL
         {
             return setAlarmReport("", eq_id, error_code, errorDesc, new List<string>());
         }
+        public ALARM setAlarmReport(string nodeID, string eq_id, string error_code, string errorDesc)
+        {
+            return setAlarmReport(nodeID, eq_id, error_code, errorDesc, new List<string>());
+        }
         //public ALARM setAlarmReport(string nodeID, string eq_id, string error_code, string errorDesc, string cmd_id_1, string cmd_id_2)
         public ALARM setAlarmReport(string nodeID, string eq_id, string error_code, string errorDesc, List<string> effectTranIDs)
         {

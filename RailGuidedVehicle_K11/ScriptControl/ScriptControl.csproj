@@ -577,6 +577,7 @@
     <Compile Include="Data\TimerAction\AGVStationCheckTimerAction.cs" />
     <Compile Include="Data\TimerAction\LinkStatusCheckV2.cs" />
     <Compile Include="Data\TimerAction\RandomGeneratesCommandTimerActionTiming.cs" />
+    <Compile Include="Data\TimerAction\TrackTimerAction.cs" />
     <Compile Include="Data\TimerAction\TransferCommandV5TimerAction.cs" />
     <Compile Include="Data\TimerAction\TransferCommandV2TimerAction.cs" />
     <Compile Include="Data\ValueDefMapAction\ASE\K11\MCSDefaultMapActionSend.cs" />
@@ -588,6 +589,7 @@
     <Compile Include="Data\VO\PartialVo\gpb\PORT_INFO.cs" />
     <Compile Include="Data\VO\PartialVo\VTRANSFER.cs" />
     <Compile Include="Data\VO\PartialVo\ATRANSFER.cs" />
+    <Compile Include="Data\VO\Track.cs" />
     <Compile Include="Data\VO\TrafficControlInfo.cs" />
     <Compile Include="Data\VO\VehicleMap.cs" />
     <Compile Include="Data\VO\ReserveEnhanceInfo.cs" />
@@ -963,6 +965,7 @@
     <Compile Include="Scheduler\MTTFAndMTBFScheduler.cs" />
     <Compile Include="Scheduler\TransferCommandDataBackupScheduler.cs" />
     <Compile Include="Scheduler\ZabbixDataCollectionScheduler.cs" />
+    <Compile Include="Service\TrackService.cs" />
     <Compile Include="Service\TransferService.cs" />
     <Compile Include="Service\UserControlService.cs" />
     <Compile Include="Service\FailOverService.cs" />
@@ -992,6 +995,7 @@
     <Compile Include="VTRANSFER.cs">
       <DependentUpon>OHTCContext.tt</DependentUpon>
     </Compile>
+    <Compile Include="WebAPI\TrackInfoClient.cs" />
     <Compile Include="WebAPI\TransferManagement.cs" />
     <Compile Include="WebAPI\UserControl.cs" />
     <Compile Include="WebAPI\ConnectionInfo.cs" />

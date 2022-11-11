@@ -389,15 +389,36 @@ namespace com.mirle.ibg3k0.sc.Common
                             string unit_cate = unitConfig.Unit_Cate.Trim();
                             string eqpt_type = unitConfig.EQPT_Type.Trim();
                             int capacity = unitConfig.Capacity;
-                            unit_lsit_temp.Add(new AUNIT()
+
+                            if (eqptType == SCAppConstants.EqptType.TRACK)
                             {
-                                UNIT_ID = unit_id,
-                                UNIT_NUM = unitConfig.Unit_Num,     //A0.02
-                                EQPT_ID = eqpt_id,
-                                UNIT_CATE = unit_cate,
-                                EQPT_TYPE = eqpt_type,
-                                CAPACITY = capacity,
-                            });
+                                unit_lsit_temp.Add(new Track()
+                                {
+                                    NODE_ID = node_id,
+                                    UNIT_ID = unit_id,
+                                    Real_ID = "",
+                                    UNIT_NUM = unitConfig.Unit_Num,
+                                    EQPT_ID = eqpt_id,
+                                    UNIT_CATE = unit_cate,
+                                    EQPT_TYPE = eqpt_type,
+                                    CAPACITY = capacity,
+                                    SECSAgentName = unitConfig.SECSAgentName
+                                });
+                            }
+                            else
+                            {
+                                unit_lsit_temp.Add(new AUNIT()
+                                {
+                                    NODE_ID = node_id,
+                                    UNIT_ID = unit_id,
+                                    UNIT_NUM = unitConfig.Unit_Num,     //A0.02
+                                    EQPT_ID = eqpt_id,
+                                    UNIT_CATE = unit_cate,
+                                    EQPT_TYPE = eqpt_type,
+                                    CAPACITY = capacity,
+                                });
+                            }
+
                         }
                         unitList.AddRange(unit_lsit_temp);
                         AEQPT eqTemp = getEquipmentInitialObj(eqptType);

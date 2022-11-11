@@ -418,7 +418,7 @@ namespace com.mirle.ibg3k0.sc.App
             public const string VERSION_NAME_TAICHUNG = "Taichung";
             public const string VERSION_NAME_AGC = "AGC";
             public const string VERSION_NAME_ASE_K11_DEMO = "ASE_K11_DEMO";
-            public const string VERSION_NAME_ASE_K11= "ASE_K11";
+            public const string VERSION_NAME_ASE_K11 = "ASE_K11";
         }
 
         #endregion current work version
@@ -693,7 +693,8 @@ namespace com.mirle.ibg3k0.sc.App
             Orther = 0,
             AGVStation = 1,
             NTB = 2,
-            Equipment = 3
+            Equipment = 3,
+            TRACK = 16
         }
         #endregion Eqpt Type
 

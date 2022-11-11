@@ -8,6 +8,8 @@
     <None Remove="Protos\AGVC_K11_E2H.proto" />
 
     <None Remove="Protos\AGVC_K11_H2E.proto" />
+
+    <None Remove="Protos\TrackFun.proto" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Google.Protobuf" Version="3.13.0" />
@@ -22,5 +24,6 @@
   <ItemGroup>
     <Protobuf Include="Protos\AGVC_K11_E2H.proto" />
     <Protobuf Include="Protos\AGVC_K11_H2E.proto" />
+    <Protobuf Include="Protos\TrackFun.proto" />
   </ItemGroup>
 </Project>

@@ -319,6 +319,9 @@ namespace com.mirle.ibg3k0.sc.App
         private FailOverService failOverService = null;
         public FailOverService FailOverService { get { return failOverService; } }
         private Grpc.Core.Server gRPC_With_MCS;
+        private TrackService trackService = null;
+        public TrackService TrackService { get { return trackService; } }
+
 
 
 
@@ -359,6 +362,7 @@ namespace com.mirle.ibg3k0.sc.App
 
         public FloydAlgorithmRouteGuide.TimeWindow TimeWindow { get; private set; } = null;
 
+        public WebAPI.TrackInfoClient TrackInfoClient { get; private set; }
 
 
         //config
@@ -1062,6 +1066,9 @@ namespace com.mirle.ibg3k0.sc.App
                 Services = { AK0.RGV.HostMessage.H2E.RGV_K11_H2E.BindService(new MCSDefaultMapActionReceive()) },
                 Ports = { new Grpc.Core.ServerPort("0.0.0.0", i_grpc_server_port, Grpc.Core.ServerCredentials.Insecure) },
             };
+            TrackInfoClient = new WebAPI.TrackInfoClient(this);
+            trackService = new TrackService();
+
         }
 
         private void startBLL()
@@ -1115,6 +1122,7 @@ namespace com.mirle.ibg3k0.sc.App
             userControlService.start(this);
             transferService.start(this);
             gRPC_With_MCS.Start();
+            trackService.Start(this);
         }
 
         private void initWIF()

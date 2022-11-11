@@ -20,6 +20,8 @@ namespace com.mirle.ibg3k0.sc
     public partial class AUNIT : BaseUnitObject
     {
         private AlarmHisList alarmHisList = new AlarmHisList();
+        public string NODE_ID = "";
+
         #region charger 
 
         #region Event

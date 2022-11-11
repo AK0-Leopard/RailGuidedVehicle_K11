@@ -1,0 +1,41 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<!--log path : 放置trackService的Log-->
+<!--offLineMode : 離線模式，此模式下不會與PLC通訊，且會無條件接受user操作，並按user操作變動cache資料-->
+<!--aliveTimeout : 定義alive卡多久以後認定此轉轍器已無回應，表示陣亡-->
+<!--autoRstBlockTime : 自動解閉塞的延遲時間，若閉塞上多久後自動且除，此參數已於3.0板之後廢除-->
+<!--syncStatusTimeInterVal : 多久向PLC撈一次資料回來存cache，單位為毫秒-->
+<TrackService>
+	<common>
+		<logPath>D:\trackLogPath</logPath>
+		<offLineMode>N</offLineMode>
+		<aliveTimeout>5000</aliveTimeout>
+		<autoRstBlockTime>5000</autoRstBlockTime>
+		<syncStatusTimeInterVal>100</syncStatusTimeInterVal>
+	</common>
+	<masterPLC>
+		<PLC no="1" ActHostAddress="192.168.28.101" ActPortNumber="7001" ActUnitType="44" ActProtocolType="5" readStartAddress="003E8" writeStartAddress="0000F"/>
+
+	</masterPLC>
+	<trackList>
+		<railChanger sn="1" boxNumber="1" usePLC="1" memoryLocation="0"/>
+		<railChanger sn="2" boxNumber="2" usePLC="1" memoryLocation="1"/>
+		<railChanger sn="3" boxNumber="3" usePLC="1" memoryLocation="2"/>
+		<railChanger sn="4" boxNumber="5" usePLC="1" memoryLocation="3"/>
+		<railChanger sn="5" boxNumber="6" usePLC="1" memoryLocation="4"/>
+		<railChanger sn="6" boxNumber="7" usePLC="1" memoryLocation="5"/>
+		<railChanger sn="7" boxNumber="8" usePLC="1" memoryLocation="6"/>
+		<railChanger sn="8" boxNumber="9" usePLC="1" memoryLocation="7"/>
+		<railChanger sn="9" boxNumber="10" usePLC="1" memoryLocation="8"/>
+		<railChanger sn="10" boxNumber="10" usePLC="1" memoryLocation="9"/>
+		<railChanger sn="11" boxNumber="11" usePLC="1" memoryLocation="10"/>
+		<railChanger sn="12" boxNumber="12" usePLC="1" memoryLocation="11"/>
+		<railChanger sn="13" boxNumber="13" usePLC="1" memoryLocation="12"/>
+		<railChanger sn="14" boxNumber="14" usePLC="1" memoryLocation="13"/>
+		<railChanger sn="15" boxNumber="15" usePLC="1" memoryLocation="14"/>
+		<railChanger sn="16" boxNumber="16" usePLC="1" memoryLocation="15"/>
+		<railChanger sn="17" boxNumber="17" usePLC="1" memoryLocation="16"/>
+		<railChanger sn="18" boxNumber="18" usePLC="1" memoryLocation="17"/>
+		<railChanger sn="19" boxNumber="19" usePLC="1" memoryLocation="18"/>
+		<railChanger sn="20" boxNumber="20" usePLC="1" memoryLocation="19"/>
+	</trackList>
+</TrackService>

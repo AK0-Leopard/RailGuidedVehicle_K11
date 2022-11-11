@@ -396,8 +396,13 @@ namespace com.mirle.ibg3k0.sc.Service
         }
         public void ProcessAlarmReport(string eqptID, string err_code, ErrorStatus status, string errorDesc)
         {
+            ProcessAlarmReport("", eqptID, err_code, status, errorDesc);
+        }
+        public void ProcessAlarmReport(string nodeID, string eqptID, string err_code, ErrorStatus status, string errorDesc)
+        {
             try
             {
+                string node_id = nodeID;
                 string eq_id = eqptID;
                 bool is_all_alarm_clear = SCUtility.isMatche(err_code, "0") && status == ErrorStatus.ErrReset;
                 //List<ALARM> alarms = null;
@@ -421,7 +426,7 @@ namespace com.mirle.ibg3k0.sc.Service
                             {
                                 case ErrorStatus.ErrSet:
                                     //將設備上報的Alarm填入資料庫。
-                                    alarm = scApp.AlarmBLL.setAlarmReport(eq_id, err_code, errorDesc);
+                                    alarm = scApp.AlarmBLL.setAlarmReport(node_id, eq_id, err_code, errorDesc);
                                     //將其更新至Redis，保存目前所發生的Alarm
                                     scApp.AlarmBLL.setAlarmReport2Redis(alarm);
                                     //alarms = new List<ALARM>() { alarm };
@@ -576,7 +581,7 @@ namespace com.mirle.ibg3k0.sc.Service
                     }
                 }
 
-                if (SCUtility.isMatche(RGV_RAIL_PORWE_OFF_ALARM_ID, err_code) && 
+                if (SCUtility.isMatche(RGV_RAIL_PORWE_OFF_ALARM_ID, err_code) &&
                     status == ErrorStatus.ErrSet)
                 {
                     vh.onVehicleRailPowerOffIsHappend();
