@@ -1138,7 +1138,7 @@ namespace com.mirle.ibg3k0.sc.Service
                         break;
                     case EventType.LoadComplete:
                         if (DebugParameter.testRetryLoadComplete) return;
-                        TranEventReport_LoadComplete(bcfApp, vh, seq_num, eventType, excute_cmd_id, current_port_id);
+                        TranEventReport_LoadComplete(bcfApp, vh, seq_num, eventType, excute_cmd_id, current_port_id, cst_location);
                         break;
                     case EventType.UnloadArrivals:
                         if (DebugParameter.testRetryUnloadArrivals) return;
@@ -1370,7 +1370,7 @@ namespace com.mirle.ibg3k0.sc.Service
             }
 
             private void TranEventReport_LoadComplete(BCFApplication bcfApp, AVEHICLE vh, int seqNum
-                                                    , EventType eventType, string cmdID, string portID)
+                                                    , EventType eventType, string cmdID, string portID, AGVLocation agvLocation)
             {
                 LogHelper.Log(logger: logger, LogLevel: LogLevel.Debug, Class: nameof(VehicleService), Device: DEVICE_NAME_AGV,
                            Data: $"Process report {eventType}",
@@ -1381,7 +1381,25 @@ namespace com.mirle.ibg3k0.sc.Service
                 scApp.MapBLL.getPortID(vh.CUR_ADR_ID, out string port_id);
                 ACMD cmd = scApp.CMDBLL.GetCMD_OHTCByID(cmdID);
                 vh.LastLoadCompleteCommandID = cmdID;
-                updateCarrierInVehicleLocation(vh, cmd, "");
+                if(DebugParameter.isPostingCarrierBy136Location)
+                {
+                    LogHelper.Log(logger: logger, LogLevel: LogLevel.Debug, Class: nameof(VehicleService), Device: DEVICE_NAME_AGV,
+                               Data: $"過帳方式使用136-Location",
+                               VehicleID: vh.VEHICLE_ID,
+                               CST_ID_L: vh.CST_ID_L,
+                               CST_ID_R: vh.CST_ID_R);
+
+                    updateCarrierInVehicleLocation(vh, cmd.CARRIER_ID, agvLocation);
+                }
+                else
+                {
+                    LogHelper.Log(logger: logger, LogLevel: LogLevel.Debug, Class: nameof(VehicleService), Device: DEVICE_NAME_AGV,
+                               Data: $"過帳方式使用144-位置資訊",
+                               VehicleID: vh.VEHICLE_ID,
+                               CST_ID_L: vh.CST_ID_L,
+                               CST_ID_R: vh.CST_ID_R);
+                    updateCarrierInVehicleLocation(vh, cmd, "");
+                }
                 bool isTranCmd = !SCUtility.isEmpty(cmd.TRANSFER_ID);
 
                 bool is_need_wait_orther_port_wait_in = IsNeedToWaitOrtherPortCSTWaitInWhenLoadCmpOnAGVSt(vh.VEHICLE_ID, portID);
@@ -1568,7 +1586,45 @@ namespace com.mirle.ibg3k0.sc.Service
                 }
             }
 
+            private void updateCarrierInVehicleLocation(AVEHICLE vh, string carrierID, AGVLocation agvLocation)
+            {
+                string current_location_real_id = "";
+                switch (agvLocation)
+                {
+                    case AGVLocation.Left:
+                        current_location_real_id = vh.LocationRealID_L;
+                        break;
+                    case AGVLocation.Right:
+                        current_location_real_id = vh.LocationRealID_R;
+                        break;
+                    default:
+                        LogHelper.Log(logger: logger, LogLevel: LogLevel.Info, Class: nameof(VehicleService), Device: DEVICE_NAME_AGV,
+                           Data: $"vh:{vh.VEHICLE_ID} report 錯誤的AGV Location資訊:{agvLocation}，不進行帳料的轉移",
+                           VehicleID: vh.VEHICLE_ID,
+                           CST_ID_L: vh.CST_ID_L,
+                           CST_ID_R: vh.CST_ID_R);
+                        return;
+                }
 
+                var force_remove_result = scApp.TransferService.
+                    ForceRemoveCarrierInVehicleByAGV(vh.VEHICLE_ID, agvLocation, carrierID);
+                if (force_remove_result.isSuccess)
+                {
+                    LogHelper.Log(logger: logger, LogLevel: LogLevel.Info, Class: nameof(VehicleService), Device: DEVICE_NAME_AGV,
+                       Data: $"vh:{vh.VEHICLE_ID} 報告Load complete，但location:{agvLocation}已有帳料存在，進行強制帳料刪除完成。result:{force_remove_result.result}",
+                       VehicleID: vh.VEHICLE_ID,
+                       CST_ID_L: vh.CST_ID_L,
+                       CST_ID_R: vh.CST_ID_R);
+                }
+
+                scApp.CarrierBLL.db.updateLocationAndState
+                    (carrierID, current_location_real_id, E_CARRIER_STATE.Installed);
+                LogHelper.Log(logger: logger, LogLevel: LogLevel.Debug, Class: nameof(VehicleService), Device: DEVICE_NAME_AGV,
+                   Data: $"vh:{vh.VEHICLE_ID} report load complete cst id:{SCUtility.Trim(carrierID, true)}, updata to location:{current_location_real_id}",
+                   VehicleID: vh.VEHICLE_ID,
+                   CST_ID_L: vh.CST_ID_L,
+                   CST_ID_R: vh.CST_ID_R);
+            }
             private void updateCarrierInVehicleLocation(AVEHICLE vh, ACMD cmd, string readCarrierID)
             {
                 var carrier_location = tryFindCarrierLocationOnVehicle(vh.VEHICLE_ID, cmd.CARRIER_ID, readCarrierID);

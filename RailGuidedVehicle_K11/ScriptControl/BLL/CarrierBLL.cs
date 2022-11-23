@@ -2,6 +2,7 @@
 using com.mirle.ibg3k0.sc.Common;
 using com.mirle.ibg3k0.sc.Data;
 using com.mirle.ibg3k0.sc.Data.DAO;
+using NLog;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -88,7 +89,8 @@ namespace com.mirle.ibg3k0.sc.BLL
                         else
                         {
                             isSuccess = false;
-                            //todo kevin Exception log
+                            LogHelper.Log(logger: logger, LogLevel: LogLevel.Warn, Class: nameof(CarrierBLL), Device: "AGV",
+                               Data: $"want to update carrier:{carrierID} to location:{location} state:{state},but data not exist");
                         }
                     }
                 }

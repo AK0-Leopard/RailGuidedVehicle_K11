@@ -55,6 +55,7 @@ namespace com.mirle.ibg3k0.bc.winform.UI
             cb_passCouplerHPSafetySingnal.Checked = DebugParameter.isPassCouplerHPSafetySignal;
             cb_needCheckPortUpdateTime.Checked = DebugParameter.isNeedCheckPortUpDateTime;
             cb_test_ForceByPassWaitTransferEvent.Checked = DebugParameter.isForceByPassWaitTranEvent;
+            cb_updateCarrierLocationByVhReport136.Checked = DebugParameter.isPostingCarrierBy136Location;
 
 
             List<string> lstVh = new List<string>();
@@ -1637,6 +1638,11 @@ namespace com.mirle.ibg3k0.bc.winform.UI
                 var action = test_report_vh.getMapActionByIdentityKey(typeof(EQTcpIpMapAction).Name) as EQTcpIpMapAction;
                 action.str106_test(has_box_l, box_id_l, has_box_r, box_id_r);
             });
+        }
+
+        private void cb_updateCarrierLocationByVhReport136_CheckedChanged(object sender, EventArgs e)
+        {
+            DebugParameter.isPostingCarrierBy136Location = cb_updateCarrierLocationByVhReport136.Checked;
         }
     }
 }

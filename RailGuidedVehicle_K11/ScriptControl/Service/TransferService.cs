@@ -1601,13 +1601,13 @@ namespace com.mirle.ibg3k0.sc.Service
                 carrierBLL.db.updateLocationAndState(on_vh_of_carrier.ID, "", E_CARRIER_STATE.OpRemove);
                 scApp.ReportBLL.newReportCarrierForceRemoved
                     (vh.Real_ID, SCUtility.Trim(on_vh_of_carrier.ID, true), SCUtility.Trim(location_real_id, true), null);
+                return (true, $"Remove carrier:{on_vh_of_carrier.ID} is success.");
             }
             catch (Exception ex)
             {
                 logger.Error(ex, "Exception");
                 return (false, ex.ToString());
             }
-            return (true, $"Remove carrier:{carrierID} is success.");
         }
         public (bool isSuccess, string result) processIDReadFailAndMismatch(string commandCarrierID, CompleteStatus completeStatus)
         {
