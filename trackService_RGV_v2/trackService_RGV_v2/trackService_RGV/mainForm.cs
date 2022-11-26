@@ -72,16 +72,16 @@ namespace trackService_RGV
 
             var track = trackService.getTrack(comboBox1.Text);
 
-            dataGridView1.Rows.Add(new string[] { "編號", track.TrackNumber });
-            dataGridView1.Rows.Add(new string[] { "index", track.AliveValue.ToString() });
-            dataGridView1.Rows.Add(new string[] { "status", track.TrackStatus.ToString() });
-            dataGridView1.Rows.Add(new string[] { "dir", track.TrackDir.ToString() });
-            dataGridView1.Rows.Add(new string[] { "block", track.TrackBlock.ToString() });
-            dataGridView1.Rows.Add(new string[] { "rgv_user", track.RGV_User.ToString() });
-            dataGridView1.Rows.Add(new string[] { "track_user", track.Track_User.ToString() });
-            dataGridView1.Rows.Add(new string[] { "切換次數", track.TrackChangeCounter.ToString() });
+            //dataGridView1.Rows.Add(new string[] { "編號", track.TrackNumber });
+            //dataGridView1.Rows.Add(new string[] { "index", track.AliveValue.ToString() });
+            //dataGridView1.Rows.Add(new string[] { "status", track.TrackStatus.ToString() });
+            //dataGridView1.Rows.Add(new string[] { "dir", track.TrackDir.ToString() });
+            //dataGridView1.Rows.Add(new string[] { "block", track.TrackBlock.ToString() });
+            //dataGridView1.Rows.Add(new string[] { "rgv_user", track.RGV_User.ToString() });
+            //dataGridView1.Rows.Add(new string[] { "track_user", track.Track_User.ToString() });
+            //dataGridView1.Rows.Add(new string[] { "切換次數", track.TrackChangeCounter.ToString() });
             dataGridView1.Rows.Add(new string[] { "alarmCode", track.AlarmCode });
-            dataGridView1.Rows.Add(new string[] { "version", track.Version });
+            //dataGridView1.Rows.Add(new string[] { "version", track.Version });
         }
 
     }
