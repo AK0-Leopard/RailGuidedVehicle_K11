@@ -68,6 +68,7 @@ namespace trackService_RGV
 
         private void timerTick(object o, EventArgs args)
         {
+            lbl_connectionResultValue.Text = trackService.isConnectionSuccess.ToString();
             dataGridView1.Rows.Clear();
 
             var track = trackService.getTrack(comboBox1.Text);

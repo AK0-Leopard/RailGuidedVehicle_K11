@@ -8,6 +8,8 @@ using System.Xml;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.ComponentModel;
+using com.mirle.ibg3k0.MPLCConnectionControl;
+using System.Linq;
 
 namespace trackService_RGV.Library
 {
@@ -81,8 +83,8 @@ namespace trackService_RGV.Library
             #region parm
             private string number; //plc number
             public string Number { get { return number; } }
-            private ActProgType plc;
-            public ActProgType Plc { get { return plc; } }
+            private MPLCConnectionManager plc;
+            //public ActProgType Plc { get { return plc; } }
             private string ip; //plc ip
             private string port; //plc protocol port
             private string unitType; //plc unit type
@@ -128,16 +130,21 @@ namespace trackService_RGV.Library
                     readStartAddress_hex = ReadStartAddress;
                     writeStartAddress_hex = WriteStartAddress;
                     this.syncStatusTimeInterVal = syncStatusTimeInterVal;
-                    plc = new ActProgType();
-                    plc.ActHostAddress = ip;
-                    plc.ActUnitType = Convert.ToInt32(unitType);
-                    plc.ActCpuType = Convert.ToInt32(cpuType);
-                    plc.ActProtocolType = Convert.ToInt32(protocolType);
-                    plc.ActPortNumber = Convert.ToInt32(port);
-                    plc.ActConnectUnitNumber = Convert.ToInt32(ActConnectUnitNumber);
-                    plc.ActNetworkNumber = Convert.ToInt32(ActNetWork);
+                    com.mirle.ibg3k0.MPLCConnectionControl.PLCConnection.PLCConnectionInfo connectionInfo =
+                        new com.mirle.ibg3k0.MPLCConnectionControl.PLCConnection.PLCConnectionInfoMCProtocol()
+                        {
+                            MaxPoolSize = 2,
+                            MaxWaitTime = 3,
+                            MaxRetryCount = 2,
+                            AliveBlock = "",
+                            IP = ip,
+                            Port = Convert.ToInt32(port)
+                        };
+
+                    plc = new MPLCConnectionManager(connectionInfo);
+
                     if (!offLineMode)
-                        connectResult = plc.Open();
+                        connectResult = plc.isAlive() ? 1 : -1;
                 }
                 catch (Exception ex)
                 {
@@ -155,7 +162,7 @@ namespace trackService_RGV.Library
                     bgWorker_alive.DoWork += new DoWorkEventHandler(bgWorker_alive_DoWorkder);
                     bgWorker_alive.WorkerSupportsCancellation = true;
 
-                    bgWorker_alive.RunWorkerAsync();
+                    //bgWorker_alive.RunWorkerAsync();
                     bgWorker_getStatus.RunWorkerAsync();
                 }
 
@@ -164,7 +171,7 @@ namespace trackService_RGV.Library
             {
                 this.bgWorker_alive?.CancelAsync();
                 this.bgWorker_getStatus?.CancelAsync();
-                this.plc.Close();
+                //this.plc.Close();
             }
             public (bool result, string resultString) writeToPLC(string seq_no, string trackNumber, string address, ushort value, [CallerMemberName] string memberName = "")
             {
@@ -172,7 +179,8 @@ namespace trackService_RGV.Library
                 bool resultFlag = true; //預設都是true, 只有在遇到狀況問題轉變為false並結束事件
                 string resultString = "";
                 //一般寫入PLC的，輸入多少寫入多少
-                lock (writeLock) { PLCResult = plc.SetDevice("W" + address, value); }
+                int[] data = new int[1] { value };
+                lock (writeLock) { PLCResult = plc.writeDeviceBlock("W" + address, 1, ref data); };
                 resultFlag = PLCResult == 0 ? true : false;
                 resultString = PLCResult.ToString();
                 saveMasterPLCLog(seq_no, number, "Write", "W" + address, value.ToString(), "0x" + PLCResult.ToString("X8"), trackNumber);
@@ -184,7 +192,10 @@ namespace trackService_RGV.Library
                 int readValue = 0;
                 bool resultFlag = true; //預設都是true, 只有在遇到狀況問題轉變為false並結束事件
                 string resultString = "";
-                lock (readLock) { PLCResult = plc.GetDevice("W" + address, out readValue); }
+                //lock (readLock) { PLCResult = plc.GetDevice("W" + address, out readValue); }
+                int[] dataAry = new int[1];
+                lock (readLock) { PLCResult = plc.readDeviceBlock("W" + address, 1, out dataAry); }
+                readValue = dataAry[0];
                 saveMasterPLCLog(seq_no, number, "Read", "W" + address, readValue.ToString(), "0x" + PLCResult.ToString("X8"), trackNumber);
                 resultFlag = PLCResult == 0 ? true : false;
                 resultString = PLCResult == 0 ? readValue.ToString() : "0x" + PLCResult.ToString("X8");
@@ -198,7 +209,10 @@ namespace trackService_RGV.Library
                 bool resultFlag = true; //預設都是true, 只有在遇到狀況問題轉變為false並結束事件
                 string resultString = "";
 
-                lock (readLock) { PLCResult = plc.GetDevice("W" + address, out readValue); }
+                //lock (readLock) { PLCResult = plc.GetDevice("W" + address, out readValue); }
+                int[] dataAry = new int[1];
+                lock (readLock) { PLCResult = plc.readDeviceBlock("W" + address, 1, out dataAry); }
+                readValue = dataAry[0];
                 saveMasterPLCLog(seq_no, number, "Incress_Read", "W" + address, readValue.ToString(), "0x" + PLCResult.ToString("X8"), trackNumber);
                 if (PLCResult == 0)
                 {
@@ -207,7 +221,9 @@ namespace trackService_RGV.Library
                         increaseValue = 0;
                     else
                         increaseValue = readValue + 1;
-                    lock (writeLock) { PLCResult = plc.SetDevice("W" + address, increaseValue); }
+                    //lock (writeLock) { PLCResult = plc.SetDevice("W" + address, increaseValue); }
+                    int[] data = new int[1] { increaseValue };
+                    lock (writeLock) { PLCResult = plc.writeDeviceBlock("W" + address, 1, ref data); }
                     saveMasterPLCLog(seq_no, number, "Incress_Write", "W" + address, increaseValue.ToString(), "0x" + PLCResult.ToString("X8"), trackNumber);
                     if (PLCResult == 0)
                     {
@@ -238,9 +254,11 @@ namespace trackService_RGV.Library
                         break;
                     //取得一大塊PLC資料
                     int[] data = new int[640];
-                    int result = plc.ReadDeviceBlock("ZR" + readStartAddress_hex, 81, out data[0]);
+                    //int result = plc.ReadDeviceBlock("ZR" + readStartAddress_hex, 81, out data[0]);
+                    int result = plc.readDeviceBlock("ZR" + readStartAddress_hex, 81, out data);
                     if (result == 0)
                     {
+                        connectResult = 1;
                         syncStatus?.Invoke(this, new syncStatusArgs(data));
                         if (bgWorker_getStatus_failCounter != 0)
                         {
@@ -250,6 +268,8 @@ namespace trackService_RGV.Library
                     }
                     else
                     {
+                        connectResult = -1;
+
                         bgWorker_getStatus_failCounter++;
                         saveMasterPLCLog("", number, "syncStatus", "", "", "異常次數" + bgWorker_getStatus_failCounter.ToString());
                         if (bgWorker_getStatus_failCounter > 100)
@@ -274,9 +294,9 @@ namespace trackService_RGV.Library
                         ushort yearAndMonth = Convert.ToUInt16((dt.Year % 100) * 256 + (dt.Month));
                         ushort dayAndHH = Convert.ToUInt16((dt.Day) * 256 + (dt.Hour));
                         ushort mmAndSS = Convert.ToUInt16((dt.Minute) * 256 + (dt.Second));
-                        plc.SetDevice("W00005", yearAndMonth);
-                        plc.SetDevice("W00006", dayAndHH);
-                        plc.SetDevice("W00007", mmAndSS);
+                        //plc.SetDevice("W00005", yearAndMonth);
+                        //plc.SetDevice("W00006", dayAndHH);
+                        //plc.SetDevice("W00007", mmAndSS);
                         writeToPLC_byIncrease("syncDateTime", "", "00001");
                         lastSyncDateTimeDays = DateTime.Now.Day;
                         cleanLog(); // sync時間的同時順便去洗一下log
@@ -854,6 +874,27 @@ namespace trackService_RGV.Library
             cleanLog();
 
         }
+        public bool isConnectionSuccess
+        {
+            get
+            {
+                if (masterPLCList != null && masterPLCList.Count > 0)
+                {
+                    var key_value = masterPLCList.FirstOrDefault();
+                    int result = key_value.Value.ConnectResult;
+                    if (result == 1)
+                        return true;
+                    else
+                        return false;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+
+        }
+
 
         #region track status get
         public string getFirstTrackNumberByBoxNumber(string boxNumber)
@@ -1076,7 +1117,7 @@ namespace trackService_RGV.Library
                             "\"isAlive\":\"" + (isAlive ? "alive" : "dead") + "\"," +
                             "\"aliveValue\":\"" + Dec2Hex(aliveValue, 4) + "\"," +
                             "\"status\":\"" + status.ToString() + "\"," +
-                            "\"alarmCode\":\"" + alarmCode??"" + "\"," +
+                            "\"alarmCode\":\"" + alarmCode ?? "" + "\"," +
                             "\"block\":\"" + block.ToString() + "\"," +
                             "\"direction\":\"" + direction.ToString() + "\"," +
                             "\"logType\":\"" + "trackService_trackLog" + "\"}";
