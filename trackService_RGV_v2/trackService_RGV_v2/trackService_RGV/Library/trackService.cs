@@ -367,7 +367,7 @@ namespace trackService_RGV.Library
                         masterPLC = masterPLCList[plcNumber];
                     //readStartAddress = Dec2Hex(
                     //    (Hex2Dec(masterPLC.ReadStartAddress) + (Convert.ToInt32(memoryLocation) * 16)), 5);
-                    readStartAddress = (Convert.ToInt32(masterPLC.ReadStartAddress)) + (memoryLocation);
+                    readStartAddress = (Convert.ToInt32(masterPLC.ReadStartAddress) + this.memoryLocation).ToString();
                     writeStartAddress = Dec2Hex(
                         (Hex2Dec(masterPLC.WriteStartAddress) + (Convert.ToInt32(memoryLocation) * 16)), 5);
 
