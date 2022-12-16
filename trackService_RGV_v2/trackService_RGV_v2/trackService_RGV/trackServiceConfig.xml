@@ -13,7 +13,7 @@
 		<syncStatusTimeInterVal>100</syncStatusTimeInterVal>
 	</common>
 	<masterPLC>
-		<PLC no="1" ActHostAddress="192.168.28.101" ActPortNumber="6070" ActCpuType="144" ActUnitType="26" ActProtocolType="5" 
+		<PLC no="1" ActHostAddress="172.21.83.40" ActPortNumber="6670" ActCpuType="144" ActUnitType="26" ActProtocolType="5" 
 								ActConnectUnitNumber="0" ActNetWork="0" readStartAddress="11" writeStartAddress="0000F"/>
 
 	</masterPLC>

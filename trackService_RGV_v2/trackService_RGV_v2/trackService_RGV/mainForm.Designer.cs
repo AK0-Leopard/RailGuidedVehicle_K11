@@ -33,6 +33,8 @@
             this.dataGridView1 = new System.Windows.Forms.DataGridView();
             this.Column1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Column2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.lbl_connectionResultName = new System.Windows.Forms.Label();
+            this.lbl_connectionResultValue = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.SuspendLayout();
             // 
@@ -42,7 +44,7 @@
             this.label1.Location = new System.Drawing.Point(15, 20);
             this.label1.Margin = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(150, 32);
+            this.label1.Size = new System.Drawing.Size(104, 22);
             this.label1.TabIndex = 0;
             this.label1.Text = "軌道編號:";
             // 
@@ -51,7 +53,7 @@
             this.comboBox1.FormattingEnabled = true;
             this.comboBox1.Location = new System.Drawing.Point(174, 12);
             this.comboBox1.Name = "comboBox1";
-            this.comboBox1.Size = new System.Drawing.Size(156, 40);
+            this.comboBox1.Size = new System.Drawing.Size(156, 29);
             this.comboBox1.TabIndex = 1;
             // 
             // dataGridView1
@@ -64,7 +66,7 @@
             this.dataGridView1.Name = "dataGridView1";
             this.dataGridView1.RowHeadersWidth = 62;
             this.dataGridView1.RowTemplate.Height = 31;
-            this.dataGridView1.Size = new System.Drawing.Size(345, 320);
+            this.dataGridView1.Size = new System.Drawing.Size(345, 93);
             this.dataGridView1.TabIndex = 2;
             // 
             // Column1
@@ -80,11 +82,33 @@
             this.Column2.MinimumWidth = 8;
             this.Column2.Name = "Column2";
             // 
+            // lbl_connectionResultName
+            // 
+            this.lbl_connectionResultName.AutoSize = true;
+            this.lbl_connectionResultName.Location = new System.Drawing.Point(17, 173);
+            this.lbl_connectionResultName.Margin = new System.Windows.Forms.Padding(6, 0, 6, 0);
+            this.lbl_connectionResultName.Name = "lbl_connectionResultName";
+            this.lbl_connectionResultName.Size = new System.Drawing.Size(104, 22);
+            this.lbl_connectionResultName.TabIndex = 3;
+            this.lbl_connectionResultName.Text = "連線結果:";
+            // 
+            // lbl_connectionResultValue
+            // 
+            this.lbl_connectionResultValue.AutoSize = true;
+            this.lbl_connectionResultValue.Location = new System.Drawing.Point(120, 173);
+            this.lbl_connectionResultValue.Margin = new System.Windows.Forms.Padding(6, 0, 6, 0);
+            this.lbl_connectionResultValue.Name = "lbl_connectionResultValue";
+            this.lbl_connectionResultValue.Size = new System.Drawing.Size(88, 22);
+            this.lbl_connectionResultValue.TabIndex = 4;
+            this.lbl_connectionResultValue.Text = "             ";
+            // 
             // mainForm
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(17F, 32F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(11F, 21F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(385, 390);
+            this.ClientSize = new System.Drawing.Size(385, 204);
+            this.Controls.Add(this.lbl_connectionResultValue);
+            this.Controls.Add(this.lbl_connectionResultName);
             this.Controls.Add(this.dataGridView1);
             this.Controls.Add(this.comboBox1);
             this.Controls.Add(this.label1);
@@ -107,6 +131,8 @@
         private System.Windows.Forms.DataGridView dataGridView1;
         private System.Windows.Forms.DataGridViewTextBoxColumn Column1;
         private System.Windows.Forms.DataGridViewTextBoxColumn Column2;
+        private System.Windows.Forms.Label lbl_connectionResultName;
+        private System.Windows.Forms.Label lbl_connectionResultValue;
     }
 }
 
