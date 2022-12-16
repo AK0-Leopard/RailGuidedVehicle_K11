@@ -81,6 +81,7 @@ namespace com.mirle.ibg3k0.sc.BLL
                                     break;
                                 case ProtocolFormat.OHTMessage.E_CARRIER_STATE.Complete:
                                 case ProtocolFormat.OHTMessage.E_CARRIER_STATE.OpRemove:
+                                case ProtocolFormat.OHTMessage.E_CARRIER_STATE.Agvremove:
                                     carrier.FINISH_TIME = DateTime.Now;
                                     break;
                             }

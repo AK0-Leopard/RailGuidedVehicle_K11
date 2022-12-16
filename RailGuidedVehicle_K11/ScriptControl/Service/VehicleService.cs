@@ -757,15 +757,16 @@ namespace com.mirle.ibg3k0.sc.Service
                                 }
                                 else if (v_tran.isUnloading)
                                 {
-                                    string finally_cst_location = v_tran.HOSTDESTINATION;
-                                    completeStatus = CompleteStatus.Loadunload;
-                                    E_CARRIER_STATE carrier_state = E_CARRIER_STATE.Complete;
+                                    //string finally_cst_location = v_tran.HOSTDESTINATION;
+                                    //completeStatus = CompleteStatus.Loadunload;
+                                    //E_CARRIER_STATE carrier_state = E_CARRIER_STATE.Complete;
 
-                                    scApp.CarrierBLL.db.updateLocationAndState
-                                        (cmd.CARRIER_ID, finally_cst_location, carrier_state);
-                                    scApp.ReportBLL.newReportUnloadComplete(cmd.TRANSFER_ID, null);
+                                    //scApp.CarrierBLL.db.updateLocationAndState
+                                    //    (cmd.CARRIER_ID, finally_cst_location, carrier_state);
+                                    //scApp.ReportBLL.newReportUnloadComplete(cmd.TRANSFER_ID, null);
 
-                                    LoggerProcess(vh, $"Non finish cmd id:{cmd.ID} transfer id:{cmd.TRANSFER_ID} ,carrier 不在車上而命令最後是Unloading狀態，判斷最後位置為:{finally_cst_location}");
+                                    var force_remove_result = scApp.TransferService.ForceRemoveCarrierInVehicleByOP(v_tran.CARRIER_ID);
+                                    LoggerProcess(vh, $"Non finish cmd id:{cmd.ID} transfer id:{cmd.TRANSFER_ID} ,carrier 不在車上而命令最後是Unloading狀態，判斷最後為人員取走，直接上報ForceRemoveCarrier");
                                 }
                                 else
                                 {
