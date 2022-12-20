@@ -166,7 +166,8 @@ AGV_NODE,410231,2,RT3-4 Alarm
 AGV_NODE,410241,2,RT3-5 Alarm
 AGV_NODE,10000,1,Long time inaction
 AGV_NODE,10001,2,Can not service
-TRACK_NODE,1,2,Track alarm happend
+TRACK_NODE,10000,2,Track alarm happend
+TRACK_NODE,10001,2,Track is not alive
 AGV_NODE,10000,1,Long time inaction
 AGV_NODE,10001,2,Can not service
 AGV_NODE,10003,1,vehicle can't find coupler to charging

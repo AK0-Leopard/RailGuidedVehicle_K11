@@ -47,4 +47,5 @@ message TrackInfo {
     int32 alarmCode=8;
     string version=9;
     string trackNumber=10;
+    bool isAlive=11;
 }

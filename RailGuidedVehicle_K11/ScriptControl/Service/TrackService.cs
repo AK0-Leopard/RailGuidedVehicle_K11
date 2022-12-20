@@ -8,6 +8,9 @@ namespace com.mirle.ibg3k0.sc.Service
 {
     public class TrackService
     {
+        const string TRACK_ALARM_CODE_TRACK_STATUS_IS_ALARM = "10000";
+        const string TRACK_ALARM_CODE_IS_NOT_ALIVE = "10001";
+
         NLog.Logger logger = NLog.LogManager.GetCurrentClassLogger();
         private SCApplication scApp = null;
 
@@ -21,6 +24,42 @@ namespace com.mirle.ibg3k0.sc.Service
             foreach (Track t in scApp.UnitBLL.OperateCatch.GetALLTracks())
             {
                 t.alarmCodeChange += trackAlarmHappend;
+                t.trackStatusChange += T_trackStatusChange;
+                t.AliveStatusChange += T_AliveStatusChange; ;
+            }
+        }
+
+        private void T_AliveStatusChange(object sender, bool isAlive)
+        {
+            Track track = sender as Track;
+            if (isAlive)
+            {
+                LogHelper.Log(logger: logger, LogLevel: LogLevel.Info, Class: nameof(VehicleService), Device: "AGVC",
+                    Data: $"Track({track.UNIT_ID}) is alive:{isAlive},report alarm Code:{TRACK_ALARM_CODE_IS_NOT_ALIVE} reset ");
+                scApp.LineService.ProcessAlarmReport(track.NODE_ID, track.UNIT_ID, TRACK_ALARM_CODE_IS_NOT_ALIVE, ProtocolFormat.OHTMessage.ErrorStatus.ErrReset, "TRACK IS NOT ALIVE");
+            }
+            else
+            {
+                LogHelper.Log(logger: logger, LogLevel: LogLevel.Info, Class: nameof(VehicleService), Device: "AGVC",
+                    Data: $"Track({track.UNIT_ID}) is alive:{isAlive},report alarm Code:{TRACK_ALARM_CODE_IS_NOT_ALIVE} set ");
+                scApp.LineService.ProcessAlarmReport(track.NODE_ID, track.UNIT_ID, TRACK_ALARM_CODE_IS_NOT_ALIVE, ProtocolFormat.OHTMessage.ErrorStatus.ErrSet, "TRACK IS NOT ALIVE");
+            }
+        }
+
+        private void T_trackStatusChange(object sender, RailChangerProtocol.TrackStatus status)
+        {
+            Track track = sender as Track;
+            if (status == RailChangerProtocol.TrackStatus.Alarm)
+            {
+                LogHelper.Log(logger: logger, LogLevel: LogLevel.Info, Class: nameof(VehicleService), Device: "AGVC",
+                    Data: $"Track({track.UNIT_ID}) current status is :{status},report alarm Code:{TRACK_ALARM_CODE_TRACK_STATUS_IS_ALARM} set");
+                scApp.LineService.ProcessAlarmReport(track.NODE_ID, track.UNIT_ID, TRACK_ALARM_CODE_TRACK_STATUS_IS_ALARM, ProtocolFormat.OHTMessage.ErrorStatus.ErrSet, "TRACK STATUS IS ALARM");
+            }
+            else
+            {
+                LogHelper.Log(logger: logger, LogLevel: LogLevel.Info, Class: nameof(VehicleService), Device: "AGVC",
+                    Data: $"Track({track.UNIT_ID}) current status is {status},report alarm Code:{TRACK_ALARM_CODE_TRACK_STATUS_IS_ALARM} reset ");
+                scApp.LineService.ProcessAlarmReport(track.NODE_ID, track.UNIT_ID, TRACK_ALARM_CODE_TRACK_STATUS_IS_ALARM, ProtocolFormat.OHTMessage.ErrorStatus.ErrReset, "TRACK STATUS IS ALARM");
             }
         }
         #region 轉轍器alarm發生的對應事件處理

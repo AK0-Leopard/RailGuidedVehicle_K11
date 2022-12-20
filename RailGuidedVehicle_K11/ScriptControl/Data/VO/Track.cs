@@ -1,4 +1,5 @@
 ﻿using com.mirle.ibg3k0.sc.ProtocolFormat.OHTMessage;
+using RailChangerProtocol;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -12,6 +13,8 @@ namespace com.mirle.ibg3k0.sc.Data.VO
     {
         public const int MIN_ALLOW_BLOCK_RELEASE_INTERVAL_ms = 10_000;
         public event EventHandler<alarmCodeChangeArgs> alarmCodeChange;
+        public event EventHandler<TrackStatus> trackStatusChange;
+        public event EventHandler<bool> AliveStatusChange;
         public class alarmCodeChangeArgs : EventArgs
         {
             public string railChanger_No;
@@ -128,9 +131,21 @@ namespace com.mirle.ibg3k0.sc.Data.VO
 
                 //alarmCode有變就進行事件處理
                 if (AlarmCode != trackInfo.AlarmCode)
+                {
                     this.onAlarmCodeChange(AlarmCode, trackInfo.AlarmCode, UNIT_ID);
-                AlarmCode = trackInfo.AlarmCode;
-                TrackStatus = trackInfo.Status;
+                    AlarmCode = trackInfo.AlarmCode;
+                }
+                if (TrackStatus != trackInfo.Status)
+                {
+                    onTrackStatusChange(trackInfo.Status);
+                    TrackStatus = trackInfo.Status;
+                }
+                if (IsAlive != trackInfo.IsAlive)
+                {
+                    if (UNIT_NUM == 1)//因為所有換軌器共用一個Alive，只有第一組才進行上報
+                        onAliveStatusChange(trackInfo.IsAlive);
+                    IsAlive = trackInfo.IsAlive;
+                }
 
                 LastUpdataStopwatch.Restart();
             }
@@ -174,6 +189,28 @@ namespace com.mirle.ibg3k0.sc.Data.VO
                 args.railChanger_No = no;
 
                 alarmCodeChange?.Invoke(this, args);
+            }
+            catch (Exception e)
+            {
+                logger.Error(e, "Exception");
+            }
+        }
+        public void onTrackStatusChange(TrackStatus trackStatus)
+        {
+            try
+            {
+                trackStatusChange?.Invoke(this, trackStatus);
+            }
+            catch (Exception e)
+            {
+                logger.Error(e, "Exception");
+            }
+        }
+        public void onAliveStatusChange(bool isAlive)
+        {
+            try
+            {
+                AliveStatusChange?.Invoke(this, isAlive);
             }
             catch (Exception e)
             {

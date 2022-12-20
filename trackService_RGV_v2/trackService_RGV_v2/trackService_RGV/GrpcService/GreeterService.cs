@@ -15,7 +15,7 @@ namespace GrpcServiceForm.GrpcService
         private trackService_RGV.Library.trackService trackService;
         private string logPath = @"Log\GrpcService\";
         private StreamWriter sw;
-        private int currentDay=0;
+        private int currentDay = 0;
         private mainForm parent;
         public EventHandler<serviceBeCallArgs> serviceBeCall;
         private static object logLock = new object();
@@ -29,10 +29,10 @@ namespace GrpcServiceForm.GrpcService
                 cmdInfo = CmdInfo;
                 result = Result;
             }
-            public string callMethod {  get; }
+            public string callMethod { get; }
             public string trackNo { get; }
             public string cmdInfo { get; }
-            public string result {  get; }
+            public string result { get; }
         }
 
         public GreeterService(mainForm mF, trackService_RGV.Library.trackService tS)
@@ -73,15 +73,16 @@ namespace GrpcServiceForm.GrpcService
 
         public override Task<ReplyTracksInfo> RequestTracksInfo(Empty request, ServerCallContext context)
         {
-            
+
             Google.Protobuf.Collections.RepeatedField<TrackInfo> data = new Google.Protobuf.Collections.RepeatedField<TrackInfo>();
-            
+
             List<string> trackNumberList = trackService.getAllTrackNumber();
-            foreach(trackService_RGV.Library.trackService.track t in trackService.getAllTrackList)
+            foreach (trackService_RGV.Library.trackService.track t in trackService.getAllTrackList)
             {
                 //trackService.track t = trackService.getTrack(trackNumber);
                 TrackInfo temp = new TrackInfo();
-
+                temp.IsAlive = t.IsAlive;
+                temp.TrackNumber = t.TrackNumber;
                 temp.Index = t.AliveValue;
                 switch (t.TrackStatus)
                 {
@@ -126,9 +127,9 @@ namespace GrpcServiceForm.GrpcService
                 temp.TrackUser = t.Track_User;
                 temp.TrackChangeCount = Convert.ToInt32(t.TrackChangeCounter);
                 temp.AlarmCode = Convert.ToInt32(t.AlarmCode);
-                temp.Version = t.Version;
+                temp.Version = t.Version == null ? "" : t.Version;
                 temp.AlarmCode = Convert.ToInt32(t.AlarmCode);
-                
+
                 data.Add(temp);
             }
             ReplyTracksInfo info = new ReplyTracksInfo();

@@ -14,7 +14,7 @@
 	</common>
 	<masterPLC>
 		<PLC no="1" ActHostAddress="172.21.83.40" ActPortNumber="6670" ActCpuType="144" ActUnitType="26" ActProtocolType="5" 
-								ActConnectUnitNumber="0" ActNetWork="0" readStartAddress="11" writeStartAddress="0000F"/>
+								ActConnectUnitNumber="0" ActNetWork="0" readStartAddress="0" writeStartAddress="0000F"/>
 
 	</masterPLC>
 	<trackList>

@@ -66,7 +66,7 @@
             this.dataGridView1.Name = "dataGridView1";
             this.dataGridView1.RowHeadersWidth = 62;
             this.dataGridView1.RowTemplate.Height = 31;
-            this.dataGridView1.Size = new System.Drawing.Size(345, 93);
+            this.dataGridView1.Size = new System.Drawing.Size(481, 186);
             this.dataGridView1.TabIndex = 2;
             // 
             // Column1
@@ -81,11 +81,12 @@
             this.Column2.HeaderText = "值";
             this.Column2.MinimumWidth = 8;
             this.Column2.Name = "Column2";
+            this.Column2.Width = 200;
             // 
             // lbl_connectionResultName
             // 
             this.lbl_connectionResultName.AutoSize = true;
-            this.lbl_connectionResultName.Location = new System.Drawing.Point(17, 173);
+            this.lbl_connectionResultName.Location = new System.Drawing.Point(15, 247);
             this.lbl_connectionResultName.Margin = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.lbl_connectionResultName.Name = "lbl_connectionResultName";
             this.lbl_connectionResultName.Size = new System.Drawing.Size(104, 22);
@@ -95,7 +96,7 @@
             // lbl_connectionResultValue
             // 
             this.lbl_connectionResultValue.AutoSize = true;
-            this.lbl_connectionResultValue.Location = new System.Drawing.Point(120, 173);
+            this.lbl_connectionResultValue.Location = new System.Drawing.Point(115, 248);
             this.lbl_connectionResultValue.Margin = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.lbl_connectionResultValue.Name = "lbl_connectionResultValue";
             this.lbl_connectionResultValue.Size = new System.Drawing.Size(88, 22);
@@ -106,7 +107,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(11F, 21F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(385, 204);
+            this.ClientSize = new System.Drawing.Size(526, 277);
             this.Controls.Add(this.lbl_connectionResultValue);
             this.Controls.Add(this.lbl_connectionResultName);
             this.Controls.Add(this.dataGridView1);
@@ -129,9 +130,9 @@
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.ComboBox comboBox1;
         private System.Windows.Forms.DataGridView dataGridView1;
+        private System.Windows.Forms.Label lbl_connectionResultName;
         private System.Windows.Forms.DataGridViewTextBoxColumn Column1;
         private System.Windows.Forms.DataGridViewTextBoxColumn Column2;
-        private System.Windows.Forms.Label lbl_connectionResultName;
         private System.Windows.Forms.Label lbl_connectionResultValue;
     }
 }
