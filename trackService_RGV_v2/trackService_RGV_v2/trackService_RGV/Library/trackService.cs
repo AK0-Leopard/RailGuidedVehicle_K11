@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using System.ComponentModel;
 using com.mirle.ibg3k0.MPLCConnectionControl;
 using System.Linq;
+using NLog.Internal;
 
 namespace trackService_RGV.Library
 {
@@ -250,36 +251,43 @@ namespace trackService_RGV.Library
             {
                 while (true)
                 {
-                    if (bgWorker_getStatus.CancellationPending)
-                        break;
-                    //取得一大塊PLC資料
-                    int[] data = new int[1000];
-                    //int result = plc.ReadDeviceBlock("ZR" + readStartAddress_hex, 81, out data[0]);
-                    int result = plc.readDeviceBlock("D" + readStartAddress_hex, 800, out data);
-                    if (result == 0)
+                    try
                     {
-                        connectResult = 1;
-                        syncStatus?.Invoke(this, new syncStatusArgs(data));
-                        if (bgWorker_getStatus_failCounter != 0)
+                        if (bgWorker_getStatus.CancellationPending)
+                            break;
+                        //取得一大塊PLC資料
+                        int[] data = new int[1000];
+                        //int result = plc.ReadDeviceBlock("ZR" + readStartAddress_hex, 81, out data[0]);
+                        int result = plc.readDeviceBlock("D" + readStartAddress_hex, 800, out data);
+                        if (result == 0)
                         {
-                            bgWorker_getStatus_failCounter = 0;
-                            saveMasterPLCLog("", number, "syncStatus", "", "", "恢復");
+                            connectResult = 1;
+                            syncStatus?.Invoke(this, new syncStatusArgs(data));
+                            if (bgWorker_getStatus_failCounter != 0)
+                            {
+                                bgWorker_getStatus_failCounter = 0;
+                                saveMasterPLCLog("", number, "syncStatus", "", "", "恢復");
+                            }
                         }
-                    }
-                    else
-                    {
-                        connectResult = -1;
+                        else
+                        {
+                            connectResult = -1;
 
-                        bgWorker_getStatus_failCounter++;
-                        saveMasterPLCLog("", number, "syncStatus", "", "", "異常次數" + bgWorker_getStatus_failCounter.ToString());
-                        if (bgWorker_getStatus_failCounter > 100)
-                        {
-                            //如果sync 連續100次失敗，則強制關閉bgWorker
-                            bgWorker_getStatus.CancelAsync();
-                            saveMasterPLCLog("", number, "syncStatus", "", "", "異常次數已達100次，將關閉syncStatus功能");
+                            bgWorker_getStatus_failCounter++;
+                            saveMasterPLCLog("", number, "syncStatus", "", "", "異常次數" + bgWorker_getStatus_failCounter.ToString());
+                            if (bgWorker_getStatus_failCounter > 100)
+                            {
+                                //如果sync 連續100次失敗，則強制關閉bgWorker
+                                bgWorker_getStatus.CancelAsync();
+                                saveMasterPLCLog("", number, "syncStatus", "", "", "異常次數已達100次，將關閉syncStatus功能");
+                            }
                         }
+                        Thread.Sleep(syncStatusTimeInterVal);
                     }
-                    Thread.Sleep(syncStatusTimeInterVal);
+                    catch (Exception ex)
+                    {
+                        expectionRecorde(ex);
+                    }
                 }
             }
             private void bgWorker_alive_DoWorkder(object sender, EventArgs args)
@@ -327,6 +335,7 @@ namespace trackService_RGV.Library
 
             string boxNumber;
             string readStartAddress;
+            int ireadStartAddress;
             string writeStartAddress;
             int memoryLocation;
             masterPLC masterPLC;
@@ -369,6 +378,7 @@ namespace trackService_RGV.Library
                     //    (Hex2Dec(masterPLC.ReadStartAddress) + (Convert.ToInt32(memoryLocation) * 16)), 5);
                     //readStartAddress = (Convert.ToInt32(masterPLC.ReadStartAddress) + this.memoryLocation).ToString();
                     readStartAddress = (Convert.ToInt32(510) + this.memoryLocation).ToString(); //固定從510開始讀
+                    ireadStartAddress = Convert.ToInt32(readStartAddress);
                     writeStartAddress = Dec2Hex(
                         (Hex2Dec(masterPLC.WriteStartAddress) + (Convert.ToInt32(memoryLocation) * 16)), 5);
 
@@ -400,116 +410,123 @@ namespace trackService_RGV.Library
 
             private void syncTrackStatus(object sender, masterPLC.syncStatusArgs args)
             {
-                bool hasChange = false; //是否有狀態被更動
-                bool autoChangeDirectionSWHasChange = false;
-                bool trackVersionHasChange = false;
+                try
+                {
+                    bool hasChange = false; //是否有狀態被更動
+                    bool autoChangeDirectionSWHasChange = false;
+                    bool trackVersionHasChange = false;
 
-                #region word[0] alive
-                if (aliveValue == 0 || lastAliveTime == DateTime.MinValue)
-                {
-                    aliveValue = args.syncData[0];//Alive 固定抓定0個就好
-                    aliveResult = true;
-                    lastAliveTime = DateTime.Now;
+                    #region word[0] alive
+                    if (aliveValue == 0 || lastAliveTime == DateTime.MinValue)
+                    {
+                        aliveValue = args.syncData[0];//Alive 固定抓定0個就好
+                        aliveResult = true;
+                        lastAliveTime = DateTime.Now;
+                    }
+                    else if (aliveValue == args.syncData[0] && (DateTime.Now - lastAliveTime).Seconds > 5)
+                    {
+                        hasChange = true;
+                        aliveResult = false;
+                    }
+                    else if (aliveValue != args.syncData[0])
+                    {
+                        aliveValue = args.syncData[0];
+                        aliveResult = true;
+                        lastAliveTime = DateTime.Now;
+                    }
+                    #endregion
+                    #region word[1] status
+                    TrackStatus newStatus = TrackStatus.TrackStatus_NotDefine;
+                    switch (args.syncData[ireadStartAddress])
+                    {
+                        case 1:
+                            newStatus = TrackStatus.TrackStatus_Manaul;
+                            break;
+                        case 2:
+                            newStatus = TrackStatus.TrackStatus_Auto;
+                            break;
+                        case 3:
+                            newStatus = TrackStatus.TrackStatus_Alarm;
+                            break;
+                        default:
+                            newStatus = TrackStatus.TrackStatus_NotDefine;
+                            break;
+                    }
+                    if (newStatus != trackStatus)
+                    {
+                        hasChange = true;
+                        trackStatus = newStatus;
+                    }
+                    #endregion
+                    //#region word[2] dir
+                    //TrackDir newDir = TrackDir.TrackDir_None;
+                    //switch(args.syncData[memoryLocation + 2])
+                    //{
+                    //    case 1:
+                    //        newDir = TrackDir.TrackDir_Straight;
+                    //        break;
+                    //    case 2:
+                    //        newDir = TrackDir.TrackDir_Curve;
+                    //        break;
+                    //    default:
+                    //        newDir = TrackDir.TrackDir_None;
+                    //        break;
+                    //}
+                    //if(newDir != trackDir)
+                    //{
+                    //    hasChange = true;
+                    //    trackDir = newDir;
+                    //}
+                    //#endregion
+                    //#region word[3] block
+                    //switch (args.syncData[memoryLocation + 3])
+                    //{
+                    //    case 1:
+                    //        trackBlock = TrackBlock.TrackBlock_Block;
+                    //        break;
+                    //    case 2:
+                    //        trackBlock = TrackBlock.TrackBlock_NonBlock;
+                    //        break;
+                    //    default:
+                    //        trackBlock = TrackBlock.TrackBlock_None;
+                    //        break;
+                    //}
+                    //#endregion
+                    //#region word[4] RGV佔用人
+                    //RGV_user = args.syncData[memoryLocation + 4].ToString();
+                    //#endregion
+                    //#region word[5] 軌道目前佔用人
+                    //track_user = args.syncData[memoryLocation + 5].ToString();
+                    //#endregion
+                    //#region word[6.7] trackChangeCounter
+                    //string counterString = Dec2Hex(args.syncData[memoryLocation + 6], 4) + Dec2Hex(args.syncData[memoryLocation + 7], 4);
+                    //trackChangeCounter = Hex2Dec(counterString);
+                    //#endregion
+                    #region word[13] alarmCode
+                    if (alarmCode != args.syncData[ireadStartAddress + 9])
+                    {
+                        hasChange = true;
+                        alarmCode = args.syncData[ireadStartAddress + 9];
+                    }
+                    #endregion
+                    //#region word[14.15] version
+                    //string newVersion = Dec2Hex(args.syncData[memoryLocation + 14], 4) + "." + Dec2Hex(args.syncData[memoryLocation + 15], 4);
+                    //if(version != newVersion) trackVersionHasChange = true;
+                    //version = newVersion;
+                    //#endregion
+                    if (isFirstSyncStatus == false || autoChangeDirectionSWHasChange || trackVersionHasChange)
+                    {
+                        saveTrackStatusLog(trackNumber, aliveResult, aliveValue, trackStatus, Dec2Hex(alarmCode, 16), trackBlock, trackDir, false, TrackDir.TrackDir_None, version);
+                        isFirstSyncStatus = true;
+                    }
+                    else if (hasChange)
+                    {
+                        saveTrackStatusLog(trackNumber, aliveResult, aliveValue, trackStatus, Dec2Hex(alarmCode, 16), trackBlock, trackDir);
+                    }
                 }
-                else if (aliveValue == args.syncData[0] && (DateTime.Now - lastAliveTime).Seconds > 5)
+                catch (Exception ex)
                 {
-                    hasChange = true;
-                    aliveResult = false;
-                }
-                else if (aliveValue != args.syncData[0])
-                {
-                    aliveValue = args.syncData[0];
-                    aliveResult = true;
-                    lastAliveTime = DateTime.Now;
-                }
-                #endregion
-                #region word[1] status
-                TrackStatus newStatus = TrackStatus.TrackStatus_NotDefine;
-                switch (args.syncData[memoryLocation + 1])
-                {
-                    case 1:
-                        newStatus = TrackStatus.TrackStatus_Manaul;
-                        break;
-                    case 2:
-                        newStatus = TrackStatus.TrackStatus_Auto;
-                        break;
-                    case 3:
-                        newStatus = TrackStatus.TrackStatus_Alarm;
-                        break;
-                    default:
-                        newStatus = TrackStatus.TrackStatus_NotDefine;
-                        break;
-                }
-                if (newStatus != trackStatus)
-                {
-                    hasChange = true;
-                    trackStatus = newStatus;
-                }
-                #endregion
-                //#region word[2] dir
-                //TrackDir newDir = TrackDir.TrackDir_None;
-                //switch(args.syncData[memoryLocation + 2])
-                //{
-                //    case 1:
-                //        newDir = TrackDir.TrackDir_Straight;
-                //        break;
-                //    case 2:
-                //        newDir = TrackDir.TrackDir_Curve;
-                //        break;
-                //    default:
-                //        newDir = TrackDir.TrackDir_None;
-                //        break;
-                //}
-                //if(newDir != trackDir)
-                //{
-                //    hasChange = true;
-                //    trackDir = newDir;
-                //}
-                //#endregion
-                //#region word[3] block
-                //switch (args.syncData[memoryLocation + 3])
-                //{
-                //    case 1:
-                //        trackBlock = TrackBlock.TrackBlock_Block;
-                //        break;
-                //    case 2:
-                //        trackBlock = TrackBlock.TrackBlock_NonBlock;
-                //        break;
-                //    default:
-                //        trackBlock = TrackBlock.TrackBlock_None;
-                //        break;
-                //}
-                //#endregion
-                //#region word[4] RGV佔用人
-                //RGV_user = args.syncData[memoryLocation + 4].ToString();
-                //#endregion
-                //#region word[5] 軌道目前佔用人
-                //track_user = args.syncData[memoryLocation + 5].ToString();
-                //#endregion
-                //#region word[6.7] trackChangeCounter
-                //string counterString = Dec2Hex(args.syncData[memoryLocation + 6], 4) + Dec2Hex(args.syncData[memoryLocation + 7], 4);
-                //trackChangeCounter = Hex2Dec(counterString);
-                //#endregion
-                #region word[13] alarmCode
-                if (alarmCode != args.syncData[memoryLocation + 0])
-                {
-                    hasChange = true;
-                    alarmCode = args.syncData[memoryLocation + 0];
-                }
-                #endregion
-                //#region word[14.15] version
-                //string newVersion = Dec2Hex(args.syncData[memoryLocation + 14], 4) + "." + Dec2Hex(args.syncData[memoryLocation + 15], 4);
-                //if(version != newVersion) trackVersionHasChange = true;
-                //version = newVersion;
-                //#endregion
-                if (isFirstSyncStatus == false || autoChangeDirectionSWHasChange || trackVersionHasChange)
-                {
-                    saveTrackStatusLog(trackNumber, aliveResult, aliveValue, trackStatus, Dec2Hex(alarmCode, 16), trackBlock, trackDir, false, TrackDir.TrackDir_None, version);
-                    isFirstSyncStatus = true;
-                }
-                else if (hasChange)
-                {
-                    saveTrackStatusLog(trackNumber, aliveResult, aliveValue, trackStatus, Dec2Hex(alarmCode, 16), trackBlock, trackDir);
+                    expectionRecorde(ex);
                 }
             }
 

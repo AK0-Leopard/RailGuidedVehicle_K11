@@ -10,13 +10,13 @@
 		<offLineMode>N</offLineMode>
 		<aliveTimeout>5000</aliveTimeout>
 		<autoRstBlockTime>5000</autoRstBlockTime>
-		<syncStatusTimeInterVal>100</syncStatusTimeInterVal>
+		<syncStatusTimeInterVal>500</syncStatusTimeInterVal>
 	</common>
 	<masterPLC>
-		<PLC no="1" ActHostAddress="172.21.83.40" ActPortNumber="6670" ActCpuType="144" ActUnitType="26" ActProtocolType="5" 
+    <PLC no="1" ActHostAddress="172.21.83.40" ActPortNumber="6670" ActCpuType="144" ActUnitType="26" ActProtocolType="5"
 								ActConnectUnitNumber="0" ActNetWork="0" readStartAddress="0" writeStartAddress="0000F"/>
 
-	</masterPLC>
+  </masterPLC>
 	<trackList>
     <railChanger sn="1" boxNumber="1" usePLC="1" memoryLocation="0"/>
     <railChanger sn="2" boxNumber="2" usePLC="1" memoryLocation="1"/>
