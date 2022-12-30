@@ -14,6 +14,7 @@ using NLog;
 using Stateless;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
@@ -111,7 +112,7 @@ namespace com.mirle.ibg3k0.sc
             CommandActionTimer = new Stopwatch();
             IdleTimer = new Stopwatch();
             StartLoadingUnloadingTime = new Stopwatch();
-            CarrierLocation = new List<Location>()
+            carrierLocation = new List<Location>()
             {
                 new Location(""),
                 new Location(""),
@@ -363,7 +364,8 @@ namespace com.mirle.ibg3k0.sc
         public string CMD_ID_4 { get; set; }
         public string CurrentExcuteCmdID { get; set; }
         public string PreExcute_Transfer_ID { get; set; }
-        public List<Location> CarrierLocation { get; private set; }
+        private List<Location> carrierLocation;
+        public ReadOnlyCollection<Location> CarrierLocation { get { return carrierLocation.AsReadOnly(); } }
         public List<string> CarrierLocationIDs { get; private set; }
 
         public string LocationRealID_R
@@ -963,7 +965,7 @@ namespace com.mirle.ibg3k0.sc
 
         public void setCarrierLocationInfo(string location_id_r, string location_id_l)
         {
-            CarrierLocation = new List<Location>()
+            carrierLocation = new List<Location>()
             {
                 new Location(location_id_r),
                 new Location(location_id_l),
@@ -1735,7 +1737,7 @@ namespace com.mirle.ibg3k0.sc
 
         public class Location
         {
-            public string ID { get; set; }
+            public readonly string ID;
             public bool HAS_CST { get; private set; }
             public string CST_ID { get; private set; }
             public ShelfStatus ShelfStatus { get; private set; }

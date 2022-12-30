@@ -1841,8 +1841,8 @@ namespace com.mirle.ibg3k0.sc.Service
 
                             foreach (VTRANSFER first_waitting_excute_mcs_cmd in traget_not_agv_st_in_queue_transfer)
                             {
-                                string hostsource = first_waitting_excute_mcs_cmd.HOSTSOURCE;
-                                string hostdest = first_waitting_excute_mcs_cmd.HOSTDESTINATION;
+                                string hostsource = SCUtility.Trim(first_waitting_excute_mcs_cmd.HOSTSOURCE, true);
+                                string hostdest = SCUtility.Trim(first_waitting_excute_mcs_cmd.HOSTDESTINATION, true);
                                 string from_adr = string.Empty;
                                 string to_adr = string.Empty;
                                 AVEHICLE bestSuitableVh = null;
@@ -1873,7 +1873,20 @@ namespace com.mirle.ibg3k0.sc.Service
                                 else
                                 {
                                     //bestSuitableVh = scApp.VehicleBLL.cache.getVehicleByRealID(hostsource);
+                                    LogHelper.Log(logger: logger, LogLevel: LogLevel.Info, Class: nameof(VehicleService), Device: DEVICE_NAME_AGV,
+                                       Data: $"嘗試取得Location real id:{hostsource}，屬於哪台RGV...");
                                     bestSuitableVh = scApp.VehicleBLL.cache.getVehicleByLocationRealID(hostsource);
+                                    if (bestSuitableVh == null)
+                                    {
+                                        LogHelper.Log(logger: logger, LogLevel: LogLevel.Info, Class: nameof(VehicleService), Device: DEVICE_NAME_AGV,
+                                           Data: $"無法取得Location real id:{hostsource}對應的RGV");
+                                        continue;
+                                    }
+
+                                    LogHelper.Log(logger: logger, LogLevel: LogLevel.Info, Class: nameof(VehicleService), Device: DEVICE_NAME_AGV,
+                                       Data: $"取得Location real id:{hostsource}對應的RGV:{bestSuitableVh.VEHICLE_ID},L_ID:{bestSuitableVh.LocationRealID_L},R_ID:{bestSuitableVh.LocationRealID_R}",
+                                       VehicleID: bestSuitableVh.VEHICLE_ID);
+
                                     if (bestSuitableVh.IsError ||
                                         bestSuitableVh.MODE_STATUS != VHModeStatus.AutoRemote)
                                     {
