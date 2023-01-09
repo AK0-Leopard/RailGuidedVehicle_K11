@@ -205,7 +205,7 @@ namespace com.mirle.ibg3k0.sc.BLL
             }
             public List<APORTSTATION> loadAllPortStation()
             {
-                return CacheManager.getALLPortStation();
+                return CacheManager.getALLPortStation().ToList();
             }
             public List<APORTSTATION> loadAllPortStation(string zoneID)
             {

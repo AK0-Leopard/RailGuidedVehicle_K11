@@ -425,7 +425,7 @@ namespace com.mirle.ibg3k0.sc.Data.TimerAction
             var result = vhs.Where(vh => vh.isTcpIpConnect &&
                             !SCUtility.isEmpty(vh.CUR_ADR_ID) &&
                             //SCUtility.isMatche(vh.CUR_ZONE_ID, zoneID) &&
-                            SCUtility.isMatche(vh.getZoneID(scApp.SectionBLL), zoneID) &&
+                            //SCUtility.isMatche(vh.getZoneID(scApp.SectionBLL), zoneID) &&
                             vh.MODE_STATUS == ProtocolFormat.OHTMessage.VHModeStatus.AutoRemote &&
                             vh.ACT_STATUS == ProtocolFormat.OHTMessage.VHActionStatus.NoCommand &&
                             //scApp.CMDBLL.canAssignCmdNew(vh.VEHICLE_ID, E_CMD_TYPE.Move).canAssign).
@@ -478,7 +478,8 @@ namespace com.mirle.ibg3k0.sc.Data.TimerAction
 
         private Task<(bool is_success, object result)> findInculdCycleTestPort(string zoneID, string byPassAdrID)
         {
-            var all_port_in_zone = scApp.PortStationBLL.OperateCatch.loadAllPortStation(zoneID);
+            //var all_port_in_zone = scApp.PortStationBLL.OperateCatch.loadAllPortStation(zoneID);
+            var all_port_in_zone = scApp.PortStationBLL.OperateCatch.loadAllPortStation();
             APORTSTATION port = null;
             if (all_port_in_zone == null)
             {
