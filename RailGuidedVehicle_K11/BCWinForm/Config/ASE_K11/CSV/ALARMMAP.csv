@@ -1,4 +1,14 @@
 OBJECT_ID,ALARM_ID,ALARM_LVL,ALARM_DESC
+AGV_NODE,10000,1,Long time inaction
+AGV_NODE,10001,2,Can not service
+TRACK_NODE,1,2,Manual Status Timeout
+TRACK_NODE,2,2,Track Position Error
+TRACK_NODE,3,2,Track No Release Error
+TRACK_NODE,101,2,Track alarm happend
+TRACK_NODE,102,2,Track is not alive
+AGV_NODE,10000,1,Long time inaction
+AGV_NODE,10001,2,Can not service
+AGV_NODE,10003,1,vehicle can't find coupler to charging
 AGV_NODE,110011,1,Send detour request when swapping command
 AGV_NODE,110021,1,Bundle ID mismatched
 AGV_NODE,110012,2,EMS in Cmd_Sub_Move
@@ -94,7 +104,7 @@ AGV_NODE,230012,2,Open DI port failed
 AGV_NODE,230022,2,Open DI port exception
 AGV_NODE,240022,2,Initial BCR exception
 AGV_NODE,240032,2,BCR is not working
-AGV_NODE,250012,2,Connect PLC failed
+AGV_NODE,250011,1,PLC Alive Stop
 AGV_NODE,250022,2,Connect PLC exception
 AGV_NODE,250032,2,Left Shelf: Tray detection mismatch[SensorOffDataOn]
 AGV_NODE,250042,2,Right Shelf: Tray detection mismatch[SensorOffDataOn]
@@ -141,33 +151,6 @@ AGV_NODE,260681,1,[031] Check RGV Mode
 AGV_NODE,270002,2,High CPU useage for RGV IPC
 AGV_NODE,270012,2,High memory useage for RGV IPC
 AGV_NODE,270022,2,Low HDD capacity for RGV IPC
+AGV_NODE,280001,1,Warning when infrared sensor is ON
 AGV_NODE,310002,2,RGVC No Response in [032]Transfer_Complete_Response
 AGV_NODE,310012,2,RGVC No Response in [036]Transfer_Event
-AGV_NODE,410001,2,RT1-1 Alarm
-AGV_NODE,410011,2,RT1-2 Alarm
-AGV_NODE,410021,2,RT1-3 Alarm
-AGV_NODE,410031,2,RT1-4 Alarm
-AGV_NODE,410041,2,RT1-5 Alarm
-AGV_NODE,410051,2,RT1-6 Alarm
-AGV_NODE,410061,2,RT1-7 Alarm
-AGV_NODE,410071,2,RT1-8 Alarm
-AGV_NODE,410101,2,RT2-1 Alarm
-AGV_NODE,410111,2,RT2-2 Alarm
-AGV_NODE,410121,2,RT2-3 Alarm
-AGV_NODE,410131,2,RT2-4 Alarm
-AGV_NODE,410141,2,RT2-5 Alarm
-AGV_NODE,410151,2,RT2-6 Alarm
-AGV_NODE,410161,2,RT2-7 Alarm
-AGV_NODE,410171,2,RT2-8 Alarm
-AGV_NODE,410201,2,RT3-1 Alarm
-AGV_NODE,410211,2,RT3-2 Alarm
-AGV_NODE,410221,2,RT3-3 Alarm
-AGV_NODE,410231,2,RT3-4 Alarm
-AGV_NODE,410241,2,RT3-5 Alarm
-AGV_NODE,10000,1,Long time inaction
-AGV_NODE,10001,2,Can not service
-TRACK_NODE,10000,2,Track alarm happend
-TRACK_NODE,10001,2,Track is not alive
-AGV_NODE,10000,1,Long time inaction
-AGV_NODE,10001,2,Can not service
-AGV_NODE,10003,1,vehicle can't find coupler to charging

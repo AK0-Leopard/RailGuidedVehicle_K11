@@ -8,8 +8,8 @@ namespace com.mirle.ibg3k0.sc.Service
 {
     public class TrackService
     {
-        const string TRACK_ALARM_CODE_TRACK_STATUS_IS_ALARM = "10000";
-        const string TRACK_ALARM_CODE_IS_NOT_ALIVE = "10001";
+        const string TRACK_ALARM_CODE_TRACK_STATUS_IS_ALARM = "101";
+        const string TRACK_ALARM_CODE_IS_NOT_ALIVE = "102";
 
         NLog.Logger logger = NLog.LogManager.GetCurrentClassLogger();
         private SCApplication scApp = null;
@@ -25,7 +25,7 @@ namespace com.mirle.ibg3k0.sc.Service
             {
                 t.alarmCodeChange += trackAlarmHappend;
                 t.trackStatusChange += T_trackStatusChange;
-                t.AliveStatusChange += T_AliveStatusChange; ;
+                t.AliveStatusChange += T_AliveStatusChange;
             }
         }
 

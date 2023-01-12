@@ -150,10 +150,19 @@
     <Content Include="DLL\MPLCConnectionControl.pdb" />
     <Content Include="DLL\MPLCConnectionControl.XML" />
     <Content Include="DLL\System.IO.Abstractions.dll" />
+    <Content Include="hasp_net_windows.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="hasp_windows_101490.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="hasp_windows_24266.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="hasp_windows_x64_101490.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="hasp_windows_x64_24266.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="trackServiceConfig.xml">

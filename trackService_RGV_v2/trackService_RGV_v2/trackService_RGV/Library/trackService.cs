@@ -503,10 +503,10 @@ namespace trackService_RGV.Library
                     //trackChangeCounter = Hex2Dec(counterString);
                     //#endregion
                     #region word[13] alarmCode
-                    if (alarmCode != args.syncData[ireadStartAddress + 9])
+                    if (alarmCode != args.syncData[ireadStartAddress + 5])
                     {
                         hasChange = true;
-                        alarmCode = args.syncData[ireadStartAddress + 9];
+                        alarmCode = args.syncData[ireadStartAddress + 5];
                     }
                     #endregion
                     //#region word[14.15] version

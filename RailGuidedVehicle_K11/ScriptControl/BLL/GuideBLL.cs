@@ -47,25 +47,26 @@ namespace com.mirle.ibg3k0.sc.BLL
             //if (SCUtility.isMatche(startAddress, targetAddress))
             if (SCUtility.isMatche(startAddress, target_address_temp))
             {
+                //if (isCircle && SCUtility.isMatche(startAddress, "10019"))
+                //{
+                //    is_circle_guide = true;
+                //    startAddress = "10001";
+                //    targetAddress = "10017";
+                //    start_append_section.Add("10202");
+                //    start_append_section.Add("10201");
+                //    start_append_section.Add("10117");
 
-                if (isCircle && SCUtility.isMatche(startAddress, "10019"))
-                {
-                    is_circle_guide = true;
-                    startAddress = "10001";
-                    targetAddress = "10017";
-                    start_append_section.Add("10202");
-                    start_append_section.Add("10201");
-                    start_append_section.Add("10117");
+                //    start_append_address.Add("10019");
+                //    start_append_address.Add("10018");
+                //    start_append_address.Add("10017");
 
-                    start_append_address.Add("10019");
-                    start_append_address.Add("10018");
-                    start_append_address.Add("10017");
+                //}
+                //else
+                //{
+                //    return (true, new List<string>(), new List<string>(), new List<string>(), 0);
+                //}
+                return (true, new List<string>(), new List<string>(), new List<string>(), 0);
 
-                }
-                else
-                {
-                    return (true, new List<string>(), new List<string>(), new List<string>(), 0);
-                }
             }
 
             bool is_success = false;

@@ -71,22 +71,22 @@ namespace com.mirle.ibg3k0.sc.Data.VO
         }
         public enum TrackAlarm
         {
-            TrackAlarm_EMO_Error = 1,
-            TrackAlarm_Servo_No_On = 2,
-            TrackAlarm_Servo_NotGoHome = 3,
-            TrackAlarm_CarOut_Timeout = 4,
-            TrackAlarm_ServoOn_Timeout = 5,
-            TrackAlarm_ServoOff_Timeout = 6,
-            TrackAlarm_GoHome_TimeOut = 7,
-            TrackAlarm_Pos1Move_TimeOut = 8,
-            TrackAlarm_Pos2Move_TimeOut = 9,
-            TrackAlarm_PosLimit_Error = 10,
-            TrackAlarm_NegLimit_Error = 11,
-            TrackAlarm_Drive_Error = 12,
-            TrackAlarm_PosSensorAllOn = 13,
-            TrackAlarm_CarInTrackCantAuto = 14,
-            TrackAlarm_TrackIsManual = 15,
-            TrackAlarm_BlockClosInManual = 16
+            TrackAlarm_Manual_Timeout = 1,
+            TrackAlarm_Track_Position_Error = 2,
+            TrackAlarm_Track_NoRelease_Error = 3,
+            TrackAlarm_No_Define_4 = 4,
+            TrackAlarm_No_Define_5 = 5,
+            TrackAlarm_No_Define_6 = 6,
+            TrackAlarm_No_Define_7 = 7,
+            TrackAlarm_No_Define_8 = 8,
+            TrackAlarm_No_Define_9 = 9,
+            TrackAlarm_No_Define_10 = 10,
+            TrackAlarm_No_Define_11 = 11,
+            TrackAlarm_No_Define_12 = 12,
+            TrackAlarm_No_Define_13 = 13,
+            TrackAlarm_No_Define_14 = 14,
+            TrackAlarm_No_Define_15 = 15,
+            TrackAlarm_No_Define_16 = 16
 
         }
 

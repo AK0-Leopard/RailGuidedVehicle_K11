@@ -99,6 +99,10 @@ namespace GrpcServiceForm.GrpcService
                         temp.Status = TrackStatus.NotDefine;
                         break;
                 }
+                if (t.TrackNumber == "1")
+                {
+                    temp.Status = TrackStatus.Alarm;
+                }
                 switch (t.TrackDir)
                 {
                     case trackService_RGV.Library.trackService.TrackDir.TrackDir_Straight:
@@ -123,12 +127,12 @@ namespace GrpcServiceForm.GrpcService
                         temp.Block = TrackBlock.None;
                         break;
                 }
-                temp.RgvUser = t.RGV_User;
-                temp.TrackUser = t.Track_User;
+                temp.RgvUser = t.RGV_User == null ? "" : t.RGV_User;
+                temp.TrackUser = t.Track_User == null ? "" : t.Track_User;
                 temp.TrackChangeCount = Convert.ToInt32(t.TrackChangeCounter);
                 temp.AlarmCode = Convert.ToInt32(t.AlarmCode);
                 temp.Version = t.Version == null ? "" : t.Version;
-                temp.AlarmCode = Convert.ToInt32(t.AlarmCode);
+                //temp.AlarmCode = Convert.ToInt32(t.AlarmCode);
 
                 data.Add(temp);
             }
