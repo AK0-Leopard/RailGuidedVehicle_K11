@@ -14,6 +14,7 @@ using com.mirle.ibg3k0.bcf.Common;
 using com.mirle.ibg3k0.bcf.Controller;
 using com.mirle.ibg3k0.bcf.Data.VO;
 using com.mirle.ibg3k0.sc.App;
+using com.mirle.ibg3k0.sc.BLL;
 using com.mirle.ibg3k0.sc.Common;
 using com.mirle.ibg3k0.sc.Data.PLC_Functions;
 using com.mirle.ibg3k0.sc.Data.VO;
@@ -212,6 +213,9 @@ namespace com.mirle.ibg3k0.sc.Data.ValueDefMapAction
             dynamic receive_process = scApp.VehicleService.Receive;
             receive_process.CommandCompleteReport(tcpipAgentName, bcfApp, eqpt, recive_str, e.iSeqNum);
         }
+
+        object lockObjID134Compare = new object();
+        ProtocolFormat.OHTMessage.ID_134_TRANS_EVENT_REP lastReciveID134EventRep = new ID_134_TRANS_EVENT_REP();
         protected void str134_Receive(object sender, TcpIpEventArgs e)
         {
             if (scApp.getEQObjCacheManager().getLine().ServerPreStop)
@@ -220,6 +224,20 @@ namespace com.mirle.ibg3k0.sc.Data.ValueDefMapAction
             {
                 //ID_134_TRANS_EVENT_REP recive_str = (ID_134_TRANS_EVENT_REP)e.objPacket;
                 ProtocolFormat.OHTMessage.ID_134_TRANS_EVENT_REP recive_str = ((AKA.ProtocolFormat.RGVMessage.ID_134_TRANS_EVENT_REP)e.objPacket).ConvertToVhMsg();
+                //確認上次的134與這次的134是否有一樣
+                lock (lockObjID134Compare)
+                {
+                    if (IsSameID134ReportPosition(lastReciveID134EventRep, recive_str))
+                    {
+                        LogHelper.Log(logger: logger, LogLevel: LogLevel.Warn, Class: nameof(EQTcpIpMapAction), Device: Service.VehicleService.DEVICE_NAME_AGV,
+                           Data: $"vh:{eqpt.VEHICLE_ID} id-134 report data is same by pass it ,current seq num:{e.iSeqNum}",
+                           VehicleID: eqpt.VEHICLE_ID,
+                           CST_ID_L: eqpt.CST_ID_L,
+                           CST_ID_R: eqpt.CST_ID_R);
+                        return;
+                    }
+                    lastReciveID134EventRep = recive_str;
+                }
                 SCUtility.RecodeReportInfo(eqpt.VEHICLE_ID, 0, recive_str);
 
                 dynamic receive_process = scApp.VehicleService.Receive;
@@ -228,6 +246,38 @@ namespace com.mirle.ibg3k0.sc.Data.ValueDefMapAction
             catch (Exception ex)
             {
                 logger.Error(ex, "(str134_Receive) Exception");
+            }
+        }
+        private bool IsSameID134ReportPosition(ID_134_TRANS_EVENT_REP lastID134, ID_134_TRANS_EVENT_REP newID134)
+        {
+            try
+            {
+                if (lastID134 == null)
+                {
+                    return false;
+                }
+                if (lastID134.EventType != newID134.EventType)
+                {
+                    return false;
+                }
+                if (!SCUtility.isMatche(lastID134.CurrentSecID, newID134.CurrentSecID))
+                {
+                    return false;
+                }
+                if (!SCUtility.isMatche(lastID134.CurrentAdrID, newID134.CurrentAdrID))
+                {
+                    return false;
+                }
+                if (lastID134.SecDistance != newID134.SecDistance)
+                {
+                    return false;
+                }
+                return true;
+            }
+            catch (Exception ex)
+            {
+                logger.Error(ex, "Exception:");
+                return false;
             }
         }
         object str136_lockObj = new object();

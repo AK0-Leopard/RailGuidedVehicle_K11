@@ -50,25 +50,26 @@ namespace com.mirle.ibg3k0.sc.Common
         }
         public string GetInfoFromServer(string uri, string[] action_targets, string param, int timeOut = 5000)
         {
-            string result = "default";
-            string action_target = string.Join("/", action_targets);
-            HttpWebRequest httpWebRequest = (HttpWebRequest)WebRequest.Create($"{uri}/{action_target}/{param}");
-            //httpWebRequest.Timeout = 5000;
-            httpWebRequest.Timeout = timeOut;
-            httpWebRequest.Method = HTTP_METHOD.GET.ToString();
-            //指定 request 的 content type
-            httpWebRequest.ContentType = "application/x-www-form-urlencoded";
+            return "";
+            //string result = "default";
+            //string action_target = string.Join("/", action_targets);
+            //HttpWebRequest httpWebRequest = (HttpWebRequest)WebRequest.Create($"{uri}/{action_target}/{param}");
+            ////httpWebRequest.Timeout = 5000;
+            //httpWebRequest.Timeout = timeOut;
+            //httpWebRequest.Method = HTTP_METHOD.GET.ToString();
+            ////指定 request 的 content type
+            //httpWebRequest.ContentType = "application/x-www-form-urlencoded";
 
-            using (var httpResponse = (HttpWebResponse)httpWebRequest.GetResponse())
-            {
-                using (var streamReader = new StreamReader(httpResponse.GetResponseStream()))
-                {
-                    result = streamReader.ReadToEnd();
-                }
-                httpResponse.Close();
-            }
-            httpWebRequest.Abort();
-            return result;
+            //using (var httpResponse = (HttpWebResponse)httpWebRequest.GetResponse())
+            //{
+            //    using (var streamReader = new StreamReader(httpResponse.GetResponseStream()))
+            //    {
+            //        result = streamReader.ReadToEnd();
+            //    }
+            //    httpResponse.Close();
+            //}
+            //httpWebRequest.Abort();
+            //return result;
         }
 
         public string PostInfoToServer(string uri, string[] action_targets, HTTP_METHOD methed, byte[] byteArray)

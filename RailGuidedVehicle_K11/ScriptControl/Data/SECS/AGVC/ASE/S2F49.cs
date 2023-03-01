@@ -238,9 +238,9 @@ namespace com.mirle.ibg3k0.sc.Data.SECS.AGVC.ASE
             }
             if (!int.TryParse(replace, out int ireplace))
             {
-                NLog.LogManager.GetCurrentClassLogger().Warn("command id :{0} of priority parse fail. priority valus:{1}"
-                            , cmdID
-                            , replace);
+                //NLog.LogManager.GetCurrentClassLogger().Warn("command id :{0} of priority parse fail. priority valus:{1}"
+                //            , cmdID
+                //            , replace);
             }
             int port_priority = 0;
             if (!SCUtility.isEmpty(source))
@@ -248,7 +248,7 @@ namespace com.mirle.ibg3k0.sc.Data.SECS.AGVC.ASE
                 APORTSTATION source_portStation = portStationBLL.OperateCatch.getPortStation(source);
                 if (source_portStation == null)
                 {
-                    NLog.LogManager.GetCurrentClassLogger().Warn($"MCS cmd of hostsource port[{source} not exist.]");
+                    //NLog.LogManager.GetCurrentClassLogger().Warn($"MCS cmd of hostsource port[{source} not exist.]");
                 }
                 else
                 {

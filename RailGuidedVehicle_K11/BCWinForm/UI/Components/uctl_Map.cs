@@ -1020,10 +1020,26 @@ namespace com.mirle.ibg3k0.bc.winform.UI.Components
             DisplayAddressLable(cb.Checked);
         }
 
-
+        private long SyncPoint = 0;
         private void pnl_Map_DoubleClick(object sender, EventArgs e)
         {
-            ohtc_Form.setMonitorVehicle(string.Empty);
+            if (System.Threading.Interlocked.Exchange(ref SyncPoint, 1) == 0)
+            {
+                try
+                {
+                    adjustTheLayerOrder();
+                    ohtc_Form.setMonitorVehicle(string.Empty);
+                }
+                catch (Exception ex)
+                {
+                    logger.Error(ex, "Exection:");
+                }
+                finally
+                {
+                    System.Threading.Interlocked.Exchange(ref SyncPoint, 0);
+                }
+            }
+
         }
 
         public void trunOnMonitorAllVhStatus()
