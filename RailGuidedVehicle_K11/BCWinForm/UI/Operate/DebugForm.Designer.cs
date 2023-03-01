@@ -117,6 +117,7 @@
             this.uctl_SendAllFun = new com.mirle.ibg3k0.bc.winform.UI.Components.uctlButton();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
+            this.cb_updateCarrierLocationByVhReport136 = new System.Windows.Forms.CheckBox();
             this.label104 = new System.Windows.Forms.Label();
             this.num_after_loading_unloading_action_time = new System.Windows.Forms.NumericUpDown();
             this.cb_test_ForceByPassWaitTransferEvent = new System.Windows.Forms.CheckBox();
@@ -417,7 +418,7 @@
             this.comboBox_port11 = new System.Windows.Forms.ComboBox();
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.btn_online = new System.Windows.Forms.Button();
-            this.cb_updateCarrierLocationByVhReport136 = new System.Windows.Forms.CheckBox();
+            this.cb_openBeforeOnTheWay = new System.Windows.Forms.CheckBox();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox3.SuspendLayout();
@@ -1463,6 +1464,7 @@
             // tabPage1
             // 
             this.tabPage1.AutoScroll = true;
+            this.tabPage1.Controls.Add(this.cb_openBeforeOnTheWay);
             this.tabPage1.Controls.Add(this.cb_updateCarrierLocationByVhReport136);
             this.tabPage1.Controls.Add(this.label104);
             this.tabPage1.Controls.Add(this.num_after_loading_unloading_action_time);
@@ -1489,6 +1491,17 @@
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "TcpIp Control";
             this.tabPage1.UseVisualStyleBackColor = true;
+            // 
+            // cb_updateCarrierLocationByVhReport136
+            // 
+            this.cb_updateCarrierLocationByVhReport136.AutoSize = true;
+            this.cb_updateCarrierLocationByVhReport136.Location = new System.Drawing.Point(1137, 487);
+            this.cb_updateCarrierLocationByVhReport136.Name = "cb_updateCarrierLocationByVhReport136";
+            this.cb_updateCarrierLocationByVhReport136.Size = new System.Drawing.Size(305, 26);
+            this.cb_updateCarrierLocationByVhReport136.TabIndex = 58;
+            this.cb_updateCarrierLocationByVhReport136.Text = "使用ID-136 Location資訊過帳";
+            this.cb_updateCarrierLocationByVhReport136.UseVisualStyleBackColor = true;
+            this.cb_updateCarrierLocationByVhReport136.CheckedChanged += new System.EventHandler(this.cb_updateCarrierLocationByVhReport136_CheckedChanged);
             // 
             // label104
             // 
@@ -1639,7 +1652,7 @@
             this.groupBox19.Controls.Add(this.cb_test_retry_LoadArrivals);
             this.groupBox19.Controls.Add(this.ck_test_retry_ReserveReq);
             this.groupBox19.Controls.Add(this.ck_continue_bcrreadfail);
-            this.groupBox19.Location = new System.Drawing.Point(1160, 537);
+            this.groupBox19.Location = new System.Drawing.Point(1154, 557);
             this.groupBox19.Name = "groupBox19";
             this.groupBox19.Size = new System.Drawing.Size(288, 339);
             this.groupBox19.TabIndex = 27;
@@ -1947,7 +1960,7 @@
             // 
             this.cb_Cache_data_Name.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.cb_Cache_data_Name.FormattingEnabled = true;
-            this.cb_Cache_data_Name.Location = new System.Drawing.Point(234, 10);
+            this.cb_Cache_data_Name.Location = new System.Drawing.Point(234, 5);
             this.cb_Cache_data_Name.Name = "cb_Cache_data_Name";
             this.cb_Cache_data_Name.Size = new System.Drawing.Size(164, 30);
             this.cb_Cache_data_Name.TabIndex = 1;
@@ -4544,16 +4557,16 @@
             this.btn_online.UseVisualStyleBackColor = true;
             this.btn_online.Click += new System.EventHandler(this.btn_online_Click);
             // 
-            // cb_updateCarrierLocationByVhReport136
+            // cb_openBeforeOnTheWay
             // 
-            this.cb_updateCarrierLocationByVhReport136.AutoSize = true;
-            this.cb_updateCarrierLocationByVhReport136.Location = new System.Drawing.Point(1137, 487);
-            this.cb_updateCarrierLocationByVhReport136.Name = "cb_updateCarrierLocationByVhReport136";
-            this.cb_updateCarrierLocationByVhReport136.Size = new System.Drawing.Size(305, 26);
-            this.cb_updateCarrierLocationByVhReport136.TabIndex = 58;
-            this.cb_updateCarrierLocationByVhReport136.Text = "使用ID-136 Location資訊過帳";
-            this.cb_updateCarrierLocationByVhReport136.UseVisualStyleBackColor = true;
-            this.cb_updateCarrierLocationByVhReport136.CheckedChanged += new System.EventHandler(this.cb_updateCarrierLocationByVhReport136_CheckedChanged);
+            this.cb_openBeforeOnTheWay.AutoSize = true;
+            this.cb_openBeforeOnTheWay.Location = new System.Drawing.Point(1137, 513);
+            this.cb_openBeforeOnTheWay.Name = "cb_openBeforeOnTheWay";
+            this.cb_openBeforeOnTheWay.Size = new System.Drawing.Size(176, 26);
+            this.cb_openBeforeOnTheWay.TabIndex = 59;
+            this.cb_openBeforeOnTheWay.Text = "開啟前順途搬送";
+            this.cb_openBeforeOnTheWay.UseVisualStyleBackColor = true;
+            this.cb_openBeforeOnTheWay.CheckedChanged += new System.EventHandler(this.cb_openBeforeOnTheWay_CheckedChanged);
             // 
             // DebugForm
             // 
@@ -5040,5 +5053,6 @@
         private System.Windows.Forms.Button btn_avoid_req;
         private System.Windows.Forms.Button btn_initialTest;
         private System.Windows.Forms.CheckBox cb_updateCarrierLocationByVhReport136;
+        private System.Windows.Forms.CheckBox cb_openBeforeOnTheWay;
     }
 }

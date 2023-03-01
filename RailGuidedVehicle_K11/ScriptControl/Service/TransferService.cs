@@ -1609,6 +1609,34 @@ namespace com.mirle.ibg3k0.sc.Service
                 return (false, ex.ToString());
             }
         }
+        public (bool isSuccess, string result) ForceRemoveCarrierInVehicleByAGVForLoadComplete(string vhID, AGVLocation agvLocation, string carrierID)
+        {
+            try
+            {
+                AVEHICLE vh = scApp.VehicleBLL.cache.getVehicle(vhID);
+                string location_real_id = vh.getLoctionRealID(agvLocation);
+
+                var check_has_carrier_on_agv_loction = carrierBLL.db.hasCarrierOnVhLocation(location_real_id);
+                if (!check_has_carrier_on_agv_loction.has)
+                {
+                    return (false, $"No carrier: on vh:{vhID} location:{agvLocation}");
+                }
+                if (SCUtility.isMatche(check_has_carrier_on_agv_loction.onVhCarrier.ID, carrierID))
+                {
+                    return (false, $"carrier id:{carrierID} with vh current carrier is same:{check_has_carrier_on_agv_loction.onVhCarrier.ID}");
+                }
+                var on_vh_of_carrier = check_has_carrier_on_agv_loction.onVhCarrier;
+                carrierBLL.db.updateLocationAndState(on_vh_of_carrier.ID, "", E_CARRIER_STATE.OpRemove);
+                scApp.ReportBLL.newReportCarrierForceRemoved
+                    (vh.Real_ID, SCUtility.Trim(on_vh_of_carrier.ID, true), SCUtility.Trim(location_real_id, true), null);
+                return (true, $"Remove carrier:{on_vh_of_carrier.ID} is success.");
+            }
+            catch (Exception ex)
+            {
+                logger.Error(ex, "Exception");
+                return (false, ex.ToString());
+            }
+        }
         public (bool isSuccess, string result) processIDReadFailAndMismatch(string commandCarrierID, CompleteStatus completeStatus)
         {
             var check_has_carrier_in_line_result = carrierBLL.db.hasCarrierInLine(commandCarrierID);
@@ -1818,18 +1846,20 @@ namespace com.mirle.ibg3k0.sc.Service
                                                     Where(tr => tr.TRANSFERSTATE == E_TRAN_STATUS.Queue).
                                                     ToList();
 
-                        (bool isFind, AVEHICLE bestSuitableVh, VTRANSFER bestSuitabletransfer) before_on_the_way_cehck_result =
-                           checkBeforeOnTheWay(in_queue_transfer, excuting_transfer);
-                        if (before_on_the_way_cehck_result.isFind)
+                        if (DebugParameter.isOpenBeforeOnTheWay)
                         {
-                            if (AssignTransferCommmand(before_on_the_way_cehck_result.bestSuitabletransfer,
-                                                       before_on_the_way_cehck_result.bestSuitableVh))
+                            (bool isFind, AVEHICLE bestSuitableVh, VTRANSFER bestSuitabletransfer) before_on_the_way_cehck_result =
+                               checkBeforeOnTheWay(in_queue_transfer, excuting_transfer);
+                            if (before_on_the_way_cehck_result.isFind)
                             {
-                                scApp.VehicleService.Command.Scan();
-                                return;
+                                if (AssignTransferCommmand(before_on_the_way_cehck_result.bestSuitabletransfer,
+                                                           before_on_the_way_cehck_result.bestSuitableVh))
+                                {
+                                    scApp.VehicleService.Command.Scan();
+                                    return;
+                                }
                             }
                         }
-
 
                         //用來搜尋第一筆從AGV St.出來的命令
                         try
@@ -1854,6 +1884,12 @@ namespace com.mirle.ibg3k0.sc.Service
                                 {
                                     scApp.MapBLL.getAddressID(hostsource, out from_adr, out vh_type);
                                     bestSuitableVh = scApp.VehicleBLL.cache.findBestSuitableVhStepByStepFromAdr(scApp.GuideBLL, scApp.CMDBLL, from_adr, vh_type);
+                                    if (bestSuitableVh == null)
+                                    {
+                                        LogHelper.Log(logger: logger, LogLevel: LogLevel.Info, Class: nameof(VehicleService), Device: DEVICE_NAME_AGV,
+                                           Data: $"無法找到Location real id:{hostsource}，可來搬送的RGV");
+                                        continue;
+                                    }
                                     //如果找到適合搬送的車子不在點上的話就要去尋找是否有車子即將前來
                                     if (!SCUtility.isMatche(first_waitting_excute_mcs_cmd.getSourcePortAdrID(scApp.PortStationBLL), bestSuitableVh.CUR_ADR_ID))
                                     {
@@ -2089,7 +2125,11 @@ namespace com.mirle.ibg3k0.sc.Service
                     }
 
                     var excute_source_eq = excute_tran.getSourcePortEQ(scApp.PortStationBLL, scApp.EqptBLL);
-
+                    if (excute_source_eq == null)
+                    {
+                        best_suitable_vh = null;
+                        continue;
+                    }
                     //string excute_tran_eq_id = SCUtility.Trim(excute_tran.getTragetPortNodeID(scApp.PortStationBLL, scApp.EqptBLL));
                     //var same_eq_ports = inQueueTransfers.
                     //                    Where(in_queue_tran => SCUtility.isMatche(in_queue_tran.getTragetPortEQID(scApp.PortStationBLL),

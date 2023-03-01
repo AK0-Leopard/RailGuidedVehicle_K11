@@ -1074,7 +1074,6 @@ namespace com.mirle.ibg3k0.sc.Service
             private const ushort SEQNUM_MAX = 999;
             private bool checkPositionSeqNum(int currnetNum, int preNum)
             {
-
                 int lower_limit = preNum - TOLERANCE_SCOPE;
                 if (lower_limit >= 0)
                 {
@@ -1608,7 +1607,7 @@ namespace com.mirle.ibg3k0.sc.Service
                 }
 
                 var force_remove_result = scApp.TransferService.
-                    ForceRemoveCarrierInVehicleByAGV(vh.VEHICLE_ID, agvLocation, carrierID);
+                    ForceRemoveCarrierInVehicleByAGVForLoadComplete(vh.VEHICLE_ID, agvLocation, carrierID);
                 if (force_remove_result.isSuccess)
                 {
                     LogHelper.Log(logger: logger, LogLevel: LogLevel.Info, Class: nameof(VehicleService), Device: DEVICE_NAME_AGV,

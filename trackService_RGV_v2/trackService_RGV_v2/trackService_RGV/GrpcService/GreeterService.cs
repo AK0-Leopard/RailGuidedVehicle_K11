@@ -99,10 +99,6 @@ namespace GrpcServiceForm.GrpcService
                         temp.Status = TrackStatus.NotDefine;
                         break;
                 }
-                if (t.TrackNumber == "1")
-                {
-                    temp.Status = TrackStatus.Alarm;
-                }
                 switch (t.TrackDir)
                 {
                     case trackService_RGV.Library.trackService.TrackDir.TrackDir_Straight:

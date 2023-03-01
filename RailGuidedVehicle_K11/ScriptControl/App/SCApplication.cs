@@ -1856,5 +1856,6 @@ namespace com.mirle.ibg3k0.sc.App
         public static int GuideQuickSearchTimes = 0;
         public static Boolean isForceByPassWaitTranEvent = true;
         public static Boolean isPostingCarrierBy136Location = true;
+        public static Boolean isOpenBeforeOnTheWay = true;
     }
 }

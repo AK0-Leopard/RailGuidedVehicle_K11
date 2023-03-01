@@ -56,6 +56,7 @@ namespace com.mirle.ibg3k0.bc.winform.UI
             cb_needCheckPortUpdateTime.Checked = DebugParameter.isNeedCheckPortUpDateTime;
             cb_test_ForceByPassWaitTransferEvent.Checked = DebugParameter.isForceByPassWaitTranEvent;
             cb_updateCarrierLocationByVhReport136.Checked = DebugParameter.isPostingCarrierBy136Location;
+            cb_openBeforeOnTheWay.Checked = DebugParameter.isOpenBeforeOnTheWay;
 
 
             List<string> lstVh = new List<string>();
@@ -1643,6 +1644,11 @@ namespace com.mirle.ibg3k0.bc.winform.UI
         private void cb_updateCarrierLocationByVhReport136_CheckedChanged(object sender, EventArgs e)
         {
             DebugParameter.isPostingCarrierBy136Location = cb_updateCarrierLocationByVhReport136.Checked;
+        }
+
+        private void cb_openBeforeOnTheWay_CheckedChanged(object sender, EventArgs e)
+        {
+            DebugParameter.isOpenBeforeOnTheWay = cb_openBeforeOnTheWay.Checked;
         }
     }
 }
