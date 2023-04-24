@@ -159,7 +159,7 @@ namespace com.mirle.ibg3k0.sc
 
         public override string ToString()
         {
-            return $"Command:{this.ID},source:{this.HOSTSOURCE},desc:{this.HOSTDESTINATION},inser time:{CMD_INSER_TIME.ToString()}";
+            return $"Command:{SCUtility.Trim(this.ID)},source:{SCUtility.Trim(this.HOSTSOURCE)},desc:{SCUtility.Trim(this.HOSTDESTINATION)},inser time:{CMD_INSER_TIME.ToString()}";
         }
 
         public object GetFormat(Type formatType)

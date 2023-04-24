@@ -5,6 +5,7 @@ using com.mirle.ibg3k0.sc.Common;
 using com.mirle.ibg3k0.sc.Data;
 using com.mirle.ibg3k0.sc.ProtocolFormat.OHTMessage;
 using DocumentFormat.OpenXml.Bibliography;
+using Nancy.Routing;
 using NLog;
 using System;
 using System.Collections.Generic;
@@ -1848,8 +1849,14 @@ namespace com.mirle.ibg3k0.sc.Service
 
                         if (DebugParameter.isOpenBeforeOnTheWay)
                         {
+                            LogHelper.Log(logger: logger, LogLevel: LogLevel.Info, Class: nameof(VehicleService), Device: DEVICE_NAME_AGV,
+                               Data: $"開始前順途搬送的確認...");
                             (bool isFind, AVEHICLE bestSuitableVh, VTRANSFER bestSuitabletransfer) before_on_the_way_cehck_result =
                                checkBeforeOnTheWay(in_queue_transfer, excuting_transfer);
+                            LogHelper.Log(logger: logger, LogLevel: LogLevel.Info, Class: nameof(VehicleService), Device: DEVICE_NAME_AGV,
+                               Data: $"順途搬送的確認結果:{before_on_the_way_cehck_result.isFind} ," +
+                                     $"選到的Vh:{before_on_the_way_cehck_result.bestSuitableVh?.VEHICLE_ID}," +
+                                     $"順途搬的命令:{before_on_the_way_cehck_result.bestSuitabletransfer?.ToString()}");
                             if (before_on_the_way_cehck_result.isFind)
                             {
                                 if (AssignTransferCommmand(before_on_the_way_cehck_result.bestSuitabletransfer,
@@ -2124,19 +2131,19 @@ namespace com.mirle.ibg3k0.sc.Service
                         continue;
                     }
 
-                    var excute_source_eq = excute_tran.getSourcePortEQ(scApp.PortStationBLL, scApp.EqptBLL);
-                    if (excute_source_eq == null)
-                    {
-                        best_suitable_vh = null;
-                        continue;
-                    }
-                    //string excute_tran_eq_id = SCUtility.Trim(excute_tran.getTragetPortNodeID(scApp.PortStationBLL, scApp.EqptBLL));
-                    //var same_eq_ports = inQueueTransfers.
-                    //                    Where(in_queue_tran => SCUtility.isMatche(in_queue_tran.getTragetPortEQID(scApp.PortStationBLL),
-                    //                                                              excute_tran_eq_id)).
+                    //var excute_source_eq = excute_tran.getSourcePortEQ(scApp.PortStationBLL, scApp.EqptBLL);
+
+                    //if (excute_source_eq == null)
+                    //{
+                    //    best_suitable_vh = null;
+                    //    continue;
+                    //}
+                    //var same_source_port_cmds = inQueueTransfers.
+                    //                    Where(in_queue_tran => excute_source_eq == in_queue_tran.getSourcePortEQ(scApp.PortStationBLL, scApp.EqptBLL)).
                     //                    ToList();
+
                     var same_source_port_cmds = inQueueTransfers.
-                                        Where(in_queue_tran => excute_source_eq == in_queue_tran.getSourcePortEQ(scApp.PortStationBLL, scApp.EqptBLL)).
+                                        Where(in_queue_tran => CanConveyOnRoute(in_queue_tran, excute_tran)).
                                         ToList();
 
                     if (same_source_port_cmds != null && same_source_port_cmds.Count > 0)
@@ -2168,6 +2175,26 @@ namespace com.mirle.ibg3k0.sc.Service
                 return (false, null, null);
             }
         }
+        private bool CanConveyOnRoute(VTRANSFER commandInQueue, VTRANSFER commandCurrentlyExecuting)
+        {
+            var excute_source_eq_id = commandCurrentlyExecuting.getSourcePortEQID(scApp.PortStationBLL);
+            if (SCUtility.isEmpty(excute_source_eq_id))
+                return false;
+            string excute_target_node_id = commandCurrentlyExecuting.getTragetPortNodeID(scApp.PortStationBLL, scApp.EqptBLL);
+            if (SCUtility.isEmpty(excute_target_node_id))
+                return false;
+
+            if (!SCUtility.isMatche(commandInQueue.getSourcePortEQID(scApp.PortStationBLL), excute_source_eq_id))
+            {
+                return false;
+            }
+            if (!SCUtility.isMatche(commandInQueue.getTragetPortNodeID(scApp.PortStationBLL, scApp.EqptBLL), excute_target_node_id))
+            {
+                return false;
+            }
+            return true;
+        }
+
         /// <summary>
         /// 尋找可以命令結束後，可順便一起帶走的CST
         /// 1.找出尚未結束的命令且目標為AGV st的
