@@ -2308,6 +2308,21 @@ namespace com.mirle.ibg3k0.sc.BLL
             }
             return hcmds;
         }
+        public List<ObjectRelay.HCMD_MCSObjToShow> loadByInsertTimeEndTimeAndVhID(DateTime startTime, DateTime finishTime, string vhID)
+        {
+            using (DBConnection_EF con = DBConnection_EF.GetUContext())
+            {
+                if (SCUtility.isEmpty(vhID))
+                {
+                    return hTransferDao.loadByInsertTimeEndTime(con, startTime, finishTime);
+                }
+                else
+                {
+                    return hTransferDao.loadByInsertTimeEndTimeAndVhID(con, startTime, finishTime, vhID);
+                }
+            }
+
+        }
         #endregion HCMD_MCS
 
         #region HCMD

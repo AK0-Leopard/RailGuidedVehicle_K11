@@ -126,8 +126,11 @@ namespace com.mirle.ibg3k0.sc
                 CMD_FINISH_TIME = this.CMD_FINISH_TIME,
                 TIME_PRIORITY = this.TIME_PRIORITY,
                 PORT_PRIORITY = this.PORT_PRIORITY,
+                REPLACE = this.REPLACE,
                 PRIORITY_SUM = this.PRIORITY_SUM,
-                REPLACE = this.REPLACE
+                EXCUTE_CMD_ID = this.EXCUTE_CMD_ID,
+                RESULT_CODE = this.RESULT_CODE,
+
             };
         }
         public VTRANSFER ToVTRANSFER()

@@ -1,5 +1,6 @@
 ﻿using com.mirle.ibg3k0.bcf.Common;
 using com.mirle.ibg3k0.sc;
+using com.mirle.ibg3k0.sc.Common;
 using com.mirle.ibg3k0.sc.ProtocolFormat.OHTMessage;
 using System;
 using System.Collections.Generic;
@@ -78,20 +79,22 @@ namespace com.mirle.ibg3k0.sc.ObjectRelay
     public class HCMD_MCSObjToShow
     {
         public static App.SCApplication app = App.SCApplication.getInstance();
-        public HTRANSFER cmd_mcs = null;
+        public HTRANSFER cmd_mcs { get; set; }
+        public HCMD hcmd { get; set; }
         public HCMD_MCSObjToShow()
         {
         }
-        public string ID { get { return cmd_mcs.ID; } }
-        public string CARRIER_ID { get { return cmd_mcs.CARRIER_ID; } }
-        public string LOT_ID { get { return cmd_mcs.LOT_ID; } }
+
+        public string ID { get { return SCUtility.Trim(cmd_mcs.ID); } }
+        public string CARRIER_ID { get { return SCUtility.Trim(cmd_mcs.CARRIER_ID); } }
+        public string LOT_ID { get { return SCUtility.Trim(cmd_mcs.LOT_ID); } }
         public E_TRAN_STATUS TRANSFERSTATE { get { return cmd_mcs.TRANSFERSTATE; } }
         public string HOSTSOURCE
         {
             get
             {
                 var portstation = app.PortStationBLL.OperateCatch.getPortStation(cmd_mcs.HOSTSOURCE);
-                return portstation == null ? cmd_mcs.HOSTSOURCE : portstation.ToString();
+                return portstation == null ? SCUtility.Trim(cmd_mcs.HOSTSOURCE) : portstation.ToString();
             }
         }
         public string HOSTDESTINATION
@@ -99,7 +102,7 @@ namespace com.mirle.ibg3k0.sc.ObjectRelay
             get
             {
                 var portstation = app.PortStationBLL.OperateCatch.getPortStation(cmd_mcs.HOSTDESTINATION);
-                return portstation == null ? cmd_mcs.HOSTDESTINATION : portstation.ToString();
+                return portstation == null ? SCUtility.Trim(cmd_mcs.HOSTDESTINATION) : portstation.ToString();
             }
         }
 
@@ -116,6 +119,7 @@ namespace com.mirle.ibg3k0.sc.ObjectRelay
         public Nullable<System.DateTime> CMD_START_TIME { get { return cmd_mcs.CMD_START_TIME; } }
         public Nullable<System.DateTime> CMD_FINISH_TIME { get { return cmd_mcs.CMD_FINISH_TIME; } }
         public int REPLACE { get { return cmd_mcs.REPLACE; } }
+        public string VH_ID { get { return hcmd?.VH_ID; } }
 
     }
 }
