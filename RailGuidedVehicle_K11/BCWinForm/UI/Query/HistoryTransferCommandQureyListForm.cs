@@ -65,22 +65,55 @@ namespace com.mirle.ibg3k0.bc.winform.UI
                     MessageBox.Show($"The search date cannot exceed {SEARCH_MAX_DATS} days.", "search fail.", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     return;
                 }
-                List<HCMD_MCSObjToShow> cmd_mcs_list = null;
+                //List<HCMD_MCSObjToShow> cmd_mcs_list = null;
                 await Task.Run(() =>
                 {
-                    cmd_mcs_list = mainform.BCApp.SCApplication.CMDBLL.loadByInsertTimeEndTimeAndVhID(start_time, end_time, vh_id);
-                    SCUtility.TrimAllParameter(cmd_mcs_list);
+                    cmdMCSList = mainform.BCApp.SCApplication.CMDBLL.loadByInsertTimeEndTimeAndVhID(start_time, end_time, vh_id);
+                    SCUtility.TrimAllParameter(cmdMCSList);
                 });
-                dgv_TransferCommand.DataSource = cmd_mcs_list;
-                lbl_commandCountValue.Text = cmd_mcs_list.Count.ToString();
+                dgv_TransferCommand.DataSource = cmdMCSList;
+                lbl_commandCountValue.Text = cmdMCSList.Count.ToString();
             }
             catch (Exception ex)
             {
                 NLog.LogManager.GetCurrentClassLogger().Error(ex, "Exception");
             }
             finally
-            { 
+            {
                 btnlSearch.Enabled = true;
+            }
+        }
+
+        private async void m_exportBtn_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                SaveFileDialog dlg = new SaveFileDialog();
+                dlg.Filter = "Command files (*.xlsx)|*.xlsx";
+                if (string.IsNullOrWhiteSpace(m_EqptIDCbx.Text))
+                {
+                    dlg.FileName = "TransferCommand" + "_" + m_StartDTCbx.Value.ToString("yyyyMMddHH") + "-" + m_EndDTCbx.Value.ToString("yyyyMMddHH");
+                }
+                else
+                {
+                    dlg.FileName = "[" + m_EqptIDCbx.Text + "] " + "TransferCommand" + "_" + m_StartDTCbx.Value.ToString("yyyyMMddHH") + "-" + m_EndDTCbx.Value.ToString("yyyyMMddHH");
+                }
+                if (dlg.ShowDialog() != System.Windows.Forms.DialogResult.OK || bcf.Common.BCFUtility.isEmpty(dlg.FileName))
+                {
+                    return;
+                }
+                string filename = dlg.FileName;
+                //建立 xlxs 轉換物件
+                Common.XSLXHelper helper = new Common.XSLXHelper();
+                //取得轉為 xlsx 的物件
+                ClosedXML.Excel.XLWorkbook xlsx = null;
+                await Task.Run(() => xlsx = helper.Export(cmdMCSList));
+                if (xlsx != null)
+                    xlsx.SaveAs(filename);
+            }
+            catch (Exception ex)
+            {
+                NLog.LogManager.GetCurrentClassLogger().Warn(ex, "Exception");
             }
         }
     }

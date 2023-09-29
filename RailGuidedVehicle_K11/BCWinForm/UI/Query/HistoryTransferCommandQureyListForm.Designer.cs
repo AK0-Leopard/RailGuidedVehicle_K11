@@ -40,6 +40,11 @@
             this.m_StartDTCbx = new System.Windows.Forms.DateTimePicker();
             this.label1 = new System.Windows.Forms.Label();
             this.dgv_TransferCommand = new System.Windows.Forms.DataGridView();
+            this.skinGroupBox2 = new CCWin.SkinControl.SkinGroupBox();
+            this.tableLayoutPanel4 = new System.Windows.Forms.TableLayoutPanel();
+            this.m_EqptIDCbx = new System.Windows.Forms.ComboBox();
+            this.lbl_commandCountName = new System.Windows.Forms.Label();
+            this.lbl_commandCountValue = new System.Windows.Forms.Label();
             this.iDDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.vHIDDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.cARRIERIDDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -52,23 +57,18 @@
             this.cMDSTARTTIMEDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.cMDFINISHTIMEDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.hCMDMCSObjToShowBindingSource = new System.Windows.Forms.BindingSource(this.components);
-            this.skinGroupBox2 = new CCWin.SkinControl.SkinGroupBox();
-            this.tableLayoutPanel4 = new System.Windows.Forms.TableLayoutPanel();
-            this.m_EqptIDCbx = new System.Windows.Forms.ComboBox();
-            this.lbl_commandCountName = new System.Windows.Forms.Label();
-            this.lbl_commandCountValue = new System.Windows.Forms.Label();
-            this.sectionObjToShowBindingSource = new System.Windows.Forms.BindingSource(this.components);
             this.cMDMCSObjToShowBindingSource = new System.Windows.Forms.BindingSource(this.components);
+            this.sectionObjToShowBindingSource = new System.Windows.Forms.BindingSource(this.components);
             this.tableLayoutPanel1.SuspendLayout();
             this.panel2.SuspendLayout();
             this.skinGroupBox4.SuspendLayout();
             this.tableLayoutPanel3.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgv_TransferCommand)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.hCMDMCSObjToShowBindingSource)).BeginInit();
             this.skinGroupBox2.SuspendLayout();
             this.tableLayoutPanel4.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.sectionObjToShowBindingSource)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.hCMDMCSObjToShowBindingSource)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.cMDMCSObjToShowBindingSource)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.sectionObjToShowBindingSource)).BeginInit();
             this.SuspendLayout();
             // 
             // tableLayoutPanel1
@@ -128,7 +128,7 @@
             this.m_exportBtn.TabIndex = 85;
             this.m_exportBtn.Text = "   Export";
             this.m_exportBtn.UseVisualStyleBackColor = false;
-            this.m_exportBtn.Visible = false;
+            this.m_exportBtn.Click += new System.EventHandler(this.m_exportBtn_Click);
             // 
             // btnlSearch
             // 
@@ -278,6 +278,71 @@
             this.dgv_TransferCommand.Size = new System.Drawing.Size(1596, 540);
             this.dgv_TransferCommand.TabIndex = 8;
             // 
+            // skinGroupBox2
+            // 
+            this.skinGroupBox2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)));
+            this.skinGroupBox2.BackColor = System.Drawing.Color.Transparent;
+            this.skinGroupBox2.BorderColor = System.Drawing.Color.Black;
+            this.skinGroupBox2.Controls.Add(this.tableLayoutPanel4);
+            this.skinGroupBox2.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.skinGroupBox2.Font = new System.Drawing.Font("Arial", 15F);
+            this.skinGroupBox2.ForeColor = System.Drawing.Color.Black;
+            this.skinGroupBox2.Location = new System.Drawing.Point(529, 3);
+            this.skinGroupBox2.Name = "skinGroupBox2";
+            this.skinGroupBox2.RectBackColor = System.Drawing.SystemColors.Control;
+            this.skinGroupBox2.RoundStyle = CCWin.SkinClass.RoundStyle.All;
+            this.skinGroupBox2.Size = new System.Drawing.Size(393, 124);
+            this.skinGroupBox2.TabIndex = 76;
+            this.skinGroupBox2.TabStop = false;
+            this.skinGroupBox2.Text = "Vehicle ID ";
+            this.skinGroupBox2.TitleBorderColor = System.Drawing.Color.Black;
+            this.skinGroupBox2.TitleRectBackColor = System.Drawing.Color.LightSteelBlue;
+            this.skinGroupBox2.TitleRoundStyle = CCWin.SkinClass.RoundStyle.All;
+            // 
+            // tableLayoutPanel4
+            // 
+            this.tableLayoutPanel4.ColumnCount = 1;
+            this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+            this.tableLayoutPanel4.Controls.Add(this.m_EqptIDCbx, 0, 0);
+            this.tableLayoutPanel4.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel4.Location = new System.Drawing.Point(3, 26);
+            this.tableLayoutPanel4.Name = "tableLayoutPanel4";
+            this.tableLayoutPanel4.RowCount = 1;
+            this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tableLayoutPanel4.Size = new System.Drawing.Size(387, 95);
+            this.tableLayoutPanel4.TabIndex = 84;
+            // 
+            // m_EqptIDCbx
+            // 
+            this.m_EqptIDCbx.Anchor = System.Windows.Forms.AnchorStyles.None;
+            this.m_EqptIDCbx.Font = new System.Drawing.Font("Arial", 14F);
+            this.m_EqptIDCbx.FormattingEnabled = true;
+            this.m_EqptIDCbx.Location = new System.Drawing.Point(80, 32);
+            this.m_EqptIDCbx.Name = "m_EqptIDCbx";
+            this.m_EqptIDCbx.Size = new System.Drawing.Size(227, 30);
+            this.m_EqptIDCbx.TabIndex = 53;
+            // 
+            // lbl_commandCountName
+            // 
+            this.lbl_commandCountName.Anchor = System.Windows.Forms.AnchorStyles.Right;
+            this.lbl_commandCountName.AutoSize = true;
+            this.lbl_commandCountName.Location = new System.Drawing.Point(1379, 685);
+            this.lbl_commandCountName.Name = "lbl_commandCountName";
+            this.lbl_commandCountName.Size = new System.Drawing.Size(70, 22);
+            this.lbl_commandCountName.TabIndex = 80;
+            this.lbl_commandCountName.Text = "Count:";
+            // 
+            // lbl_commandCountValue
+            // 
+            this.lbl_commandCountValue.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.lbl_commandCountValue.AutoSize = true;
+            this.lbl_commandCountValue.Location = new System.Drawing.Point(1455, 676);
+            this.lbl_commandCountValue.Name = "lbl_commandCountValue";
+            this.lbl_commandCountValue.Size = new System.Drawing.Size(140, 40);
+            this.lbl_commandCountValue.TabIndex = 81;
+            this.lbl_commandCountValue.Text = "                    ";
+            // 
             // iDDataGridViewTextBoxColumn
             // 
             this.iDDataGridViewTextBoxColumn.DataPropertyName = "ID";
@@ -370,78 +435,13 @@
             // 
             this.hCMDMCSObjToShowBindingSource.DataSource = typeof(com.mirle.ibg3k0.sc.ObjectRelay.HCMD_MCSObjToShow);
             // 
-            // skinGroupBox2
+            // cMDMCSObjToShowBindingSource
             // 
-            this.skinGroupBox2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)));
-            this.skinGroupBox2.BackColor = System.Drawing.Color.Transparent;
-            this.skinGroupBox2.BorderColor = System.Drawing.Color.Black;
-            this.skinGroupBox2.Controls.Add(this.tableLayoutPanel4);
-            this.skinGroupBox2.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.skinGroupBox2.Font = new System.Drawing.Font("Arial", 15F);
-            this.skinGroupBox2.ForeColor = System.Drawing.Color.Black;
-            this.skinGroupBox2.Location = new System.Drawing.Point(529, 3);
-            this.skinGroupBox2.Name = "skinGroupBox2";
-            this.skinGroupBox2.RectBackColor = System.Drawing.SystemColors.Control;
-            this.skinGroupBox2.RoundStyle = CCWin.SkinClass.RoundStyle.All;
-            this.skinGroupBox2.Size = new System.Drawing.Size(393, 124);
-            this.skinGroupBox2.TabIndex = 76;
-            this.skinGroupBox2.TabStop = false;
-            this.skinGroupBox2.Text = "Vehicle ID ";
-            this.skinGroupBox2.TitleBorderColor = System.Drawing.Color.Black;
-            this.skinGroupBox2.TitleRectBackColor = System.Drawing.Color.LightSteelBlue;
-            this.skinGroupBox2.TitleRoundStyle = CCWin.SkinClass.RoundStyle.All;
-            // 
-            // tableLayoutPanel4
-            // 
-            this.tableLayoutPanel4.ColumnCount = 1;
-            this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-            this.tableLayoutPanel4.Controls.Add(this.m_EqptIDCbx, 0, 0);
-            this.tableLayoutPanel4.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tableLayoutPanel4.Location = new System.Drawing.Point(3, 26);
-            this.tableLayoutPanel4.Name = "tableLayoutPanel4";
-            this.tableLayoutPanel4.RowCount = 1;
-            this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel4.Size = new System.Drawing.Size(387, 95);
-            this.tableLayoutPanel4.TabIndex = 84;
-            // 
-            // m_EqptIDCbx
-            // 
-            this.m_EqptIDCbx.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.m_EqptIDCbx.Font = new System.Drawing.Font("Arial", 14F);
-            this.m_EqptIDCbx.FormattingEnabled = true;
-            this.m_EqptIDCbx.Location = new System.Drawing.Point(80, 32);
-            this.m_EqptIDCbx.Name = "m_EqptIDCbx";
-            this.m_EqptIDCbx.Size = new System.Drawing.Size(227, 30);
-            this.m_EqptIDCbx.TabIndex = 53;
-            // 
-            // lbl_commandCountName
-            // 
-            this.lbl_commandCountName.Anchor = System.Windows.Forms.AnchorStyles.Right;
-            this.lbl_commandCountName.AutoSize = true;
-            this.lbl_commandCountName.Location = new System.Drawing.Point(1379, 685);
-            this.lbl_commandCountName.Name = "lbl_commandCountName";
-            this.lbl_commandCountName.Size = new System.Drawing.Size(70, 22);
-            this.lbl_commandCountName.TabIndex = 80;
-            this.lbl_commandCountName.Text = "Count:";
-            // 
-            // lbl_commandCountValue
-            // 
-            this.lbl_commandCountValue.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.lbl_commandCountValue.AutoSize = true;
-            this.lbl_commandCountValue.Location = new System.Drawing.Point(1455, 676);
-            this.lbl_commandCountValue.Name = "lbl_commandCountValue";
-            this.lbl_commandCountValue.Size = new System.Drawing.Size(140, 40);
-            this.lbl_commandCountValue.TabIndex = 81;
-            this.lbl_commandCountValue.Text = "                    ";
+            this.cMDMCSObjToShowBindingSource.DataSource = typeof(com.mirle.ibg3k0.sc.ObjectRelay.TRANSFERObjToShow);
             // 
             // sectionObjToShowBindingSource
             // 
             this.sectionObjToShowBindingSource.DataSource = typeof(com.mirle.ibg3k0.bc.winform.ObjectRelay.SectionObjToShow);
-            // 
-            // cMDMCSObjToShowBindingSource
-            // 
-            this.cMDMCSObjToShowBindingSource.DataSource = typeof(com.mirle.ibg3k0.sc.ObjectRelay.TRANSFERObjToShow);
             // 
             // HistoryTransferCommandQureyListForm
             // 
@@ -461,11 +461,11 @@
             this.tableLayoutPanel3.ResumeLayout(false);
             this.tableLayoutPanel3.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgv_TransferCommand)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.hCMDMCSObjToShowBindingSource)).EndInit();
             this.skinGroupBox2.ResumeLayout(false);
             this.tableLayoutPanel4.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.sectionObjToShowBindingSource)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.hCMDMCSObjToShowBindingSource)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.cMDMCSObjToShowBindingSource)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.sectionObjToShowBindingSource)).EndInit();
             this.ResumeLayout(false);
 
         }

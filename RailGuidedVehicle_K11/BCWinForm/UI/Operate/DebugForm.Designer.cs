@@ -117,6 +117,7 @@
             this.uctl_SendAllFun = new com.mirle.ibg3k0.bc.winform.UI.Components.uctlButton();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
+            this.cb_openBeforeOnTheWay = new System.Windows.Forms.CheckBox();
             this.cb_updateCarrierLocationByVhReport136 = new System.Windows.Forms.CheckBox();
             this.label104 = new System.Windows.Forms.Label();
             this.num_after_loading_unloading_action_time = new System.Windows.Forms.NumericUpDown();
@@ -418,7 +419,6 @@
             this.comboBox_port11 = new System.Windows.Forms.ComboBox();
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.btn_online = new System.Windows.Forms.Button();
-            this.cb_openBeforeOnTheWay = new System.Windows.Forms.CheckBox();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox3.SuspendLayout();
@@ -1492,6 +1492,17 @@
             this.tabPage1.Text = "TcpIp Control";
             this.tabPage1.UseVisualStyleBackColor = true;
             // 
+            // cb_openBeforeOnTheWay
+            // 
+            this.cb_openBeforeOnTheWay.AutoSize = true;
+            this.cb_openBeforeOnTheWay.Location = new System.Drawing.Point(1137, 513);
+            this.cb_openBeforeOnTheWay.Name = "cb_openBeforeOnTheWay";
+            this.cb_openBeforeOnTheWay.Size = new System.Drawing.Size(176, 26);
+            this.cb_openBeforeOnTheWay.TabIndex = 59;
+            this.cb_openBeforeOnTheWay.Text = "開啟前順途搬送";
+            this.cb_openBeforeOnTheWay.UseVisualStyleBackColor = true;
+            this.cb_openBeforeOnTheWay.CheckedChanged += new System.EventHandler(this.cb_openBeforeOnTheWay_CheckedChanged);
+            // 
             // cb_updateCarrierLocationByVhReport136
             // 
             this.cb_updateCarrierLocationByVhReport136.AutoSize = true;
@@ -1960,7 +1971,7 @@
             // 
             this.cb_Cache_data_Name.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.cb_Cache_data_Name.FormattingEnabled = true;
-            this.cb_Cache_data_Name.Location = new System.Drawing.Point(234, 5);
+            this.cb_Cache_data_Name.Location = new System.Drawing.Point(234, 10);
             this.cb_Cache_data_Name.Name = "cb_Cache_data_Name";
             this.cb_Cache_data_Name.Size = new System.Drawing.Size(164, 30);
             this.cb_Cache_data_Name.TabIndex = 1;
@@ -4556,17 +4567,6 @@
             this.btn_online.Text = "Online with MCS";
             this.btn_online.UseVisualStyleBackColor = true;
             this.btn_online.Click += new System.EventHandler(this.btn_online_Click);
-            // 
-            // cb_openBeforeOnTheWay
-            // 
-            this.cb_openBeforeOnTheWay.AutoSize = true;
-            this.cb_openBeforeOnTheWay.Location = new System.Drawing.Point(1137, 513);
-            this.cb_openBeforeOnTheWay.Name = "cb_openBeforeOnTheWay";
-            this.cb_openBeforeOnTheWay.Size = new System.Drawing.Size(176, 26);
-            this.cb_openBeforeOnTheWay.TabIndex = 59;
-            this.cb_openBeforeOnTheWay.Text = "開啟前順途搬送";
-            this.cb_openBeforeOnTheWay.UseVisualStyleBackColor = true;
-            this.cb_openBeforeOnTheWay.CheckedChanged += new System.EventHandler(this.cb_openBeforeOnTheWay_CheckedChanged);
             // 
             // DebugForm
             // 

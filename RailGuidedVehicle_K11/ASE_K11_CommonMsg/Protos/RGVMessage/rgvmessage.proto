@@ -151,6 +151,12 @@ message Timestamp {
 	Right = 3;
   }
 
+   enum CSTLocation{
+	UNKNOWN_LOCATION = 0;
+    Left = 1;
+    Right = 2;
+  }
+
   message ID_1_HOST_BASIC_INFO_VERSION_REP {
 		string DataDateTime_Year = 1;
 		string DataDateTime_Month = 2;
@@ -180,13 +186,23 @@ message Timestamp {
    message ID_2_BASIC_INFO_VERSION_RESPONSE {
 		int32 ReplyCode = 1;
   }
+  
+   message VhLocationInfo {
+	bool has_cst = 1;
+	stinrg  cst_id = 2;
+	CSTLocation cst_location  = 3;
+  }
 
    message ID_106_INITIAL_EVENT_REP {
 	VhLoadCSTStatus HasBox_L = 1;
 	string BoxIdL = 2;
 	VhLoadCSTStatus HasBox_R = 3;
 	string BoxIdR = 4;
+
+	repeated VhLocationInfo vh_locations =5;
   }
+
+
    message ID_6_INITIAL_EVENT_RESPONSE {
 	int32 ReplyCode = 1;
 	string RenameBOXID_L = 2;
@@ -635,6 +651,12 @@ message Timestamp {
 
   }
 
+message CommandStatus {
+  string command_id = 1;
+  CommandState step_type = 2;
+}
+
+
   message ID_144_STATUS_CHANGE_REP {
 	string CurrentAdrID = 1;
 	string CurrentSecID = 2;
@@ -660,6 +682,7 @@ message Timestamp {
 	double Angle = 22;
 	double XAxis = 23;
 	double YAxis = 24;
+	repeated CommandStatus command_statuses = 1;
 	string CmdId1 = 25;
 	CommandState CmdState_1 = 26;
 	string CmdId2 = 27;

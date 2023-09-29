@@ -79,13 +79,14 @@ namespace com.mirle.ibg3k0.sc.ObjectRelay
     public class HCMD_MCSObjToShow
     {
         public static App.SCApplication app = App.SCApplication.getInstance();
-        public HTRANSFER cmd_mcs { get; set; }
-        public HCMD hcmd { get; set; }
+        public HTRANSFER cmd_mcs;
+        public HCMD hcmd;
         public HCMD_MCSObjToShow()
         {
         }
 
         public string ID { get { return SCUtility.Trim(cmd_mcs.ID); } }
+        public string VH_ID { get { return hcmd?.VH_ID; } }
         public string CARRIER_ID { get { return SCUtility.Trim(cmd_mcs.CARRIER_ID); } }
         public string LOT_ID { get { return SCUtility.Trim(cmd_mcs.LOT_ID); } }
         public E_TRAN_STATUS TRANSFERSTATE { get { return cmd_mcs.TRANSFERSTATE; } }
@@ -119,7 +120,6 @@ namespace com.mirle.ibg3k0.sc.ObjectRelay
         public Nullable<System.DateTime> CMD_START_TIME { get { return cmd_mcs.CMD_START_TIME; } }
         public Nullable<System.DateTime> CMD_FINISH_TIME { get { return cmd_mcs.CMD_FINISH_TIME; } }
         public int REPLACE { get { return cmd_mcs.REPLACE; } }
-        public string VH_ID { get { return hcmd?.VH_ID; } }
 
     }
 }
